@@ -1,6 +1,8 @@
+# using CSV, DataFrames, Test
 
 # Loads in a list of 200 randomly chosen examples from the ldp-database
 EXAMPLES_FILE = joinpath(dirname(@__FILE__), "examples.tsv")
+# EXAMPLES_FILE = "test/CStarSurface/examples.tsv"
 
 # These methods tell CSV.read how to parse the columns of the tsv file correctly
 Base.tryparse(::Type{Vector{T}}, s::String) where {T} = Meta.eval(Meta.parse(s))

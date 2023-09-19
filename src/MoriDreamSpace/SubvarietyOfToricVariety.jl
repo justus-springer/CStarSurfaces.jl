@@ -34,5 +34,3 @@ subvariety_of_toric_variety(ambient, [relation]; is_canonical_ambient)
 
 @attr cox_ring_relations(X :: SubvarietyOfToricVariety) = X.relations
 
-@attr cox_ring(X :: SubvarietyOfToricVariety) = quo(cox_ring(X.ambient), X.relations)[1]
-

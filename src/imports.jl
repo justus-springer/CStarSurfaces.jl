@@ -28,17 +28,22 @@ using CustomUnitRanges:
 using Oscar
 
 import Oscar:
-    map_from_torusinvariant_cartier_divisor_group_to_picard_group,
-    AbstractNormalToricVariety,
-    normal_toric_variety,
+    anticanonical_divisor,
+    anticanonical_divisor_class,
+    canonical_divisor,
+    canonical_divisor_class,
     class_group,
-    pm_object,
     coefficients,
     cox_ring,
-    canonical_divisor,
-    anticanonical_divisor,
+    gorenstein_index,
     is_ample,
     is_fano,
-    permuted
+    map_from_picard_group_to_class_group,
+    normal_toric_variety,
+    permuted,
+    picard_group,
+    picard_index,
+    pm_object,
+    rays
 
 

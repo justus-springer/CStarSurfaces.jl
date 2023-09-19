@@ -9,7 +9,7 @@ include("ToricGeometry/ToricDivisor.jl")
 include("ToricGeometry/ToricDivisorClass.jl")
 
 include("MoriDreamSpace/MoriDreamSpace.jl")
-include("MoriDreamSpace/SubvarietyOfToricVariety.jl")
+#include("MoriDreamSpace/SubvarietyOfToricVariety.jl")
 
 include("CStarSurface/ZeroVector.jl")
 include("CStarSurface/DoubleVector.jl")

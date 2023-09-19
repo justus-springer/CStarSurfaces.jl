@@ -4,10 +4,10 @@ struct PE <: CStarSurfaceCase end
 struct EP <: CStarSurfaceCase end
 struct PP <: CStarSurfaceCase end
 
-invert_case(c :: EE) = EE()
-invert_case(c :: PE) = EP()
-invert_case(c :: EP) = PE()
-invert_case(c :: PP) = PP()
+invert_case(:: EE) = EE()
+invert_case(:: PE) = EP()
+invert_case(:: EP) = PE()
+invert_case(:: PP) = PP()
 invert_case(c :: CStarSurfaceCase, invert :: Bool) = invert ? invert_case(c) : c
 
 @attributes mutable struct CStarSurface{T<:CStarSurfaceCase} <: MoriDreamSpace
@@ -35,27 +35,11 @@ function cstar_surface(ls :: DoubleVector{Int64}, ds :: DoubleVector{Int64}, cas
     @req all2((l,d) -> gcd(l,d) == 1, ls, ds) "ls[i][j] and ds[i][j] must be coprime for all i and j"
 
     c = _to_case(case)
-    X = CStarSurface{typeof(c)}(ls, ds)
+    return CStarSurface{typeof(c)}(ls, ds)
 
-    _set_coordinate_names_cstar(X)
-    return X
 end
 
 cstar_surface(ls :: Vector{Vector{Int64}}, ds :: Vector{Vector{Int64}}, case :: Union{Symbol, CStarSurfaceCase}) = cstar_surface(DoubleVector(ls), DoubleVector(ds), case)
-
-function _bas_vec(r :: Int, i :: Int)
-    @req i >= 0 "index cannot be negative"
-    @req i <= r+1 "index cannot exceed r+1"
-    v = fill(0, r+1)
-    if i == 0
-        for j = 1 : r
-            v[j] = -1
-        end
-    else
-        v[i] = 1
-    end
-    return v
-end
 
 function _is_cstar_column(v :: Vector{T}) where {T <: Oscar.IntegerUnion}
     r = length(v) - 1
@@ -102,11 +86,11 @@ function cstar_surface(P :: ZZMatrix)
     m = length(cols) - sum(map(length, ls))
     if m == 0
         case = :ee
-    elseif m == 1 && last(cols) == _bas_vec(r,r+1)
+    elseif m == 1 && last(cols) == basis_vector(r+1,r+1)
         case = :pe
-    elseif m == 1 && last(cols) == -_bas_vec(r,r+1)
+    elseif m == 1 && last(cols) == -basis_vector(r+1,r+1)
         case = :ep
-    elseif m == 2 && cols[end-1] == _bas_vec(r,r+1) && last(cols) == -_bas_vec(r,r+1)
+    elseif m == 2 && cols[end-1] == basis_vector(r+1,r+1) && last(cols) == -basis_vector(r+1,r+1)
         case = :pp
     else
         throw(ArgumentError("given matrix is not in P-Matrix shape"))
@@ -173,19 +157,18 @@ _max_cones_indices(X :: CStarSurface{EP}) = append!(_taus(X), [_sigma_plus(X)], 
 _max_cones_indices(X :: CStarSurface{PP}) = append!(_taus(X), _taus_plus(X), _taus_minus(X))
 
 _ray(X :: CStarSurface, i :: Int, j :: Int) = 
-X.l[i][j] * _bas_vec(_r(X),i) + X.d[i][j] * _bas_vec(_r(X),nblocks(X))
+X.l[i][j] * [basis_vector(_r(X),i) ; 0] + X.d[i][j] * basis_vector(_r(X)+1, _r(X)+1)
 
-_rays_core(X :: CStarSurface) = [_ray(X, i, j) for i in axes(X.l, 1) for j in axes(X.l[i], 1)]
+_rays_core(X :: CStarSurface) = ZeroVector([_ray(X, i, j) for i in axes(X.l, 1) for j in axes(X.l[i], 1)])
 
-_vplus(X :: CStarSurface) = _bas_vec(_r(X), nblocks(X))
-_vminus(X :: CStarSurface) = -_bas_vec(_r(X), nblocks(X))
+_vplus(X :: CStarSurface) = basis_vector(_r(X)+1, _r(X)+1)
+_vminus(X :: CStarSurface) = -basis_vector(_r(X)+1, _r(X)+1)
 
-_rays(X :: CStarSurface{EE}) = _rays_core(X)
-_rays(X :: CStarSurface{PE}) = push!(_rays_core(X), _vplus(X))
-_rays(X :: CStarSurface{EP}) = push!(_rays_core(X), _vminus(X))
-_rays(X :: CStarSurface{PP}) = push!(_rays_core(X), _vplus(X), _vminus(X))
+rays(X :: CStarSurface{EE}) = _rays_core(X)
+rays(X :: CStarSurface{PE}) = push!(_rays_core(X), _vplus(X))
+rays(X :: CStarSurface{EP}) = push!(_rays_core(X), _vminus(X))
+rays(X :: CStarSurface{PP}) = push!(_rays_core(X), _vplus(X), _vminus(X))
 
-@attr canonical_toric_ambient(X :: CStarSurface) = normal_toric_variety(_rays(X), _max_cones_indices(X))
 
 # Unfortunately, polymake reorders the rays in unpredictable ways, destroying the
 # ordering presrcibed by the double index notation of c-star surfaces.
@@ -204,31 +187,32 @@ function _find_ray_index(X :: CStarSurface, ray :: RayVector{QQFieldElem})
 
 end
 
-@attr _sorted_index_pairs(X :: CStarSurface) = map(ray -> _find_ray_index(X, ray), rays(X))
-
-#################################################
-# Cox Ring
-#################################################
-
+# The names of the variables in the cox ring, labeled according to the double
+# index notation
 _coord_name(i :: Int, j :: Int) = "T[$(i)][$(j)]"
 _coord_name(k :: Int) = "S[$(k)]"
 
-# Sets the coordinate names in the cox ring according to the double index notation
-function _set_coordinate_names_cstar(X :: CStarSurface)
-    coord_names = map(ij -> _coord_name(ij...), _sorted_index_pairs(X))
-    set_coordinate_names(X, coord_names)
-    set_coordinate_names(canonical_toric_ambient(X), coord_names)
+@attr function canonical_toric_ambient(X :: CStarSurface) 
+    Z = normal_toric_variety(rays(X), _max_cones_indices(X))
+    _sorted_ray_indices = map(ray -> _find_ray_index(X, ray), rays(Z))
+    coord_names = map(ij -> _coord_name(ij...), _sorted_ray_indices)
+    set_coordinate_names(Z, coord_names)
+    return Z
 end
+#################################################
+# Cox Ring
+#################################################
 
 # Returns the variables in the Cox Ring of the canonical toric ambient, according
 # to the double index notation of C-Star surfaces.
 # The result is a tuple, whose first entry is a DoubleVector consisting of the 
 # variables T[i][j] and whose second entry is the Vector of variables (S[1], ... S[m])
 @attr function cox_ring_vars(X :: CStarSurface)
-    cox_gens = gens(cox_ring(canonical_toric_ambient(X)))
+    Z = canonical_toric_ambient(X)
+    cox_gens = gens(cox_ring(Z))
     Ts = DoubleVector{MPolyDecRingElem}(undef, _ns(X))
     Ss = Vector{MPolyDecRingElem}(undef, _m(X))
-    indices = _sorted_index_pairs(X)
+    indices = map(ray -> _find_ray_index(X, ray), rays(Z))
     for k in axes(indices, 1)
         if length(indices[k]) == 1
             Ss[indices[k]] = cox_gens[k]
