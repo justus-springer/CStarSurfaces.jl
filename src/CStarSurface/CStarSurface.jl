@@ -10,6 +10,16 @@ invert_case(:: EP) = PE()
 invert_case(:: PP) = PP()
 invert_case(c :: CStarSurfaceCase, invert :: Bool) = invert ? invert_case(c) : c
 
+has_x_plus(:: EE) = true
+has_x_plus(:: PE) = false
+has_x_plus(:: EP) = true
+has_x_plus(:: PP) = false
+
+has_x_minus(c :: CStarSurfaceCase) = has_x_plus(invert_case(c))
+
+has_D_plus(c :: CStarSurfaceCase) = !has_x_plus(c)
+has_D_minus(c :: CStarSurfaceCase) = !has_x_minus(c)
+
 @attributes mutable struct CStarSurface{T<:CStarSurfaceCase} <: MoriDreamSpace
     l :: DoubleVector{Int64}
     d :: DoubleVector{Int64}
@@ -19,6 +29,11 @@ invert_case(c :: CStarSurfaceCase, invert :: Bool) = invert ? invert_case(c) : c
 end
 
 Base.:(==)(X :: CStarSurface, Y :: CStarSurface) = X.l == Y.l && X.d == Y.d && X.case == Y.case
+
+has_x_plus(X :: CStarSurface) = has_x_plus(X.case)
+has_x_minus(X :: CStarSurface) = has_x_minus(X.case)
+has_D_plus(X :: CStarSurface) = has_D_plus(X.case)
+has_D_minus(X :: CStarSurface) = has_D_minus(X.case)
 
 #################################################
 # Constructors
@@ -108,6 +123,9 @@ end
 @attr nblocks(X :: CStarSurface) = length(X.l)
 
 @attr slopes(X :: CStarSurface) = map2(//, X.d, X.l)
+
+@attr _m_plus(X :: CStarSurface) = sum(map(maximum, slopes(X)))
+@attr _m_minus(X :: CStarSurface) = -sum(map(minimum, slopes(X)))
 
 _r(X :: CStarSurface) = nblocks(X) - 1
 
@@ -199,6 +217,7 @@ _coord_name(k :: Int) = "S[$(k)]"
     set_coordinate_names(Z, coord_names)
     return Z
 end
+
 #################################################
 # Cox Ring
 #################################################
@@ -232,6 +251,89 @@ end
 _trinomial(X :: CStarSurface, i :: Int) = _monomial(X, i) + _monomial(X, i+1) + _monomial(X, i+2)
 
 @attr cox_ring_relations(X :: CStarSurface) = [_trinomial(X,i) for i = 0 : _r(X) - 2]
+
+#################################################
+# Intersection numbers
+#
+# We compute intersection numbers following
+# Chapter 7 of "Classifying log del Pezzo surfaces
+# with torus action" (arXiv:2302.03095)
+#################################################
+
+@attr _ordered_slopes(X :: CStarSurface) = map(v -> sort(v, rev=true), slopes(X))
+
+function _mcal(X :: CStarSurface, i :: Int, j :: Int)
+    @req 0 ≤ j ≤ _ns(X)[i] "j must be between 0 and n_i"
+
+    j == 0 && return has_x_plus(X) ? -1/_m_plus(X) : 0
+    j == _ns(X)[i] && return has_x_minus(X) ? -1/_m_minus(X) : 0
+
+    ms = sort(slopes(X)[i], rev=true)
+    return 1 / (ms[j] - ms[j+1])
+end
+
+@attr _mcals(X :: CStarSurface) = ZeroVector([[_mcal(X, i, j) for j = 0 : _ns(X)[i]] for i = 0 : _r(X)])
+
+@attr function intersection_matrix(X :: CStarSurface)
+    r, n, m, ns = _r(X), _n(X), _m(X), _ns(X)
+    # The resulting intersection matrix
+    IM = zeros(Rational{Int}, n + m, n + m)
+
+    # The entries ls sorted by slope
+    ls = ZeroVector(map(i -> X.l[i][sortperm(slopes(X)[i], rev=true)], 0 : r))
+
+    inds = _slope_ordered_ray_indices(X)
+
+    # 1. Intersection numbers of adjacent rays in the leaf cones
+    for i = 0 : r
+        if has_D_plus(X) 
+            IM[_vplus_index(X), inds[i][1]] = 1 // ls[i][1] 
+        end
+
+        for j = 1 : ns[i]-1
+            IM[inds[i][j], inds[i][j+1]] = _mcal(X, i, j) // (ls[i][j] * ls[i][j+1])
+        end
+
+        if has_D_minus(X) 
+            IM[inds[i][ns[i]], _vminus_index(X)] = 1 // ls[i][1] 
+        end
+    end
+
+    # 2. Intersection numbers of top and bottom most rays with each other
+    for i = 0 : r, k = i+1 : r
+        if has_x_plus(X)
+            IM[inds[i][1], inds[k][1]] = ns[i] * ns[k] == 1 ? 
+                -(_mcal(X, i, 0) + _mcal(X, i, ns[i])) // (ls[i][1] * ls[k][1]) :
+                -_mcal(X, i, 0) // (ls[i][1] * ls[k][1])
+        end
+        if has_x_minus(X)
+            IM[inds[i][ns[i]], inds[k][ns[k]]] = ns[i] * ns[k] == 1 ? 
+                -(_mcal(X, i, 0) + _mcal(X, i, ns[i])) // (ls[i][ns[i]] * ls[k][ns[k]]) :
+                -_mcal(X, i, ns[i]) // (ls[i][ns[i]] * ls[k][ns[k]])
+        end
+    end
+
+    # 3. Self intersection numbers
+    if has_D_plus(X)
+        IM[_vplus_index(X), _vplus_index(X)] = - _m_plus(X)
+    end
+    if has_D_minus(X)
+        IM[_vminus_index(X), _vminus_index(X)] = - _m_minus(X)
+    end
+    for i = 0 : r, j = 1 : ns[i]
+        IM[inds[i][j], inds[i][j]] = - 1 // ls[i][j]^2 * (_mcal(X, i, j-1) + _mcal(X, i, j))
+    end
+
+    # fill in numbers to make the matrix symmetric
+    for i = 1 : n+m, j = 1 : n+m
+        if IM[i,j] == 0 
+            IM[i,j] = IM[j,i]
+        end
+    end
+
+    return IM
+
+end
 
 
 #################################################

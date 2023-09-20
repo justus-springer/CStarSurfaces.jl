@@ -21,9 +21,6 @@ end
 @attr _beta_plus_sorted(X :: CStarSurface) = sort(map(xs -> sort(xs, rev=true), _beta_plus(X)), lt = _custom_lt_vectors)
 @attr _beta_minus_sorted(X :: CStarSurface) = sort(map(xs -> sort(xs, rev=true), _beta_minus(X)), lt = _custom_lt_vectors)
 
-@attr _m_plus(X :: CStarSurface) = sum(map(maximum, slopes(X)))
-@attr _m_minus(X :: CStarSurface) = -sum(map(minimum, slopes(X)))
-
 @attr orientation(X :: CStarSurface{PE}) = 1
 @attr orientation(X :: CStarSurface{EP}) = -1
 @attr function orientation(X :: CStarSurface)
