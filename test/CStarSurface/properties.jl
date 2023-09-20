@@ -54,3 +54,9 @@ end
     end
 end
 
+@testset "examples - intersection matrix" begin
+    for i = 1 : length(Xs)
+        @test intersection_matrix(Xs[i]) == df[i, "intersectionMatrix"]
+    end
+end
+

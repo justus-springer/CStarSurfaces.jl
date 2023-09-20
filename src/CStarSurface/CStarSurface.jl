@@ -260,8 +260,6 @@ _trinomial(X :: CStarSurface, i :: Int) = _monomial(X, i) + _monomial(X, i+1) + 
 # with torus action" (arXiv:2302.03095)
 #################################################
 
-@attr _ordered_slopes(X :: CStarSurface) = map(v -> sort(v, rev=true), slopes(X))
-
 function _mcal(X :: CStarSurface, i :: Int, j :: Int)
     @req 0 ≤ j ≤ _ns(X)[i] "j must be between 0 and n_i"
 
@@ -276,6 +274,7 @@ end
 
 @attr function intersection_matrix(X :: CStarSurface)
     r, n, m, ns = _r(X), _n(X), _m(X), _ns(X)
+
     # The resulting intersection matrix
     IM = zeros(Rational{Int}, n + m, n + m)
 
@@ -331,7 +330,7 @@ end
         end
     end
 
-    return IM
+    return matrix(QQ, IM)
 
 end
 
