@@ -1,3 +1,7 @@
+
+# Union type of MoriDreamSpace's and Oscar's toric varieties
+const MoriDreamSpaceUnion = Union{MoriDreamSpace, Oscar.NormalToricVarietyType}
+
 #################################################
 # Additional constructors
 #################################################
@@ -11,7 +15,7 @@ function normal_toric_variety(P :: MatElem)
     normal_toric_variety(P, cones)
 end
 
-gen_matrix(X :: Oscar.NormalToricVarietyType) = transpose(matrix(ZZ, rays(X)))
+gen_matrix(X :: MoriDreamSpaceUnion) = transpose(matrix(ZZ, rays(X)))
 
 @attr function affine_toric_charts(X :: Oscar.NormalToricVarietyType)
     P = gen_matrix(X)
@@ -40,7 +44,7 @@ end
 
 
 #################################################
-# Some basis attributes
+# Some basic attributes
 #################################################
 
 @attr function maximal_cones_indices(X :: Oscar.NormalToricVarietyType) 

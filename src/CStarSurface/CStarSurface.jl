@@ -177,7 +177,7 @@ _max_cones_indices(X :: CStarSurface{PP}) = append!(_taus(X), _taus_plus(X), _ta
 _ray(X :: CStarSurface, i :: Int, j :: Int) = 
 X.l[i][j] * [basis_vector(_r(X),i) ; 0] + X.d[i][j] * basis_vector(_r(X)+1, _r(X)+1)
 
-_rays_core(X :: CStarSurface) = ZeroVector([_ray(X, i, j) for i in axes(X.l, 1) for j in axes(X.l[i], 1)])
+_rays_core(X :: CStarSurface) = [_ray(X, i, j) for i in axes(X.l, 1) for j in axes(X.l[i], 1)]
 
 _vplus(X :: CStarSurface) = basis_vector(_r(X)+1, _r(X)+1)
 _vminus(X :: CStarSurface) = -basis_vector(_r(X)+1, _r(X)+1)

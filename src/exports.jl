@@ -3,6 +3,7 @@ export map_from_picard_group_to_class_group
 export cox_ring_relation_degrees
 export has_x_plus
 export has_x_minus
+export gen_matrix
 export intersection_matrix
 export AdmissibleRowOperation
 export affine_toric_chart
