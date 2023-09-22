@@ -46,11 +46,11 @@ function normal_form(X :: CStarSurface)
     Y = p1(Y)
 
     # Step 2: Sort the rays in each block by slope
-    p2 = PermutationOfRays(map(ms -> perm(sortperm(ms; rev = true)), _beta_plus(Y)))
+    p2 = PermutationOfRays(map(ms -> inv(perm(sortperm(ms; rev = true))), _beta_plus(Y)))
     Y = p2(Y)
 
     # Step 3: Sort the blocks
-    p3 = PermutationOfBlocks(perm(sortperm(Vector(_beta_plus(Y)), lt = _custom_lt_vectors)))
+    p3 = PermutationOfBlocks(inv(perm(sortperm(Vector(_beta_plus(Y)), lt = _custom_lt_vectors))))
     Y = p3(Y)
 
     # Step 4: Apply row operations to achieve floor(maximum(m_{i1}, ...m_{in_i})) = 0

@@ -42,13 +42,3 @@ is_complete_intersection(R :: MPolyQuoRing) = is_complete_intersection(R.I)
 
 is_complete_intersection(R :: MPolyRing) = true
 
-#################################################
-# Permutation on abstract vectors
-#################################################
-
-function permuted(v :: AbstractVector{T}, x :: PermGroupElem) where {T}
-    invx = inv(x)
-    a = axes(v,1)
-    return v[[a[i^x] for i in 1 : size(a,1)]]
-end
-

@@ -31,7 +31,7 @@ Base.one(::Type{InvertLastRow}) = InvertLastRow(1)
 
 Base.:*(α :: InvertLastRow, β :: InvertLastRow) = InvertLastRow(α.factor * β.factor)
 
-Base.inv(α :: InvertLastRow) = InvertLastRow(1 ÷ α.factors)
+Base.inv(α :: InvertLastRow) = InvertLastRow(1 ÷ α.factor)
 
 (α :: InvertLastRow)(X :: CStarSurface) = cstar_surface(X.l, map(d -> α.factor * d, X.d), invert_case(X.case, α.factor == -1))
 
@@ -234,7 +234,7 @@ _swap_ops(α :: PermutationOfBlocks, β :: PermutationOfRays) = (PermutationOfRa
 
 _swap_ops(α :: AdmissibleRowOperation, β :: PermutationOfRays) = (β, α)
 
-_swap_ops(α :: AdmissibleRowOperation, β :: PermutationOfBlocks) = (β, AdmissibleRowOperation(ZeroVector(permuted(α.factors, β.block_perm))))
+_swap_ops(α :: AdmissibleRowOperation, β :: PermutationOfBlocks) = (β, AdmissibleRowOperation(permuted(α.factors, β.block_perm)))
 
 _admissible_operations_ordering = Dict([(InvertLastRow, 1), (PermutationOfRays, 2), (PermutationOfBlocks, 3), (AdmissibleRowOperation, 4)])
 

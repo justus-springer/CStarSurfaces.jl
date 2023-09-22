@@ -43,3 +43,6 @@ function resize!(v :: ZeroVector, n :: Integer)
     resize!(v.parent, n)
     return v
 end
+
+permuted(v :: ZeroVector, x :: PermGroupElem) = ZeroVector(permuted(v.parent, x))
+

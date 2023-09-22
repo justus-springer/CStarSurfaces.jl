@@ -7,7 +7,7 @@
     @test X1.l.parent == [[1,2,3,1],[5],[1,1]]
     @test X1.d.parent == [[3,3,-1,-2],[2],[0,-1]]
     @test X1.case == EE()
-    @test gen_matrix(X1) == ZZ[-1 -2 -3 -1 5 0 0; -1 -2 -3 -1 0 1 1; 3 3 -1 -2 2 0 -1] broken=true
+    @test gen_matrix(X1) == ZZ[-1 -2 -3 -1 5 0 0; -1 -2 -3 -1 0 1 1; 3 3 -1 -2 2 0 -1]
 
     @test X1 == X2
     @test X2 == X3

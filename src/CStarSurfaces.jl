@@ -4,12 +4,13 @@ include("imports.jl")
 include("exports.jl")
 include("Tools.jl")
 
-include("ToricGeometry/AbstractNormalToricVariety.jl")
-include("ToricGeometry/ToricDivisor.jl")
-include("ToricGeometry/ToricDivisorClass.jl")
 
 include("MoriDreamSpace/MoriDreamSpace.jl")
 #include("MoriDreamSpace/SubvarietyOfToricVariety.jl")
+
+include("ToricGeometry/AbstractNormalToricVariety.jl")
+include("ToricGeometry/ToricDivisor.jl")
+include("ToricGeometry/ToricDivisorClass.jl")
 
 include("CStarSurface/ZeroVector.jl")
 include("CStarSurface/DoubleVector.jl")
