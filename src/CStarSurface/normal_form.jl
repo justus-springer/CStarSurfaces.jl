@@ -50,7 +50,7 @@ function normal_form(X :: CStarSurface)
     Y = p2(Y)
 
     # Step 3: Sort the blocks
-    p3 = PermutationOfBlocks(perm(sortperm(Vector(_beta_plus(Y)))))
+    p3 = PermutationOfBlocks(perm(sortperm(Vector(_beta_plus(Y)), lt = _custom_lt_vectors)))
     Y = p3(Y)
 
     # Step 4: Apply row operations to achieve floor(maximum(m_{i1}, ...m_{in_i})) = 0
