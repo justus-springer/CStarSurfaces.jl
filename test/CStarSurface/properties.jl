@@ -60,3 +60,12 @@ end
     end
 end
 
+@testset "examples - is normal form" begin
+    for i = 1 : length(Xs)
+        # the non-toric entries should all be in normal form
+        if nblocks(Xs[i]) > 2
+            @test is_normal_form(Xs[i])
+        end
+    end
+end
+

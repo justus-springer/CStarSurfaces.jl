@@ -61,6 +61,8 @@ function normal_form(X :: CStarSurface)
     return (Y, normalize_admissible_operation(p1 * p2 * p3 * p4))
 end
 
+is_normal_form(X :: CStarSurface) = normal_form(X)[1] == X
+
 # Check whether two C-star surfaces are isomorphic to each other
 # Returns a pair consisting of a boolean and either an admissible operation turning
 # `X` into `Y` or `nothing`.
