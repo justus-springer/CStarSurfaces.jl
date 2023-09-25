@@ -211,7 +211,7 @@ _coord_name(i :: Int, j :: Int) = "T[$(i)][$(j)]"
 _coord_name(k :: Int) = "S[$(k)]"
 
 @attr function canonical_toric_ambient(X :: CStarSurface) 
-    Z = normal_toric_variety(rays(X), _max_cones_indices(X))
+    Z = normal_toric_variety(rays(X), _max_cones_indices(X); non_redundant=true)
     _sorted_ray_indices = map(ray -> _find_ray_index(X, ray), rays(Z))
     coord_names = map(ij -> _coord_name(ij...), _sorted_ray_indices)
     set_coordinate_names(Z, coord_names)
