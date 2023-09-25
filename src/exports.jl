@@ -1,6 +1,8 @@
 export AdmissibleOperation
 export cox_ring_weights
 export class_group_torsion_order
+export local_picard_indices
+export local_picard_index
 export map_from_picard_group_to_class_group
 export cox_ring_relation_degrees
 export has_x_plus

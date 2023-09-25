@@ -6,18 +6,18 @@
 
 # A constructor for normal toric varieties of picard number one.
 # The fan will be the unique complete fan having `transpose(P)` as its generator matrix.
-function normal_toric_variety(P :: MatElem)
+function normal_toric_variety(P :: MatElem; non_redundant :: Bool)
     n, r = nrows(P), ncols(P)
     @req n == r + 1 "this constructor only works if the picard rank is one"
     cones = collect(powerset(1 : n, r, r))
-    normal_toric_variety(P, cones)
+    normal_toric_variety(P, cones, non_redundant=non_redundant)
 end
 
 @attr function affine_toric_charts(X :: Oscar.NormalToricVarietyType)
     P = gen_matrix(X)
-    charts = Dict{Vector{Int}, AffineNormalToricVariety}()
+    charts = Dict{Vector{Int}, NormalToricVariety}()
     for c in maximal_cones_indices(X)
-        charts[c] = affine_normal_toric_variety(cone(transpose(P[:, c])))
+        charts[c] = normal_toric_variety(transpose(P[:, c]), [collect(1:length(c))]; non_redundant=true)
     end
     return charts
 end
@@ -36,7 +36,7 @@ function remove_torusfactor(X :: Oscar.NormalToricVarietyType)
     # Use `invoke` here to dispatch on the more generic `solve_rational` from 
     # AbstractAlgebra, which doesn't require the first argument to be a square matrix
     new_P, _ = invoke(solve_rational, Tuple{MatElem{ZZRingElem}, MatElem{ZZRingElem}}, A, P)
-    normal_toric_variety(transpose(new_P), maximal_cones_indices(X))
+    normal_toric_variety(transpose(new_P), maximal_cones_indices(X); non_redundant=true)
 end
 
 #################################################
@@ -67,19 +67,6 @@ end
 
 map_from_class_group_to_local_class_group(X :: Oscar.NormalToricVarietyType, c :: Vector{Int64}) =
 maps_from_class_group_to_local_class_groups(X)[c]
-
-@attr function local_gorenstein_indices(X :: Oscar.NormalToricVarietyType)
-    gorenstein_indices = Dict{Vector{Int}, ZZRingElem}()
-    K = divisor_class(canonical_divisor_class(X))
-    for c in maximal_cones_indices(X)
-        f = map_from_class_group_to_local_class_group(X, c)
-        gorenstein_indices[c] = order(f(K))
-    end
-    return gorenstein_indices
-end
-
-local_gorenstein_index(X :: Oscar.NormalToricVarietyType, c :: Vector{Int64}) =
-local_gorenstein_indices(X)[c]
 
 
 #################################################

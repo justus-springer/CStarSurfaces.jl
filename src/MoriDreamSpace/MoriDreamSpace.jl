@@ -72,6 +72,15 @@ end
     order(f(c))
 end
 
+@attr local_class_groups(X :: MoriDreamSpace) = local_class_groups(canonical_toric_ambient(X))
+
+local_class_group(X :: MoriDreamSpace, c :: Vector{Int64}) = local_class_groups(X)[c]
+
+@attr maps_from_class_group_to_local_class_groups(X :: MoriDreamSpace) =
+maps_from_class_group_to_local_class_groups(canonical_toric_ambient(X))
+
+map_from_class_group_to_local_class_group(X :: MoriDreamSpace, c :: Vector{Int64}) =
+maps_from_class_group_to_local_class_groups(X)[c]
 
 #################################################
 # More attributes for Mori dream spaces and toric varieties
@@ -108,6 +117,23 @@ end
 @attr class_group_torsion_order(X :: MoriDreamSpaceUnion) = 
 prod(elementary_divisors(class_group(X))[1 : end - rank(class_group(X))])
 
+@attr function local_gorenstein_indices(X :: MoriDreamSpaceUnion)
+    gorenstein_indices = Dict{Vector{Int}, ZZRingElem}()
+    K = divisor_class(canonical_divisor_class(X))
+    for c in maximal_cones_indices(X)
+        f = map_from_class_group_to_local_class_group(X, c)
+        gorenstein_indices[c] = order(f(K))
+    end
+    return gorenstein_indices
+end
 
+local_gorenstein_index(X :: MoriDreamSpaceUnion, c :: Vector{Int64}) =
+local_gorenstein_indices(X)[c]
+
+@attr local_picard_indices(X :: MoriDreamSpaceUnion) = 
+Dict([(c, order(g)) for (c,g) in local_class_groups(X)])
+
+local_picard_index(X :: MoriDreamSpaceUnion, c :: Vector{Int64}) =
+local_picard_indices(X)[c]
 
 
