@@ -63,6 +63,7 @@ export maps_from_class_group_to_local_class_groups
 export maximal_cones_indices
 export MoriDreamSpace
 export is_normal_form
+export reset_attributes!
 export mori_dream_space_divisor
 export MoriDreamSpaceDivisor
 export moving_cone

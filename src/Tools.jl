@@ -1,3 +1,17 @@
+#################################################
+# Reset all attributes
+#################################################
+
+function reset_attributes!(x)
+    try
+        empty!(x.__attrs)
+    finally
+        return x
+    end
+end
+
+reset_attributes!(xs :: AbstractVector) = map(reset_attributes!, xs)
+
 # i-th canonical basis vector, with the convention that the zeroth 
 # one has minus ones everywhere
 function basis_vector(::Type{T}, n, i) where {T <: Oscar.IntegerUnion}
