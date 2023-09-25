@@ -44,6 +44,8 @@ import Oscar:
     picard_group,
     picard_index,
     pm_object,
-    rays
+    rays,
+    nrays,
+    maximal_cones
 
 

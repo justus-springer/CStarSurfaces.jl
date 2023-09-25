@@ -250,7 +250,9 @@ end
 
 _trinomial(X :: CStarSurface, i :: Int) = _monomial(X, i) + _monomial(X, i+1) + _monomial(X, i+2)
 
-@attr cox_ring_relations(X :: CStarSurface) = [_trinomial(X,i) for i = 0 : _r(X) - 2]
+@attr cox_ring_relations(X :: CStarSurface) :: 
+    Vector{MPolyDecRingElem{QQFieldElem, QQMPolyRingElem}} = 
+[_trinomial(X,i) for i = 0 : _r(X) - 2]
 
 #################################################
 # Intersection numbers

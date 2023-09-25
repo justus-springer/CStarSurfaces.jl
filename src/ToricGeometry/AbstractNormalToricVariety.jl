@@ -1,6 +1,4 @@
 
-# Union type of MoriDreamSpace's and Oscar's toric varieties
-const MoriDreamSpaceUnion = Union{MoriDreamSpace, Oscar.NormalToricVarietyType}
 
 #################################################
 # Additional constructors
@@ -15,8 +13,6 @@ function normal_toric_variety(P :: MatElem)
     normal_toric_variety(P, cones)
 end
 
-gen_matrix(X :: MoriDreamSpaceUnion) = transpose(matrix(ZZ, rays(X)))
-
 @attr function affine_toric_charts(X :: Oscar.NormalToricVarietyType)
     P = gen_matrix(X)
     charts = Dict{Vector{Int}, AffineNormalToricVariety}()
@@ -25,6 +21,7 @@ gen_matrix(X :: MoriDreamSpaceUnion) = transpose(matrix(ZZ, rays(X)))
     end
     return charts
 end
+
 
 # return the affine toric chart associated with the given cone
 affine_toric_chart(X :: Oscar.NormalToricVarietyType, c :: Vector{Int64}) = affine_toric_charts(X)[c]
@@ -41,40 +38,6 @@ function remove_torusfactor(X :: Oscar.NormalToricVarietyType)
     new_P, _ = invoke(solve_rational, Tuple{MatElem{ZZRingElem}, MatElem{ZZRingElem}}, A, P)
     normal_toric_variety(transpose(new_P), maximal_cones_indices(X))
 end
-
-
-#################################################
-# Some basic attributes
-#################################################
-
-@attr function maximal_cones_indices(X :: Oscar.NormalToricVarietyType) 
-    IM = ray_indices(maximal_cones(X))
-    [sort(collect(row(IM,i))) for i = 1 : nrows(IM)]
-end
-
-@attr covering_collection(X :: Oscar.NormalToricVarietyType) =
-map(c -> [i for i in 1 : nrays(X) if i ∉ c], maximal_cones_indices(X))
-
-@attr degree_matrix(X :: Oscar.NormalToricVarietyType) =
-transpose(vcat([w.coeff for w in Oscar._cox_ring_weights(X)]))
-
-@attr function degree_matrix_torsion_part(X :: Oscar.NormalToricVarietyType)
-    Q = degree_matrix(X)
-    Q[1 : end - rank(class_group(X)), :]
-end
-
-@attr function degree_matrix_free_part(X :: Oscar.NormalToricVarietyType)
-    Q = degree_matrix(X)
-    Q[end - rank(class_group(X)) + 1 : end, :]
-end
-
-@attr is_q_factorial(X :: Oscar.NormalToricVarietyType) = is_simplicial(X)
-
-@attr is_factorial(X :: Oscar.NormalToricVarietyType) = is_smooth(X)
-
-#overwritten from Oscar
-@attr is_fano(X :: Oscar.NormalToricVarietyType) = is_ample(anticanonical_divisor_class(X))
-
 
 #################################################
 # Local class groups
