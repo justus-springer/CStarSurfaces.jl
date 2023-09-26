@@ -169,10 +169,10 @@ _vminus_index(X :: CStarSurface{PP}) = sum(map(length, X.l)) + 2
 
 _taus_minus(X :: CStarSurface) = Vector(map(vs -> [last(vs), _vminus_index(X)], _slope_ordered_ray_indices(X)))
 
-_max_cones_indices(X :: CStarSurface{EE}) = append!(_taus(X), [_sigma_plus(X), _sigma_minus(X)])
-_max_cones_indices(X :: CStarSurface{PE}) = append!(_taus(X), [_sigma_minus(X)], _taus_plus(X))
-_max_cones_indices(X :: CStarSurface{EP}) = append!(_taus(X), [_sigma_plus(X)], _taus_minus(X))
-_max_cones_indices(X :: CStarSurface{PP}) = append!(_taus(X), _taus_plus(X), _taus_minus(X))
+@attr maximal_cones_indices(X :: CStarSurface{EE}) = append!(_taus(X), [_sigma_plus(X), _sigma_minus(X)])
+@attr maximal_cones_indices(X :: CStarSurface{PE}) = append!(_taus(X), [_sigma_minus(X)], _taus_plus(X))
+@attr maximal_cones_indices(X :: CStarSurface{EP}) = append!(_taus(X), [_sigma_plus(X)], _taus_minus(X))
+@attr maximal_cones_indices(X :: CStarSurface{PP}) = append!(_taus(X), _taus_plus(X), _taus_minus(X))
 
 _ray(X :: CStarSurface, i :: Int, j :: Int) = 
 X.l[i][j] * [basis_vector(_r(X),i) ; 0] + X.d[i][j] * basis_vector(_r(X)+1, _r(X)+1)
@@ -187,34 +187,20 @@ rays(X :: CStarSurface{PE}) = push!(_rays_core(X), _vplus(X))
 rays(X :: CStarSurface{EP}) = push!(_rays_core(X), _vminus(X))
 rays(X :: CStarSurface{PP}) = push!(_rays_core(X), _vplus(X), _vminus(X))
 
+_coordinate_names_core(X :: CStarSurface) = ["T[$(i)][$(j)]" for i in axes(X.l, 1) for j in axes(X.l[i], 1)]
 
-# Unfortunately, polymake reorders the rays in unpredictable ways, destroying the
-# ordering presrcibed by the double index notation of c-star surfaces.
-# This function finds the indices matching to a given ray vector.
-function _find_ray_index(X :: CStarSurface, ray :: RayVector{QQFieldElem})
-    int_ray = map(Int, lcm(denominator.(ray)) * ray)
-    if int_ray == _vplus(X)
-        return _vplus_index(X) - _n(X)
-    elseif int_ray == _vminus(X)
-        return _vminus_index(X) - _n(X)
-    end
-
-    (i,l,d) = _is_cstar_column(int_ray)
-    j = findfirst(ld -> ld == (l,d), collect(zip(X.l[i], X.d[i])))
-    return (i,j)
-
-end
-
-# The names of the variables in the cox ring, labeled according to the double
-# index notation
-_coord_name(i :: Int, j :: Int) = "T[$(i)][$(j)]"
-_coord_name(k :: Int) = "S[$(k)]"
+_coordinate_names(X :: CStarSurface{EE}) = _coordinate_names_core(X)
+_coordinate_names(X :: CStarSurface{PE}) = push!(_coordinate_names_core(X), "S[1]")
+_coordinate_names(X :: CStarSurface{EP}) = push!(_coordinate_names_core(X), "S[1]")
+_coordinate_names(X :: CStarSurface{PP}) = push!(_coordinate_names_core(X), "S[1]", "S[2]")
 
 @attr function canonical_toric_ambient(X :: CStarSurface) 
-    Z = normal_toric_variety(rays(X), _max_cones_indices(X); non_redundant=true)
-    _sorted_ray_indices = map(ray -> _find_ray_index(X, ray), rays(Z))
-    coord_names = map(ij -> _coord_name(ij...), _sorted_ray_indices)
-    set_coordinate_names(Z, coord_names)
+    # passing non_redundant=true does two important things here:
+    # 1. It skips time-consuming checks on the input rays,
+    # 2. It prevents polymake from reordering the rays, making the interface to
+    # toric geometry in Oscar much more reliable.
+    Z = normal_toric_variety(rays(X), maximal_cones_indices(X); non_redundant=true)
+    set_coordinate_names(Z, _coordinate_names(X))
     return Z
 end
 
@@ -227,19 +213,19 @@ end
 # The result is a tuple, whose first entry is a DoubleVector consisting of the 
 # variables T[i][j] and whose second entry is the Vector of variables (S[1], ... S[m])
 @attr function cox_ring_vars(X :: CStarSurface)
+    r, ns, m = _r(X), _ns(X), _m(X)
     Z = canonical_toric_ambient(X)
     cox_gens = gens(cox_ring(Z))
-    Ts = DoubleVector{MPolyDecRingElem}(undef, _ns(X))
-    Ss = Vector{MPolyDecRingElem}(undef, _m(X))
-    indices = map(ray -> _find_ray_index(X, ray), rays(Z))
-    for k in axes(indices, 1)
-        if length(indices[k]) == 1
-            Ss[indices[k]] = cox_gens[k]
-        else
-            (i,j) = indices[k]
-            Ts[i][j] = cox_gens[k]
-        end
+
+    Ts = DoubleVector{MPolyDecRingElem}(undef, ns)
+    k = 1
+    for i = 0 : r, j = 1 : ns[i]
+        Ts[i][j] = cox_gens[k]
+        k += 1
     end
+
+    Ss = cox_gens[end - (m-1) : end]
+
     return (Ts,Ss)
 end
 
