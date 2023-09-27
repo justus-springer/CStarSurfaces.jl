@@ -12,6 +12,7 @@ include("MoriDreamSpace/MoriDreamSpaceDivisor.jl")
 include("ToricGeometry/AbstractNormalToricVariety.jl")
 include("ToricGeometry/ToricDivisor.jl")
 include("ToricGeometry/ToricDivisorClass.jl")
+include("ToricGeometry/ToricSurfaceResolution.jl")
 
 include("CStarSurface/ZeroVector.jl")
 include("CStarSurface/DoubleVector.jl")
