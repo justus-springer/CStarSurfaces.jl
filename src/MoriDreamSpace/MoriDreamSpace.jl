@@ -19,7 +19,7 @@ abstract type MoriDreamSpace end
 # The computation of these fields are simply
 # passed to the canonical toric ambient. Subtypes
 # of `MoriDreamSpace` can and should overwrite
-# there, should a more direct approach exist.
+# these, should a more direct approach exist.
 #################################################
 
 rays(X :: MoriDreamSpace) = rays(canonical_toric_ambient(X))
