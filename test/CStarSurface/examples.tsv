@@ -1,4 +1,4 @@
-P	case	classGroupRank	classGroupTorsion	orientation	gorensteinIndex	picardIndex	intersectionMatrix	degree	maximalLogCanonicity
+P	case	classGroupRank	classGroupTorsion	orientation	gorensteinIndex	picardIndex	intersectionMatrix	anticanonicalSelfIntersection	maximalLogCanonicity
 [-1 -1 371 0 ; -1 -1 0 7 ; 0 -1 192 3]	ee	1	[7]	1	130	49140	[20//351 1//1 1//351 53//351 ; 1//1 351//20 1//20 53//20 ; 1//351 1//20 1//7020 53//7020 ; 53//351 53//20 53//7020 2809//7020]	27//65	1//13
 [-197 1 48 ; -292 0 73]	ee	1	[73]	-1	146	106580	[1//1460 1//292 1//365 ; 1//292 5//292 1//73 ; 1//365 1//73 4//365]	 5//73	 5//146
 [-47 1 4 ; -15 0 5]	ee	1	[5]	1	175	2625	[1//525 1//15 1//175 ; 1//15 7//3 1//5 ; 1//175 1//5 3//175]	507//175	4//35

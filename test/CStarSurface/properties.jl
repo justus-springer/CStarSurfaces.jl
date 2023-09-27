@@ -20,7 +20,7 @@ col_types = Dict([
     :gorensteinIndex => Int,
     :picardIndex => Int,
     :intersectionMatrix => QQMatrix,
-    :degree => Rational{Int},
+    :anticanonicalSelfIntersection => Rational{Int},
     :maximalLogCanonicity => Rational{Int}
 ])
 
@@ -63,6 +63,12 @@ end
 @testset "examples - intersection matrix" begin
     for i = 1 : length(Xs)
         @test intersection_matrix(Xs[i]) == df[i, "intersectionMatrix"]
+    end
+end
+
+@testset "examples - anticanonical self intersection" begin
+    for i = 1 : length(Xs)
+        @test anticanonical_self_intersection(Xs[i]) == df[i, "anticanonicalSelfIntersection"]
     end
 end
 

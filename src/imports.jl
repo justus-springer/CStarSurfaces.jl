@@ -40,6 +40,7 @@ import Oscar:
     is_fano,
     map_from_picard_group_to_class_group,
     normal_toric_variety,
+    toric_divisor,
     permuted,
     picard_group,
     picard_index,

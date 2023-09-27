@@ -55,12 +55,12 @@ isempty(cox_ring_relations(X)) ?
     # we need to treat the treat of no relations in the cox ring seperately, since
     # zero(::Type{ToricDivisor}) can't be defined properly.
     can_divisor = isempty(relation_divisors) ? canonical_divisor(Z) : sum(relation_divisors) + canonical_divisor(Z)
-    return can_divisor
+    return mori_dream_space_divisor(X, can_divisor)
 end
 
 @attr anticanonical_divisor(X :: MoriDreamSpace) = -canonical_divisor(X)
 
-@attr canonical_divisor_class(X :: MoriDreamSpace) = toric_divisor_class(canonical_divisor(X))
+@attr canonical_divisor_class(X :: MoriDreamSpace) = toric_divisor_class(toric_divisor(canonical_divisor(X)))
 
 @attr anticanonical_divisor_class(X :: MoriDreamSpace) = -canonical_divisor_class(X)
 

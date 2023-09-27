@@ -322,6 +322,8 @@ end
 
 end
 
+anticanonical_self_intersection(X :: CStarSurface) = anticanonical_divisor(X) * anticanonical_divisor(X)
+
 #################################################
 # Picard Index
 #
