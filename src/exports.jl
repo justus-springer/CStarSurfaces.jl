@@ -1,10 +1,10 @@
 export AdmissibleOperation
-export anticanonical_self_intersection
 export AdmissibleRowOperation
 export affine_toric_chart
 export affine_toric_charts
 export all2
 export anticanonical_divisor
+export anticanonical_self_intersection
 export are_isomorphic
 export basis_vector
 export canonical_divisor
@@ -39,6 +39,7 @@ export gorenstein_index
 export has_torusfactor
 export has_x_minus
 export has_x_plus
+export hilbert_basis_2D
 export intersection_matrix
 export InvertLastRow
 export is_ample
@@ -96,6 +97,7 @@ export slope_ordered_indices
 export slopes
 export subvariety_of_toric_variety
 export SubvarietyOfToricVariety
+export toric_affine_surface_resolution
 export ToricDivisorMDS
 export ToricVarietyMDS
 export xcones

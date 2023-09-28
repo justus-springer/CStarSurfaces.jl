@@ -26,7 +26,7 @@ end
 function hirzebruch_jung(x :: T, y :: T) where {T <: Oscar.IntegerUnion}
     res = T[]
     while y > 0
-        push!(res, (x + (mod(-x, y))) / y)
+        push!(res, (x + mod(-x, y)) ÷ y)
         x, y = y, mod(-x,y)
     end
     return res;
@@ -48,5 +48,48 @@ function hilbert_basis_2D(A :: ZZMatrix)
     return res
 end
 
-hilbert_basis_2D(v1 :: Vector{T}, v2 :: Vector{T}) where {T <: Oscar.IntegerUnion} =
-hilbert_basis_2D(matrix(ZZ, [v1[1] v2[1] ; v1[2] v2[2]]))
+function hilbert_basis_2D(v1 :: Vector{T}, v2 :: Vector{T}) where {T <: Oscar.IntegerUnion}
+    hb = hilbert_basis_2D(matrix(ZZ, [v1[1] v2[1] ; v1[2] v2[2]]))
+    return [[v[1,1], v[2,1]] for v in hb]
+end
+
+
+# Find the unique intersection of two lines in two-dimensional space, if 
+# it exists. The lines are described by two points written in the columns
+# of a matrix.
+function intersect_lines_2D(M1 :: QQMatrix, M2 :: QQMatrix)
+    A = QQ[M1[2,2]-M1[2,1] M1[1,1]-M1[1,2] ; M2[2,2]-M2[2,1] M2[1,1]-M2[1,2]]
+    b = QQ[det(M1) ; det(M2)]
+    @req det(A) ≠ 0 "No unique intersection"
+    (p, z) = can_solve_with_solution(A,b)
+    @req p "no solution exists"
+    return z
+end
+
+function intersect_lines_2D(v1 :: Vector, v2 :: Vector, w1 :: Vector, w2 :: Vector)
+    z = intersect_lines_2D(matrix(QQ, [v1 v2]), matrix(QQ, [w1 w2]))
+    return [z[1,1], z[2,1]]
+end
+
+# Computes the ratio ||v1|| / ||v2|| of two vectors in 2D-space.
+# By the intercept theorem, we can just take the ratio of some
+# non-zero coordinates.
+norm_ratio(v1 :: Vector, v2 :: Vector) = v2[2] == 0 ? v1[1] // v2[1] : v1[2] // v2[2]
+
+# Computes the discrepancy of the toric refinement given by introducing the ray 
+# with primitive generator `w` into the cone spanned by the vectors `v1` and `v2`.
+discrepancy(v1 :: Vector, v2 :: Vector, w :: Vector) = 
+norm_ratio(w, intersect_lines_2D(v1, v2, [0, 0], w))
+
+# Computes the toric resolution of an affine toric surface given by a cone with
+# primitive generators `v1` and `v2`. This function returns a pair, where the first
+# entry is the list of rays that need to be inserted and the second is a list
+# of the discrepancies of the associated exceptional divisors.
+function toric_affine_surface_resolution(v1 :: Vector{T}, v2 :: Vector{T}) where {T <: Oscar.IntegerUnion}
+    ex_rays = hilbert_basis_2D(v1, v2)
+    discrepancies = [discrepancy(v1, v2, w) for w in ex_rays]
+    return (ex_rays, discrepancies)
+end
+
+
+    
