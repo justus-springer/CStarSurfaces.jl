@@ -122,11 +122,6 @@ end
 
 @attr nblocks(X :: CStarSurface) = length(X.l)
 
-@attr slopes(X :: CStarSurface) = map2(//, X.d, X.l)
-
-@attr _m_plus(X :: CStarSurface) = sum(map(maximum, slopes(X)))
-@attr _m_minus(X :: CStarSurface) = -sum(map(minimum, slopes(X)))
-
 _r(X :: CStarSurface) = nblocks(X) - 1
 
 _n(X :: CStarSurface, i :: Int) = length(X.l[i])
@@ -138,19 +133,31 @@ _m(X :: CStarSurface{PE}) = 1
 _m(X :: CStarSurface{EP}) = 1
 _m(X :: CStarSurface{PP}) = 2
 
+@attr slopes(X :: CStarSurface) = map2(//, X.d, X.l)
+
+@attr _m_plus(X :: CStarSurface) = sum(map(maximum, slopes(X)))
+@attr _m_minus(X :: CStarSurface) = -sum(map(minimum, slopes(X)))
+
+@attr _slope_ordering_permutations(X :: CStarSurface) = map(v -> sortperm(v, rev=true), slopes(X))
+
+@attr _slope_ordered_l(X :: CStarSurface) = map(getindex, X.l, _slope_ordering_permutations(X))
+
+@attr _slope_ordered_d(X :: CStarSurface) = map(getindex, X.d, _slope_ordering_permutations(X))
+
+@attr _l_plus(X :: CStarSurface) = sum([1 // first(_slope_ordered_l(X)[i]) for i = 0 : _r(X)]) - _r(X) + 1
+@attr _l_minus(X :: CStarSurface) = sum([1 // last(_slope_ordered_l(X)[i]) for i = 0 : _r(X)]) - _r(X) + 1
+
+
 
 #################################################
 # Construction of canonical toric ambient
 #################################################
 
-function _slope_ordered_ray_indices(X :: CStarSurface) 
-    is = map(v -> sortperm(v, rev=true), slopes(X))
-    N = 0
-    for i in axes(is,1)
-        is[i] .+= N
-        N += length(is[i])
-    end
-    return is
+
+@attr function _slope_ordered_ray_indices(X :: CStarSurface) 
+    ns, r = _ns(X), _r(X)
+    is = ZeroVector([sum(ns[0 : i-1]) .+ collect(1 : ns[i]) for i = 0 : r])
+    return map(getindex, is, _slope_ordering_permutations(X))
 end
 
 _sigma_plus(X :: CStarSurface) = Vector(map(first, _slope_ordered_ray_indices(X)))
@@ -334,6 +341,91 @@ anticanonical_self_intersection(X :: CStarSurface) = anticanonical_divisor(X) * 
 
 # Use the formula for the Picard index (only works for C-star surfaces)
 picard_index(X :: CStarSurface) = prod(values(local_picard_indices(X))) / class_group_torsion_order(X)
+
+#################################################
+# Resolution of singularities
+#
+# The resolution of singularities for C-star surfaces
+# is obtained in two steps: In the tropical step,
+# we add the rays [0,...,0,1] and [0,...,0,-1] to 
+# the fan, if not already present. The second step
+# is toric: We perform regular subdivision all cones
+# in the fan, which are now all two-dimensional
+#################################################
+
+# See Section 9 of "Classifying log del Pezzo surfaces with 
+# torus action" (arxiv:2302.03095) for the definition of 
+# these numbers
+_d_plus(X :: CStarSurface{EE}) = _m_plus(X) // _l_plus(X)
+_d_plus(X :: CStarSurface{EP}) = _m_plus(X) // _l_plus(X)
+_d_plus(X :: CStarSurface{PE}) = 1
+_d_plus(X :: CStarSurface{PP}) = 1
+
+_d_minus(X :: CStarSurface{EE}) = _m_minus(X) // _l_minus(X)
+_d_minus(X :: CStarSurface{EP}) = 1
+_d_minus(X :: CStarSurface{PE}) = _m_minus(X) // _l_minus(X)
+_d_minus(X :: CStarSurface{PP}) = 1
+
+
+# We extend the ls and ds on both sides to make it easier to loop through all the 
+# cones of the fan. Together, these numbers form the outer vertices of the 
+# simplicial complex \mathcal{A}_P from arxiv:2302.03095.
+_slope_ordered_extended_l(X :: CStarSurface) = map(ls -> [0 ; ls ; 0], _slope_ordered_l(X))
+_slope_ordered_extended_d(X :: CStarSurface) = map(ds -> [_d_plus(X) ; ds ; -_d_minus(X)], _slope_ordered_d(X))
+
+# Computes the canonical resolution of singularities of a C-star surface
+# together with the exceptional rays and discrepancies. The output format is:
+# (Y, ex_rays, discrepancies), where `Y` is the smooth C-star surface that 
+# is the resolution of X. `ex_rays` and `discrepancies` are both given as pairs, 
+# where the first entry comes from the toric step and the second entry from the 
+# tropical step. The toric ones are given as a `DoubleVector`, adhering the double
+# index notation.
+@attr function canonical_resolution(X :: CStarSurface)
+    ns, r = _ns(X), _r(X) 
+    l, d = _slope_ordered_extended_l(X), _slope_ordered_extended_d(X)
+
+    # The toric step
+    new_l, new_d = deepcopy(X.l), deepcopy(X.d)
+    ex_rays_toric = DoubleVector{Vector{Vector{Int}}}(undef, Vector(ns) .+ 1)
+    discrepancies_toric = DoubleVector{Vector{Rational{Int}}}(undef, Vector(ns) .+ 1)
+    for i = 0 : r, j = 1 : ns[i] + 1
+        v1, v2 = [l[i][j], d[i][j]], [l[i][j+1], d[i][j+1]]
+        ex_rays_toric[i][j], discrepancies_toric[i][j] = toric_affine_surface_resolution(v1, v2)
+        append!(new_l[i], map(first, ex_rays_toric[i][j]))
+        append!(new_d[i], map(last, ex_rays_toric[i][j]))
+    end
+
+    # The tropical step
+    ex_rays_tropic = Vector{Int}[]
+    discrepancies_tropic = Rational{Int}[]
+    if has_x_plus(X)
+        push!(ex_rays_tropic, [0,1])
+        push!(discrepancies_tropic, _l_plus(X) // _m_plus(X) - 1)
+    end
+    if has_x_minus(X)
+        push!(ex_rays_tropic, [0,-1])
+        push!(discrepancies_tropic, _l_minus(X) // _m_minus(X) - 1)
+    end
+
+    ex_rays = (ex_rays_toric, ex_rays_tropic)
+    discrepancies = (discrepancies_toric, discrepancies_tropic)
+    
+    return (cstar_surface(new_l, new_d, :pp), ex_rays, discrepancies)
+end
+
+exceptional_rays(X :: CStarSurface) = canonical_resolution(X)[2]
+
+discrepancies(X :: CStarSurface) = canonical_resolution(X)[3]
+
+@attr function maximal_log_canonicity(X :: CStarSurface) 
+    (ds_tor, ds_tro) = discrepancies(X) 
+    # we add a superficial zero into the list of discrepancies to ensure a
+    # well-defined (and correct) result in case there are no exceptional rays
+    # (i.e. the surface is already smooth).
+    ds = vcat([0], ds_tro, map(d -> vcat(d...), ds_tor)...)
+    # the maximal log canonicity equals the minimal discrepancy plus one
+    return minimum(ds) + 1
+end
 
 
 #################################################

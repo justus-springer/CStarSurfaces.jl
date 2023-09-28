@@ -72,6 +72,12 @@ end
     end
 end
 
+@testset "examples - maximal log canonicity" begin
+    for i = 1 : length(Xs)
+        @test maximal_log_canonicity(Xs[i]) == df[i, "maximalLogCanonicity"]
+    end
+end
+
 @testset "examples - is normal form" begin
     for i = 1 : length(Xs)
         # the non-toric entries should all be in normal form

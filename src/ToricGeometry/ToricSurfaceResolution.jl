@@ -53,6 +53,13 @@ function hilbert_basis_2D(v1 :: Vector{T}, v2 :: Vector{T}) where {T <: Oscar.In
     return [[v[1,1], v[2,1]] for v in hb]
 end
 
+function primitivize(v :: Vector) 
+    v = Int.(lcm(denominator.(v)) .* v)
+    return v .÷ gcd(v)
+end
+
+hilbert_basis_2D(v1 :: Vector, v2 :: Vector) = hilbert_basis_2D(primitivize(v1), primitivize(v2))
+
 
 # Find the unique intersection of two lines in two-dimensional space, if 
 # it exists. The lines are described by two points written in the columns
@@ -79,17 +86,20 @@ norm_ratio(v1 :: Vector, v2 :: Vector) = v2[2] == 0 ? v1[1] // v2[1] : v1[2] // 
 # Computes the discrepancy of the toric refinement given by introducing the ray 
 # with primitive generator `w` into the cone spanned by the vectors `v1` and `v2`.
 discrepancy(v1 :: Vector, v2 :: Vector, w :: Vector) = 
-norm_ratio(w, intersect_lines_2D(v1, v2, [0, 0], w))
+norm_ratio(w, intersect_lines_2D(v1, v2, [0, 0], w)) - 1
 
 # Computes the toric resolution of an affine toric surface given by a cone with
 # primitive generators `v1` and `v2`. This function returns a pair, where the first
 # entry is the list of rays that need to be inserted and the second is a list
 # of the discrepancies of the associated exceptional divisors.
-function toric_affine_surface_resolution(v1 :: Vector{T}, v2 :: Vector{T}) where {T <: Oscar.IntegerUnion}
+function toric_affine_surface_resolution(v1 :: Vector, v2 :: Vector)
     ex_rays = hilbert_basis_2D(v1, v2)
     discrepancies = [discrepancy(v1, v2, w) for w in ex_rays]
     return (ex_rays, discrepancies)
 end
 
 
+export norm_ratio
+export intersect_lines_2D
+export discrepancy
     

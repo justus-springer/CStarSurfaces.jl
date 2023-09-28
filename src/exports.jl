@@ -8,6 +8,7 @@ export anticanonical_self_intersection
 export are_isomorphic
 export basis_vector
 export canonical_divisor
+export canonical_resolution
 export canonical_toric_ambient
 export class_group
 export class_group_torsion_order
@@ -28,11 +29,13 @@ export CStarSurfaceFormat
 export degree_matrix
 export degree_matrix_free_part
 export degree_matrix_torsion_part
+export discrepancies
 export DoubleVector
 export DoubleVector
 export EE
 export effective_cone
 export EP
+export exceptional_rays
 export free_part
 export gen_matrix
 export gorenstein_index
@@ -69,6 +72,7 @@ export map_from_class_group_to_local_class_group
 export map_from_picard_group_to_class_group
 export maps_from_class_group_to_local_class_groups
 export maximal_cones_indices
+export maximal_log_canonicity
 export MoriDreamSpace
 export mori_dream_space_divisor
 export MoriDreamSpaceDivisor
@@ -100,5 +104,6 @@ export SubvarietyOfToricVariety
 export toric_affine_surface_resolution
 export ToricDivisorMDS
 export ToricVarietyMDS
+export tropical_resolution
 export xcones
 export ZeroVector
