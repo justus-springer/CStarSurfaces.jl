@@ -54,6 +54,11 @@ function cstar_surface(ls :: DoubleVector{Int64}, ds :: DoubleVector{Int64}, cas
 
 end
 
+"""
+    cstar_surface(ls :: Vector{Vector{Int64}}, ds :: Vector{Vector{Int64}}, case :: Symbol)
+
+Construct a C-Star surface from the given data
+"""
 cstar_surface(ls :: Vector{Vector{Int64}}, ds :: Vector{Vector{Int64}}, case :: Union{Symbol, CStarSurfaceCase}) = cstar_surface(DoubleVector(ls), DoubleVector(ds), case)
 
 function _is_cstar_column(v :: Vector{T}) where {T <: Oscar.IntegerUnion}
