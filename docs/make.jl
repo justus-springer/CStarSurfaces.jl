@@ -11,9 +11,5 @@ makedocs(
     sitename = "CStarSurfaces.jl",
     pages = [
         "Home" => "index.md",
-        "General" => [
-            "constructors.md"
-            "attributes.md"
-        ]
     ]
 )
