@@ -74,3 +74,26 @@ end
 
 Base.show(io :: IO, X :: ToricSurface) = Base.print(io, "Normal toric surface")
 
+##############################################################
+# Resolution of singularities
+##############################################################
+
+@attr function canonical_resolution(X :: ToricSurface)
+    vs = rays(X)
+    r = length(vs)
+    inds = _ordered_ray_indices(X)
+
+    new_vs = deepcopy(vs)
+    ex_rays = Vector{Vector{Vector{Int}}}(undef, r)
+    discrepancies = Vector{Vector{Rational{Int}}}(undef, r)
+    for i = 1 : r
+        v1, v2 = vs[inds[i]], vs[inds[mod(i+1, 1:r)]]
+        ex_rays[i], discrepancies[i] = toric_affine_surface_resolution(v1, v2) 
+        append!(new_vs, ex_rays[i])
+    end
+
+    return (toric_surface(new_vs), ex_rays, discrepancies)
+
+end
+
+@attr maximal_log_canonicity(X :: ToricSurface) = minimum(vcat(discrepancies(X)...)) + 1

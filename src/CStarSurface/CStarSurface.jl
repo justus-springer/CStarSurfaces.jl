@@ -334,8 +334,6 @@ end
 
 end
 
-anticanonical_self_intersection(X :: CStarSurface) = anticanonical_divisor(X) * anticanonical_divisor(X)
-
 
 #################################################
 # Resolution of singularities
@@ -408,9 +406,6 @@ _slope_ordered_extended_d(X :: CStarSurface) = map(ds -> [_d_plus(X) ; ds ; -_d_
     return (cstar_surface(new_l, new_d, :pp), ex_rays, discrepancies)
 end
 
-exceptional_rays(X :: CStarSurface) = canonical_resolution(X)[2]
-
-discrepancies(X :: CStarSurface) = canonical_resolution(X)[3]
 
 @attr function maximal_log_canonicity(X :: CStarSurface) 
     (ds_tor, ds_tro) = discrepancies(X) 

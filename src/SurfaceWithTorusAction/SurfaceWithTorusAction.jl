@@ -19,3 +19,8 @@ picard_index(X :: SurfaceWithTorusAction) = prod(values(local_picard_indices(X))
 #################################################
 
 anticanonical_self_intersection(X :: SurfaceWithTorusAction) = anticanonical_divisor(X) * anticanonical_divisor(X)
+
+
+exceptional_rays(X :: SurfaceWithTorusAction) = canonical_resolution(X)[2]
+
+discrepancies(X :: SurfaceWithTorusAction) = canonical_resolution(X)[3]
