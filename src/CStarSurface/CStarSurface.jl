@@ -336,16 +336,6 @@ end
 
 anticanonical_self_intersection(X :: CStarSurface) = anticanonical_divisor(X) * anticanonical_divisor(X)
 
-#################################################
-# Picard Index
-#
-# For C-star surfaces, we can use the formula for
-# the picard index in terms of the local class group,
-# which is more efficient than the general algorithm
-#################################################
-
-# Use the formula for the Picard index (only works for C-star surfaces)
-picard_index(X :: CStarSurface) = prod(values(local_picard_indices(X))) / class_group_torsion_order(X)
 
 #################################################
 # Resolution of singularities
