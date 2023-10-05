@@ -334,18 +334,6 @@ end
 
 end
 
-anticanonical_self_intersection(X :: CStarSurface) = anticanonical_divisor(X) * anticanonical_divisor(X)
-
-#################################################
-# Picard Index
-#
-# For C-star surfaces, we can use the formula for
-# the picard index in terms of the local class group,
-# which is more efficient than the general algorithm
-#################################################
-
-# Use the formula for the Picard index (only works for C-star surfaces)
-picard_index(X :: CStarSurface) = prod(values(local_picard_indices(X))) / class_group_torsion_order(X)
 
 #################################################
 # Resolution of singularities
@@ -418,9 +406,6 @@ _slope_ordered_extended_d(X :: CStarSurface) = map(ds -> [_d_plus(X) ; ds ; -_d_
     return (cstar_surface(new_l, new_d, :pp), ex_rays, discrepancies)
 end
 
-exceptional_rays(X :: CStarSurface) = canonical_resolution(X)[2]
-
-discrepancies(X :: CStarSurface) = canonical_resolution(X)[3]
 
 @attr function maximal_log_canonicity(X :: CStarSurface) 
     (ds_tor, ds_tro) = discrepancies(X) 

@@ -99,7 +99,3 @@ function toric_affine_surface_resolution(v1 :: Vector, v2 :: Vector)
 end
 
 
-export norm_ratio
-export intersect_lines_2D
-export discrepancy
-    

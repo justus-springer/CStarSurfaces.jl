@@ -8,11 +8,15 @@ include("Tools.jl")
 include("MoriDreamSpace/MoriDreamSpace.jl")
 include("MoriDreamSpace/MoriDreamSpaceDivisor.jl")
 #include("MoriDreamSpace/SubvarietyOfToricVariety.jl")
+include("MoriDreamSpace/ToricVarietyMDS.jl")
 
 include("ToricGeometry/AbstractNormalToricVariety.jl")
 include("ToricGeometry/ToricDivisor.jl")
 include("ToricGeometry/ToricDivisorClass.jl")
-include("ToricGeometry/ToricSurfaceResolution.jl")
+
+include("ToricSurface/ToricSurfaceResolution.jl")
+include("ToricSurface/ToricSurface.jl")
+include("ToricSurface/ToricSurfaceDivisor.jl")
 
 include("CStarSurface/ZeroVector.jl")
 include("CStarSurface/DoubleVector.jl")
@@ -21,5 +25,7 @@ include("CStarSurface/CStarSurfaceDivisor.jl")
 include("CStarSurface/AdmissibleOperation.jl")
 include("CStarSurface/normal_form.jl")
 
+include("SurfaceWithTorusAction/SurfaceWithTorusAction.jl")
+include("SurfaceWithTorusAction/SurfaceWithTorusActionDivisor.jl")
 
 end 

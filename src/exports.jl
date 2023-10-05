@@ -101,8 +101,16 @@ export slope_ordered_indices
 export slopes
 export subvariety_of_toric_variety
 export SubvarietyOfToricVariety
+export SurfaceWithTorusAction
+export SurfaceWithTorusActionDivisor
 export toric_affine_surface_resolution
 export ToricDivisorMDS
+export toric_surface
+export ToricSurface
+export toric_surface_divisor
+export ToricSurfaceDivisor
+export toric_variety_mds
+export ToricVarietyMDS
 export ToricVarietyMDS
 export tropical_resolution
 export xcones
