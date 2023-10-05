@@ -13,6 +13,11 @@ end
 
 toric_surface(vs :: Vector{Vector{T}}) where {T <: Oscar.IntegerUnion} = ToricSurface(vs)
 
+function toric_surface(P :: ZZMatrix)
+    cols = [[P[j,i] for j = 1 : nrows(P)] for i = 1 : ncols(P)]
+    return toric_surface(cols)
+end
+
 rays(X :: ToricSurface) = X.vs
 
 #############################################################
@@ -23,12 +28,15 @@ rays(X :: ToricSurface) = X.vs
 
 # sorts two-dimensional vectors clockwise, where [1,0] is considered
 # minimal
-function _is_less(v :: Vector, w :: Vector)
+function _is_less(v :: Vector{T}, w :: Vector{T}) where {T <: Integer}
     v[2] ≥ 0 && w[2] < 0 && return true
     v[2] < 0 && w[2] ≥ 0 && return false
     v[2] ≥ 0 && w[2] ≥ 0 && return v[1] // v[2] > w[1] // w[2]
     v[2] < 0 && w[2] < 0 && return v[1] // v[2] > w[1] // w[2]
 end
+
+# need extra method, since 1 // 0 is not defined for ZZRingElem
+_is_less(v :: Vector{ZZRingElem}, w :: Vector{ZZRingElem}) = _is_less(convert(Vector{Int}, v), convert(Vector{Int}, w))
 
 @attr _ordered_ray_indices(X :: ToricSurface) = sortperm(rays(X); lt = _is_less)
 
