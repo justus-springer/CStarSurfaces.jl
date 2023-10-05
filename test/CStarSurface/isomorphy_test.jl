@@ -1,5 +1,5 @@
 
-@testset "normal form and isomorphy test" begin
+@testset "normal form and isomorphy test (C-star)" begin
 
     ##########################################################
     # A list of c-star surfaces, all isomorphic to each other

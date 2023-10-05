@@ -16,6 +16,7 @@ include("ToricGeometry/ToricDivisorClass.jl")
 
 include("ToricSurface/ToricSurfaceResolution.jl")
 include("ToricSurface/ToricSurface.jl")
+include("ToricSurface/normal_form.jl")
 include("ToricSurface/ToricSurfaceDivisor.jl")
 
 include("CStarSurface/ZeroVector.jl")

@@ -11,6 +11,8 @@
     end
 end
 
+Base.:(==)(X :: ToricSurface, Y :: ToricSurface) = X.vs == Y.vs 
+
 toric_surface(vs :: Vector{Vector{T}}) where {T <: Oscar.IntegerUnion} = ToricSurface(vs)
 
 function toric_surface(P :: ZZMatrix)
@@ -40,11 +42,16 @@ _is_less(v :: Vector{ZZRingElem}, w :: Vector{ZZRingElem}) = _is_less(convert(Ve
 
 @attr _ordered_ray_indices(X :: ToricSurface) = sortperm(rays(X); lt = _is_less)
 
-@attr function maximal_cones_indices(X :: ToricSurface)
-    is = _ordered_ray_indices(X)
-    r = length(is)
-    return [[is[i], is[mod(i+1, 1:r)]] for i = 1 : r]
+# given the index of a ray of X, returns the index of the
+# counterclockwise adjacent ray.
+function _next_ray_index(X :: ToricSurface, i :: Int) 
+    is =_ordered_ray_indices(X)
+    r = nrays(X)
+    j = indexin(i, is)[1]
+    return is[mod(j+1, 1:r)]
 end
+
+@attr maximal_cones_indices(X :: ToricSurface) = [[i, _next_ray_index(X, i)] for i = 1 : nrays(X)]
 
 @attr canonical_toric_ambient(X :: ToricSurface) = normal_toric_variety(rays(X), maximal_cones_indices(X))
 
@@ -53,8 +60,7 @@ end
 ###############################################################
 
 @attr function intersection_matrix(X :: ToricSurface)
-    vs = rays(X)
-    r = length(vs)
+    vs, r = rays(X), nrays(X)
     inds = _ordered_ray_indices(X)
 
     IM = zeros(Rational{Int}, r, r)
