@@ -29,4 +29,7 @@ include("CStarSurface/normal_form.jl")
 include("SurfaceWithTorusAction/SurfaceWithTorusAction.jl")
 include("SurfaceWithTorusAction/SurfaceWithTorusActionDivisor.jl")
 
+include("Database/DatabaseAdapter.jl")
+include("Database/SQLiteAdapter.jl")
+
 end 

@@ -30,6 +30,8 @@ end
 
 Base.:(==)(X :: CStarSurface, Y :: CStarSurface) = X.l == Y.l && X.d == Y.d && X.case == Y.case
 
+is_toric(:: CStarSurface) = false
+
 has_x_plus(X :: CStarSurface) = has_x_plus(X.case)
 has_x_minus(X :: CStarSurface) = has_x_minus(X.case)
 has_D_plus(X :: CStarSurface) = has_D_plus(X.case)

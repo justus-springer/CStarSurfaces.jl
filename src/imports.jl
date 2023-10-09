@@ -21,6 +21,8 @@ import Combinatorics:
 using CustomUnitRanges: 
     filename_for_zerorange
 
+using SQLite
+
 
 # for now, just import Oscar
 # at some point, this should be replaced by a more precice

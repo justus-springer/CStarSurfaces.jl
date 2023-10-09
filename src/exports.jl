@@ -26,6 +26,7 @@ export CStarSurfaceCase
 export cstar_surface_divisor
 export CStarSurfaceDivisor
 export CStarSurfaceFormat
+export DatabaseAdapter
 export degree_matrix
 export degree_matrix_free_part
 export degree_matrix_torsion_part
@@ -59,6 +60,7 @@ export is_q_gorenstein
 export is_rcef
 export is_semiample
 export is_smooth
+export is_toric
 export local_class_group
 export local_class_groups
 export local_gorenstein_index
@@ -99,6 +101,7 @@ export restrict_to_stratum
 export semiample_cone
 export slope_ordered_indices
 export slopes
+export SQLiteAdapter 
 export subvariety_of_toric_variety
 export SubvarietyOfToricVariety
 export SurfaceWithTorusAction

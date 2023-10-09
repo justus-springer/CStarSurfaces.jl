@@ -3,6 +3,8 @@
 # #############################################################
 abstract type ToricVarietyMDS <: MoriDreamSpace end
 
+is_toric(::ToricVarietyMDS) = true
+
 cox_ring_relations(::ToricVarietyMDS) = []
 
 
