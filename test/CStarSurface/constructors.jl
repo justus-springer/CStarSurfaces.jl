@@ -6,17 +6,17 @@
     
     @test X1.l.parent == [[1,2,3,1],[5],[1,1]]
     @test X1.d.parent == [[3,3,-1,-2],[2],[0,-1]]
-    @test X1.case == EE()
+    @test X1.case == :ee
     @test gen_matrix(X1) == ZZ[-1 -2 -3 -1 5 0 0; -1 -2 -3 -1 0 1 1; 3 3 -1 -2 2 0 -1]
 
     @test X1 == X2
     @test X2 == X3
     @test X1 == X3
 
-    @test cstar_surface(ZZ[-1 -3 2 0 ; -1 -3 0 3 ; 1 -4 1 1]).case == EE()
-    @test cstar_surface(ZZ[-1 -3 2 0 0 ; -1 -3 0 3 0 ; 1 -4 1 1 1]).case == PE()
-    @test cstar_surface(ZZ[-1 -3 2 0 0 ; -1 -3 0 3 0 ; 1 -4 1 1 -1]).case == EP()
-    @test cstar_surface(ZZ[-1 -3 2 0 0 0 ; -1 -3 0 3 0 0 ; 1 -4 1 1 1 -1]).case == PP()
+    @test cstar_surface(ZZ[-1 -3 2 0 ; -1 -3 0 3 ; 1 -4 1 1]).case == :ee
+    @test cstar_surface(ZZ[-1 -3 2 0 0 ; -1 -3 0 3 0 ; 1 -4 1 1 1]).case == :pe
+    @test cstar_surface(ZZ[-1 -3 2 0 0 ; -1 -3 0 3 0 ; 1 -4 1 1 -1]).case == :ep
+    @test cstar_surface(ZZ[-1 -3 2 0 0 0 ; -1 -3 0 3 0 0 ; 1 -4 1 1 1 -1]).case == :pp
 
     @test_throws "must be of the same length" cstar_surface([[1,3],[1,3],[2]], [[0,5],[0,-7],[1],[1]], :ee)
     @test_throws "must be of the same length" cstar_surface([[1,3],[1,3],[2]], [[0,5],[-7],[1]], :ee)
