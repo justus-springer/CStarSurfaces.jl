@@ -90,4 +90,4 @@ update_in_database(db, "SELECT * FROM $(db.table_name) WHERE $(db.primary_key) I
 update_in_database(db :: SQLiteAdapter{T}, id :: Int, column_functions :: Dict{Symbol, Function}) where {T <: MoriDreamSpace} = update_in_database(db, [id], column_functions)
 
 update_in_database(db :: SQLiteAdapter{T}, column_functions :: Dict{Symbol, Function}) where {T <: MoriDreamSpace} = 
-update_in_database(db, "SELECT * FROM $(db.table_name)", column_function)
+update_in_database(db, "SELECT * FROM $(db.table_name)", column_functions)
