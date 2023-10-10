@@ -25,17 +25,20 @@ reference, we mention [ArDeHaLa15](@cite).
 
 ## Installation
 
-To install [CStarSurfaces.jl](https://github.com/justus-springer/CStarSurfaces), type the following into a Julia prompt:
+[CStarSurfaces.jl](https://github.com/justus-springer/CStarSurfaces.jl) is
+available in the [General
+Registry](https://github.com/JuliaRegistries/General), hence can be
+installed with
 
 ```julia
-julia> import Pkg; Pkg.add(url="https://github.com/justus-springer/CStarSurfaces")
+julia> ]add CStarSurfaces
 ```
 
 ## Quick start
 
 We work in the notation of [ArDeHaLa15; Section 5.4](@cite).
 
-Import both [Oscar](https://www.oscar-system.org) and [CStarSurfaces.jl](https://github.com/justus-springer/CStarSurfaces) to get started:
+Import both [Oscar](https://www.oscar-system.org) and [CStarSurfaces.jl](https://github.com/justus-springer/CStarSurfaces.jl) to get started:
 
 ```julia
 julia> using Oscar, CStarSurfaces
