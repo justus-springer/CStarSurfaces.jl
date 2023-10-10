@@ -41,7 +41,7 @@ export EE
 export effective_cone
 export EP
 export exceptional_rays
-export export_into_database
+export export_to_database
 export free_part
 export gen_matrix
 export gorenstein_index

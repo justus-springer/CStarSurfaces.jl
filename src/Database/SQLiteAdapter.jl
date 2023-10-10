@@ -10,12 +10,15 @@ end
 default_column_functions(::Type{T}) where {T <: MoriDreamSpace} = 
 Dict{Symbol, Function}([])
 
-function export_into_database(
+default_insert_predicate(::Type{T}) where {T <: MoriDreamSpace} =
+function(X...) true end
+
+function export_to_database(
         db_adapter :: SQLiteAdapter{T}, 
         table_name :: AbstractString, 
         Xs :: AbstractVector;
         column_functions = default_column_functions(T),
-        insert_predicate = (X -> true)) where {T <: MoriDreamSpace}
+        insert_predicate = default_insert_predicate(T)) where {T <: MoriDreamSpace}
 
     db = db_adapter.db
     if isempty(column_functions)
