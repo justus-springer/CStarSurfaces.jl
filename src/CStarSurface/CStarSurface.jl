@@ -46,6 +46,8 @@ end
 
 Base.:(==)(X :: CStarSurface, Y :: CStarSurface) = X.l == Y.l && X.d == Y.d && X.case == Y.case
 
+is_toric(:: CStarSurface) = false
+
 has_x_plus(X :: CStarSurface{T}) where {T <: CStarSurfaceCase} = has_x_plus(T)
 has_x_minus(X :: CStarSurface{T}) where {T <: CStarSurfaceCase} = has_x_minus(T)
 has_D_plus(X :: CStarSurface{T}) where {T <: CStarSurfaceCase} = has_D_plus(T)
@@ -144,10 +146,14 @@ _n(X :: CStarSurface, i :: Int) = length(X.l[i])
 @attr _ns(X :: CStarSurface) = map(length, X.l)
 @attr _n(X :: CStarSurface) = sum(_ns(X))
 
+block_sizes(X :: CStarSurface) = _ns(X)
+
 _m(X :: CStarSurface{EE}) = 0
 _m(X :: CStarSurface{PE}) = 1
 _m(X :: CStarSurface{EP}) = 1
 _m(X :: CStarSurface{PP}) = 2
+
+number_of_parabolic_fixed_point_curves(X :: CStarSurface) = _m(X)
 
 @attr slopes(X :: CStarSurface) = map2(//, X.d, X.l)
 

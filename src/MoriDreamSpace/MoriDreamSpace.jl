@@ -30,6 +30,12 @@ maximal_cones(X :: MoriDreamSpace) = maximal_cones(canonical_toric_ambient(X))
 
 @attr class_group(X :: MoriDreamSpace) = class_group(canonical_toric_ambient(X))
 
+@attr class_group_rank(X :: MoriDreamSpace) = rank(class_group(X))
+
+@attr class_group_torsion(X :: MoriDreamSpace) = elementary_divisors(class_group(X))[1 : end - rank(class_group(X))]
+
+@attr class_group_torsion_order(X :: MoriDreamSpace) = prod(class_group_torsion(X))
+
 @attr picard_group(X :: MoriDreamSpace) = picard_group(canonical_toric_ambient(X))
 
 @attr map_from_picard_group_to_class_group(X :: MoriDreamSpace) = map_from_picard_group_to_class_group(canonical_toric_ambient(X))
@@ -113,9 +119,6 @@ end
     Q = degree_matrix(X)
     Q[end - rank(class_group(X)) + 1 : end, :]
 end
-
-@attr class_group_torsion_order(X :: MoriDreamSpaceUnion) = 
-prod(elementary_divisors(class_group(X))[1 : end - rank(class_group(X))])
 
 @attr function local_gorenstein_indices(X :: MoriDreamSpaceUnion)
     gorenstein_indices = Dict{Vector{Int}, ZZRingElem}()

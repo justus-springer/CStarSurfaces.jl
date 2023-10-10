@@ -7,10 +7,13 @@ export anticanonical_divisor
 export anticanonical_self_intersection
 export are_isomorphic
 export basis_vector
+export block_sizes
 export canonical_divisor
 export canonical_resolution
 export canonical_toric_ambient
 export class_group
+export class_group_rank
+export class_group_torsion
 export class_group_torsion_order
 export CompositeAdmissibleOperation
 export covering_collection
@@ -26,6 +29,8 @@ export CStarSurfaceCase
 export cstar_surface_divisor
 export CStarSurfaceDivisor
 export CStarSurfaceFormat
+export DatabaseAdapter
+export default_column_functions
 export degree_matrix
 export degree_matrix_free_part
 export degree_matrix_torsion_part
@@ -36,6 +41,7 @@ export EE
 export effective_cone
 export EP
 export exceptional_rays
+export export_to_database
 export free_part
 export gen_matrix
 export gorenstein_index
@@ -43,6 +49,7 @@ export has_torusfactor
 export has_x_minus
 export has_x_plus
 export hilbert_basis_2D
+export import_from_database
 export intersection_matrix
 export InvertLastRow
 export is_ample
@@ -59,6 +66,7 @@ export is_q_gorenstein
 export is_rcef
 export is_semiample
 export is_smooth
+export is_toric
 export local_class_group
 export local_class_groups
 export local_gorenstein_index
@@ -82,6 +90,7 @@ export nblocks
 export normal_form
 export normalize_admissible_operation
 export normal_toric_variety
+export number_of_parabolic_fixed_point_curves
 export orientation
 export PE
 export PermutationOfBlocks
@@ -99,6 +108,9 @@ export restrict_to_stratum
 export semiample_cone
 export slope_ordered_indices
 export slopes
+export SQLiteAdapter 
+export SQLiteAdapterSurfaces
+export sqlite_import_row
 export subvariety_of_toric_variety
 export SubvarietyOfToricVariety
 export SurfaceWithTorusAction
@@ -113,5 +125,6 @@ export toric_variety_mds
 export ToricVarietyMDS
 export ToricVarietyMDS
 export tropical_resolution
+export update_in_database
 export xcones
 export ZeroVector
