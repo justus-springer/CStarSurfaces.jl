@@ -4,11 +4,12 @@ DB_FILE_PATH = joinpath(dirname(@__FILE__), "test.db")
 CREATE_TABLE_FILE_PATH = joinpath(dirname(@__FILE__), "create.sql")
 # CREATE_TABLE_FILE_PATH = "test/Database/create.sql"
 TABLE_NAME = "surfaces"
+PRIMARY_KEY = "surface_id"
 
 @testset "Insert surfaces into test database" begin 
 
     rm(DB_FILE_PATH, force=true)
-    db = SQLiteAdapter{SurfaceWithTorusAction}(DB_FILE_PATH)
+    db = SQLiteAdapter{SurfaceWithTorusAction}(DB_FILE_PATH, TABLE_NAME, PRIMARY_KEY)
     DBInterface.execute(db.db, read(CREATE_TABLE_FILE_PATH, String))
 
     @testset "Insert C-star surface" begin

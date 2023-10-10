@@ -1,7 +1,9 @@
 struct SQLiteAdapter{T} <: DatabaseAdapter{T}
     db :: SQLite.DB
-    SQLiteAdapter{T}(f :: AbstractString) where {T <: MoriDreamSpace} = new{T}(SQLite.DB(f))
-    SQLiteAdapter{T}() where {T <: MoriDreamSpace} = new{T}(SQLite.DB())
+    table_name :: AbstractString
+    primary_key :: AbstractString
+
+    SQLiteAdapter{T}(f :: AbstractString, table_name :: AbstractString, primary_key :: AbstractString) where {T <: MoriDreamSpace} = new{T}(SQLite.DB(f), table_name, primary_key)
 end
 
 # Fallback definition. Subtypes of `MoriDreamSpace` should implement this,
@@ -36,4 +38,20 @@ function export_to_database(
     end
     
 end
+
+function import_from_database(db :: SQLiteAdapter{T}, str :: AbstractString) where {T <: MoriDreamSpace}
+    stmt = SQLite.Stmt(db.db, str)
+    Xs = T[]
+    for row in DBInterface.execute(stmt)
+        push!(Xs, sqlite_import_row(T, row))
+    end
+    return Xs
+end
+
+import_from_database(db :: SQLiteAdapter{T}, ids :: AbstractVector{Int}) where {T <: MoriDreamSpace} = 
+import_from_database(db, "SELECT * FROM $(db.table_name) WHERE $(db.primary_key) IN ($(join(ids, ", ")))")
+
+import_from_database(db :: SQLiteAdapter{T}, id :: Int) where {T <: MoriDreamSpace} = import_from_database(db, [id])
+
+
 
