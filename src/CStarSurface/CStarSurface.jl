@@ -4,55 +4,66 @@ struct PE <: CStarSurfaceCase end
 struct EP <: CStarSurfaceCase end
 struct PP <: CStarSurfaceCase end
 
-invert_case(:: EE) = EE()
-invert_case(:: PE) = EP()
-invert_case(:: EP) = PE()
-invert_case(:: PP) = PP()
-invert_case(c :: CStarSurfaceCase, invert :: Bool) = invert ? invert_case(c) : c
+invert_case(::Type{EE}) = EE
+invert_case(::Type{PE}) = EP
+invert_case(::Type{EP}) = PE
+invert_case(::Type{PP}) = PP
+function invert_case(c :: Symbol)
+    c == :ee && return :ee
+    c == :pe && return :ep
+    c == :ep && return :pe
+    c == :pp && return :pp
+    throw(DomainError(c, "symbol must be one of :ee, :pe, :ep and :pp"))
+end
+invert_case(c::Union{Symbol, Type{<:CStarSurfaceCase}}, invert :: Bool) = invert ? invert_case(c) : c
 
-has_x_plus(:: EE) = true
-has_x_plus(:: PE) = false
-has_x_plus(:: EP) = true
-has_x_plus(:: PP) = false
+has_x_plus(::Type{EE}) = true
+has_x_plus(::Type{PE}) = false
+has_x_plus(::Type{EP}) = true
+has_x_plus(::Type{PP}) = false
 
-has_x_minus(c :: CStarSurfaceCase) = has_x_plus(invert_case(c))
+has_x_minus(c::Type{T}) where {T <: CStarSurfaceCase} = has_x_plus(invert_case(c))
 
-has_D_plus(c :: CStarSurfaceCase) = !has_x_plus(c)
-has_D_minus(c :: CStarSurfaceCase) = !has_x_minus(c)
+has_D_plus(c::Type{T}) where {T <: CStarSurfaceCase} = !has_x_plus(c)
+
+has_D_minus(c::Type{T}) where {T <: CStarSurfaceCase} = !has_x_minus(c)
+
+function _case_sym_to_type(c :: Symbol)
+    c == :ee && return EE
+    c == :pe && return PE
+    c == :ep && return EP
+    c == :pp && return PP
+    throw(DomainError(c, "symbol must be one of :ee, :pe, :ep and :pp"))
+end
 
 @attributes mutable struct CStarSurface{T<:CStarSurfaceCase} <: MoriDreamSpace
     l :: DoubleVector{Int64}
     d :: DoubleVector{Int64}
-    case :: T
+    case :: Symbol
 
-    CStarSurface{T}(l, d) where {T<:CStarSurfaceCase} = new{T}(l,d,T())
+    CStarSurface(l, d, case) = new{_case_sym_to_type(case)}(l, d, case)
 end
 
 Base.:(==)(X :: CStarSurface, Y :: CStarSurface) = X.l == Y.l && X.d == Y.d && X.case == Y.case
 
 is_toric(:: CStarSurface) = false
 
-has_x_plus(X :: CStarSurface) = has_x_plus(X.case)
-has_x_minus(X :: CStarSurface) = has_x_minus(X.case)
-has_D_plus(X :: CStarSurface) = has_D_plus(X.case)
-has_D_minus(X :: CStarSurface) = has_D_minus(X.case)
+has_x_plus(X :: CStarSurface{T}) where {T <: CStarSurfaceCase} = has_x_plus(T)
+has_x_minus(X :: CStarSurface{T}) where {T <: CStarSurfaceCase} = has_x_minus(T)
+has_D_plus(X :: CStarSurface{T}) where {T <: CStarSurfaceCase} = has_D_plus(T)
+has_D_minus(X :: CStarSurface{T}) where {T <: CStarSurfaceCase} = has_D_minus(T)
 
 #################################################
 # Constructors
 #################################################
 
-_symbol_to_case_dict = Dict([(:ee, EE()), (:pe, PE()), (:ep, EP()), (:pp, PP())])
-_to_case(s :: Symbol) = _symbol_to_case_dict[s]
-_to_case(c :: CStarSurfaceCase) = c
-
-function cstar_surface(ls :: DoubleVector{Int64}, ds :: DoubleVector{Int64}, case :: Union{Symbol, CStarSurfaceCase})
+function cstar_surface(ls :: DoubleVector{Int64}, ds :: DoubleVector{Int64}, case :: Symbol)
     @req length(ls) == length(ds) "ls and ds must be of the same length"
     r = length(ls)
     @req all(i -> length(ls[i]) == length(ds[i]), axes(ls,1)) "ls[i] and ds[i] must be of the same length for all i"
     @req all2((l,d) -> gcd(l,d) == 1, ls, ds) "ls[i][j] and ds[i][j] must be coprime for all i and j"
 
-    c = _to_case(case)
-    return CStarSurface{typeof(c)}(ls, ds)
+    return CStarSurface(ls, ds, case)
 
 end
 
@@ -61,7 +72,7 @@ end
 
 Construct a C-Star surface from the given data
 """
-cstar_surface(ls :: Vector{Vector{Int64}}, ds :: Vector{Vector{Int64}}, case :: Union{Symbol, CStarSurfaceCase}) = cstar_surface(DoubleVector(ls), DoubleVector(ds), case)
+cstar_surface(ls :: Vector{Vector{Int64}}, ds :: Vector{Vector{Int64}}, case :: Symbol) = cstar_surface(DoubleVector(ls), DoubleVector(ds), case)
 
 function _is_cstar_column(v :: Vector{T}) where {T <: Oscar.IntegerUnion}
     r = length(v) - 1
