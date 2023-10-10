@@ -15,5 +15,5 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/justus-springer/CStarSurfaces.git",
+    repo = "github.com/justus-springer/CStarSurfaces.jl.git",
 )
