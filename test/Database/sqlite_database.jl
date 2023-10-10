@@ -15,7 +15,7 @@ PRIMARY_KEY = "surface_id"
     @testset "Insert C-star surface" begin
 
         X = cstar_surface([[1,3], [2], [3]], [[1,-4], [1], [1]], :ee)
-        export_to_database(db, TABLE_NAME, [X]) 
+        export_to_database(db, [X]) 
         row = first(DBInterface.execute(db.db, "SELECT * FROM SURFACES WHERE surface_id = 1"))
 
         @test row[:surface_id] == 1
@@ -42,12 +42,14 @@ PRIMARY_KEY = "surface_id"
         @test row[:anticanonical_self_intersection_numerator] == 169
         @test row[:anticanonical_self_intersection_denominator] == 693
 
+        @test import_from_database(db, row[:surface_id]) == X
+
     end
 
     @testset "Insert toric surface" begin
 
         X = toric_surface(ZZ[-5 1 1 ; -3 0 3])
-        export_to_database(db, TABLE_NAME, [X]) 
+        export_to_database(db, [X]) 
         row = first(DBInterface.execute(db.db, "SELECT * FROM SURFACES WHERE surface_id = 2"))
 
         @test row[:surface_id] == 2
@@ -73,6 +75,8 @@ PRIMARY_KEY = "surface_id"
         @test row[:maximal_log_canonicity_denominator] == 2
         @test row[:anticanonical_self_intersection_numerator] == 3
         @test row[:anticanonical_self_intersection_denominator] == 1
+
+        @test import_from_database(db, row[:surface_id]) == X
 
     end
 
