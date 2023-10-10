@@ -4,27 +4,30 @@ struct SQLiteAdapter{T} <: DatabaseAdapter{T}
     SQLiteAdapter{T}() where {T <: MoriDreamSpace} = new{T}(SQLite.DB())
 end
 
+# Fallback definition. Subtypes of `MoriDreamSpace` should implement this,
+# describing the default column names the functions to compute them
+# when inserting into a database..
+default_column_functions(::Type{T}) where {T <: MoriDreamSpace} = 
+Dict{Symbol, Function}([])
+
 function export_into_database(
-        db :: SQLiteAdapter{T}, 
+        db_adapter :: SQLiteAdapter{T}, 
         table_name :: AbstractString, 
-        Xs :: AbstractVector{T}, 
-        column_functions :: Dict{Symbol, Function}) where {T <: MoriDreamSpace}
+        Xs :: AbstractVector;
+        column_functions = default_column_functions(T),
+        insert_predicate = (X -> true)) where {T <: MoriDreamSpace}
 
-    str = "INSERT INTO $table_name ("
-    for col_name in keys(column_functions)
-        str *= "$col_name,"
+    db = db_adapter.db
+    if isempty(column_functions)
+        stmt = SQLite.Stmt(db, "INSERT INTO $table_name DEFAULT VALUES")
+    else
+        columns = join(keys(column_functions), ",")
+        values = join(":" .* string.(keys(column_functions)), ",")
+        stmt = SQLite.Stmt(db, "INSERT INTO $table_name ($columns) VALUES ($values)")
     end
-    str = str[begin : end-1] # remove trailing comma
-    str *= ") VALUES ("
-    for col_name in keys(column_functions)
-        str *= ":$col_name,"
-    end
-    str = str[begin : end-1] # remove trailing comma
-    str *= ")"
-
-    stmt = SQLite.Stmt(db, str)
 
     for X in Xs
+        !insert_predicate(X) && continue
         val_dict = Dict([k => f(X) for (k,f) in column_functions])
         DBInterface.execute(stmt, val_dict)
     end

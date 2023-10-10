@@ -31,5 +31,6 @@ include("SurfaceWithTorusAction/SurfaceWithTorusActionDivisor.jl")
 
 include("Database/DatabaseAdapter.jl")
 include("Database/SQLiteAdapter.jl")
+include("Database/SQLiteAdapterSurfaces.jl")
 
 end 
