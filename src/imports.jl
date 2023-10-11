@@ -23,6 +23,10 @@ using CustomUnitRanges:
 
 using SQLite
 
+using ProgressLogging
+
+using Tables
+
 
 # for now, just import Oscar
 # at some point, this should be replaced by a more precice

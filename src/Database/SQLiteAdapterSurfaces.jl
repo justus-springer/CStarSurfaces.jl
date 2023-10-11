@@ -100,7 +100,7 @@ default_column_functions(::Type{<:SurfaceWithTorusAction}) = Dict([
 # Import a single surface from an SQLite row
 ######################################################################
 
-function sqlite_import_row(::Type{SurfaceWithTorusAction}, row :: SQLite.Row)
+function sqlite_import_row(::Type{SurfaceWithTorusAction}, row :: Union{SQLite.Row, NamedTuple})
     P = matrix(ZZ, eval(Meta.parse(row[:gen_matrix])))
     return row[:is_toric] == 1 ? toric_surface(P) : cstar_surface(P)
 end

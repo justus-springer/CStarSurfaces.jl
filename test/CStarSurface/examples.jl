@@ -1,7 +1,7 @@
 
 # Loads in a list of 200 randomly chosen examples from the ldp-database
 filepath = joinpath(dirname(@__FILE__), "cstarsurfaces.tsv")
-# EXAMPLES_FILE = "test/CStarSurface/cstarsurfaces.tsv"
+# filepath = "test/CStarSurface/cstarsurfaces.tsv"
 
 df = CSV.read(filepath, DataFrame, delim='\t', types=TSV_COLUMN_TYPES)
 
