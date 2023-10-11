@@ -170,7 +170,7 @@ number_of_parabolic_fixed_point_curves(X :: CStarSurface) = _m(X)
 @attr _l_minus(X :: CStarSurface) = sum([1 // last(_slope_ordered_l(X)[i]) for i = 0 : _r(X)]) - _r(X) + 1
 
 @attr is_intrinsic_quadric(X :: CStarSurface) = 
-nblocks(X) == 3 & all(ls -> sum(ls) == 2, X.l)
+nblocks(X) == 3 && all(ls -> sum(ls) == 2, X.l)
 
 
 #################################################
