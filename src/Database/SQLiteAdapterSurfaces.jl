@@ -43,6 +43,9 @@ _db_number_of_parabolic_fixed_point_curves(X :: CStarSurface) = number_of_parabo
 _db_orientation(X :: ToricSurface) = Missing
 _db_orientation(X :: CStarSurface) = orientation(X)
 
+_db_is_intrinsic_quadric(X :: ToricSurface) = Missing
+_db_is_intrinsic_quadric(X :: CStarSurface) = is_intrinsic_quadric(X) ? 1 : 0
+
 _db_class_group_rank(X :: SurfaceWithTorusAction) = class_group_rank(X)
 
 _db_class_group_torsion(X :: SurfaceWithTorusAction) = "[" * join(class_group_torsion(X), ", ") * "]"
@@ -83,6 +86,7 @@ default_column_functions(::Type{<:SurfaceWithTorusAction}) = Dict([
 :nblocks => _db_nblocks,
 :number_of_parabolic_fixed_point_curves => _db_number_of_parabolic_fixed_point_curves,
 :orientation => _db_orientation,
+:is_intrinsic_quadric => _db_is_intrinsic_quadric,
 :class_group_rank => _db_class_group_rank,
 :class_group_torsion => _db_class_group_torsion,
 :class_group_torsion_order => _db_class_group_torsion_order,

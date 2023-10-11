@@ -50,6 +50,10 @@ CREATE TABLE IF NOT EXISTS surfaces (
     -- This is always either -1, 0 or 1.
     orientation INTEGER, -- NULL for toric surfaces
 
+    -- Whether the C-star surface is an intrinsic quadric, i.e. its Cox
+    -- Ring has a single quadratic equation.
+    is_intrinsic_quadric INTEGER, --NULL for toric surfaces
+
     -- The rank of the divisor class group.
     class_group_rank INTEGER,
 
@@ -96,6 +100,29 @@ CREATE TABLE IF NOT EXISTS surfaces (
     -- the anticanonical self intersection as a floating point number.
     anticanonical_self_intersection REAL AS (CAST(anticanonical_self_intersection_numerator AS FLOAT) / CAST(anticanonical_self_intersection_denominator AS FLOAT)),
 
-    UNIQUE (is_toric, gen_matrix)
+    -- whether the surface admits a Kaehler-Ricci soliton 
+    admits_kaehler_ricci_soliton INTEGER,
+
+    -- whether the surface admits a Kaehler Einstein metric
+    admits_kaehler_einstein_metric INTEGER,
+
+    -- whether the surface admits a Sasaki Einstein metric
+    admits_sasaki_einstein_metric INTEGER,
+
+    -- whether the surface is quasi-smooth
+    is_quasismooth INTEGER
 
 )
+
+
+
+
+
+
+
+
+
+
+
+
+
