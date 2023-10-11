@@ -22,28 +22,28 @@ _db_rays(X :: SurfaceWithTorusAction) = "[" * join(["[" * join(r, ", ") * "]" fo
 
 _db_nrays(X :: SurfaceWithTorusAction) = nrays(X)
 
-_db_lss(X :: ToricSurface) = Missing
+_db_lss(X :: ToricSurface) = missing
 _db_lss(X :: CStarSurface) = string(Vector(X.l))
 
-_db_dss(X :: ToricSurface) = Missing
+_db_dss(X :: ToricSurface) = missing
 _db_dss(X :: CStarSurface) = string(Vector(X.d))
 
-_db_case_(X :: ToricSurface) = Missing
+_db_case_(X :: ToricSurface) = missing
 _db_case_(X :: CStarSurface) = string(X.case)
 
-_db_block_sizes(X :: ToricSurface) = Missing
+_db_block_sizes(X :: ToricSurface) = missing
 _db_block_sizes(X :: CStarSurface) = string(Vector(block_sizes(X)))
 
-_db_nblocks(X :: ToricSurface) = Missing
+_db_nblocks(X :: ToricSurface) = missing
 _db_nblocks(X :: CStarSurface) = nblocks(X)
 
-_db_number_of_parabolic_fixed_point_curves(X :: ToricSurface) = Missing
+_db_number_of_parabolic_fixed_point_curves(X :: ToricSurface) = missing
 _db_number_of_parabolic_fixed_point_curves(X :: CStarSurface) = number_of_parabolic_fixed_point_curves(X)
 
-_db_orientation(X :: ToricSurface) = Missing
+_db_orientation(X :: ToricSurface) = missing
 _db_orientation(X :: CStarSurface) = orientation(X)
 
-_db_is_intrinsic_quadric(X :: ToricSurface) = Missing
+_db_is_intrinsic_quadric(X :: ToricSurface) = missing
 _db_is_intrinsic_quadric(X :: CStarSurface) = is_intrinsic_quadric(X) ? 1 : 0
 
 _db_class_group_rank(X :: SurfaceWithTorusAction) = class_group_rank(X)
