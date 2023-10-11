@@ -126,7 +126,7 @@ function update_in_database(
     @progress for i = 1 : count
         row = rows[i]
         X = sqlite_import_row(T, row)
-        val_dict = Dict([k => f(X) for (k,f) in column_functions])
+        val_dict = Dict{Symbol,Any}([k => f(X) for (k,f) in column_functions])
         push!(val_dict, Symbol(primary_key) => row[Symbol(primary_key)])
         DBInterface.execute(update_stmt, val_dict)
     end
