@@ -75,16 +75,13 @@ end
 
 function import_from_database(db :: SQLiteAdapter{T}, sql :: String = "TRUE") where {T <: MoriDreamSpace}
 
-    @info "Importing from SQLite database file $(db.file_path)."
-
-    count_stmt = SQLite.Stmt(db.db, "SELECT COUNT(*) FROM $(db.table_name) WHERE $sql")
-    count = first(DBInterface.execute(count_stmt))[1]
-
-    @info "Number of objects to be imported: $count."
-    @info "Importing..."
+    @info "Importing from SQLite database file $(db.file_path)..."
 
     select_stmt = SQLite.Stmt(db.db, "SELECT * FROM $(db.table_name) WHERE $sql")
     rows = DBInterface.execute(select_stmt) |> rowtable
+    count = length(rows)
+
+    @info "Number of imported objects: $count."
 
     @info "Converting to Julia type `$T`."
 
@@ -112,16 +109,14 @@ function update_in_database(
     table_name, primary_key = db.table_name, db.primary_key
 
     @info "Updating columns in SQLite database file $(db.file_path)."
-
-    count_stmt = SQLite.Stmt(db.db, "SELECT COUNT(*) FROM $(db.table_name) WHERE $sql")
-    count = first(DBInterface.execute(count_stmt))[1]
-
-    @info "Number of affected rows: $count."
     @info "Provided column functions: " keys(column_functions)
     @info "Importing..."
 
     select_stmt = SQLite.Stmt(db.db, "SELECT * FROM $(db.table_name) WHERE $sql")
     rows = DBInterface.execute(select_stmt) |> rowtable
+    count = length(rows)
+
+    @info "Number of affected rows: $count."
 
     @info "Updating columns..."
 
