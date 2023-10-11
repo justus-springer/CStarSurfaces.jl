@@ -57,13 +57,13 @@ PRIMARY_KEY = "surface_id"
         @test row[:gen_matrix] == "[[-5, 1, 1], [-3, 0, 3]]"
         @test row[:rays] == "[[-5, -3], [1, 0], [1, 3]]"
         @test row[:nrays] == 3
-        @test row[:lss] == Missing
-        @test row[:dss] == Missing
-        @test row[:case_] == Missing
-        @test row[:block_sizes] == Missing
-        @test row[:nblocks] == Missing
-        @test row[:number_of_parabolic_fixed_point_curves] == Missing
-        @test row[:orientation] == Missing
+        @test ismissing(row[:lss])
+        @test ismissing(row[:dss])
+        @test ismissing(row[:case_])
+        @test ismissing(row[:block_sizes])
+        @test ismissing(row[:nblocks])
+        @test ismissing(row[:number_of_parabolic_fixed_point_curves])
+        @test ismissing(row[:orientation])
         @test row[:class_group_rank] == 1 
         @test row[:class_group_torsion] == "[3]"
         @test row[:class_group_torsion_order] == 3
