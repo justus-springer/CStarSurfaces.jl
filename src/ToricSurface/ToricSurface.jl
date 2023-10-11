@@ -110,4 +110,4 @@ Base.show(io :: IO, X :: ToricSurface) = Base.print(io, "Normal toric surface")
 
 end
 
-@attr maximal_log_canonicity(X :: ToricSurface) = minimum(vcat(discrepancies(X)...)) + 1
+@attr maximal_log_canonicity(X :: ToricSurface) = minimum(vcat([0], discrepancies(X)...)) + 1
