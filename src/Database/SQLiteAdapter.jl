@@ -17,8 +17,16 @@ end
 default_column_functions(::Type{T}) where {T <: MoriDreamSpace} = 
 Dict{Symbol, Function}([])
 
+# Fallback definition
+function find_in_database(db :: SQLiteAdapter{T}, X :: T) where {T <: MoriDreamSpace}
+    @warn "Used fallback definition for find_in_database"
+    return nothing
+end
+
 default_insert_predicate(::Type{T}) where {T <: MoriDreamSpace} =
-function(X...) true end
+function(db :: SQLiteAdapter{T}, X :: T)
+    return isnothing(find_in_database(db, X))
+end
 
 function export_to_database(
         db_adapter :: SQLiteAdapter{T}, 
@@ -50,8 +58,7 @@ function export_to_database(
     @progress for i in axes(Xs, 1)
         X = Xs[i]
 
-        if !insert_predicate(X)
-            @info "Skipping object no. $i"
+        if !insert_predicate(db_adapter, X)
             skip_count += 1
             continue
         end

@@ -1,5 +1,6 @@
 export AdmissibleOperation
 export is_intrinsic_quadric
+export find_in_database
 export AdmissibleRowOperation
 export affine_toric_chart
 export affine_toric_charts

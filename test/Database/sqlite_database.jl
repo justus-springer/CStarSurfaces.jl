@@ -16,7 +16,7 @@ PRIMARY_KEY = "surface_id"
 
         X = cstar_surface([[1,3], [2], [3]], [[1,-4], [1], [1]], :ee)
         export_to_database(db, [X]) 
-        row = first(DBInterface.execute(db.db, "SELECT * FROM SURFACES WHERE surface_id = 1"))
+        row = first(DBInterface.execute(db.db, "SELECT * FROM $TABLE_NAME WHERE $PRIMARY_KEY = 1"))
 
         @test row[:surface_id] == 1
         @test row[:is_toric] == 0
@@ -44,18 +44,22 @@ PRIMARY_KEY = "surface_id"
 
         @test import_from_database(db, row[:surface_id]) == X
 
+        # Exporting again should do nothing
+        export_to_database(db, [X]) 
+        @test first(DBInterface.execute(db.db, "SELECT COUNT(*) FROM $TABLE_NAME"))[1] == 1
+
     end
 
     @testset "Insert toric surface" begin
 
-        X = toric_surface(ZZ[-5 1 1 ; -3 0 3])
+        X = toric_surface(ZZ[1 1 -5 ; 0 3 -12])
         export_to_database(db, [X]) 
         row = first(DBInterface.execute(db.db, "SELECT * FROM SURFACES WHERE surface_id = 2"))
 
         @test row[:surface_id] == 2
         @test row[:is_toric] == 1
-        @test row[:gen_matrix] == "[[-5, 1, 1], [-3, 0, 3]]"
-        @test row[:rays] == "[[-5, -3], [1, 0], [1, 3]]"
+        @test row[:gen_matrix] == "[[1, 1, -5], [0, 3, -12]]"
+        @test row[:rays] == "[[1, 0], [1, 3], [-5, -12]]"
         @test row[:nrays] == 3
         @test ismissing(row[:lss])
         @test ismissing(row[:dss])
@@ -77,6 +81,10 @@ PRIMARY_KEY = "surface_id"
         @test row[:anticanonical_self_intersection_denominator] == 1
 
         @test import_from_database(db, row[:surface_id]) == X
+
+        # Exporting again should do nothing
+        export_to_database(db, [X]) 
+        @test first(DBInterface.execute(db.db, "SELECT COUNT(*) FROM $TABLE_NAME"))[1] == 2
 
     end
 
