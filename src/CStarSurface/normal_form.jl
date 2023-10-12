@@ -39,7 +39,7 @@ end
 
 # Bring a C-star surface `X` into normal form. Returns a tuple (Y,p), where Y is in 
 # normal form such that `p(X) = Y`.
-function normal_form(X :: CStarSurface)
+@attr function normal_form(X :: CStarSurface)
     Y = deepcopy(X)
     # Step 1: Bring X into non-negative orientation
     p1 = InvertLastRow(orientation(X) < 0 ? -1 : 1)
@@ -58,10 +58,15 @@ function normal_form(X :: CStarSurface)
     p4 = AdmissibleRowOperation(map(ms -> -floor(Int, maximum(ms)), slopes(Y)[1:end]))
     Y = p4(Y)
 
+    # Remember that Y is in normal form, so it doesn't have to be
+    # computed again
+    set_attribute!(Y, :is_normal_form, true)
+    set_attribute!(Y, :normal_form, (Y, one(AdmissibleOperation))) 
+
     return (Y, normalize_admissible_operation(p1 * p2 * p3 * p4))
 end
 
-is_normal_form(X :: CStarSurface) = normal_form(X)[1] == X
+@attr is_normal_form(X :: CStarSurface) = normal_form(X)[1] == X
 
 # Check whether two C-star surfaces are isomorphic to each other
 # Returns a pair consisting of a boolean and either an admissible operation turning
