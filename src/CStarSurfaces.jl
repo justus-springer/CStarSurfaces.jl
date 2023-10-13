@@ -4,6 +4,8 @@ include("imports.jl")
 include("exports.jl")
 include("Tools.jl")
 
+include("types.jl")
+
 
 include("MoriDreamSpace/MoriDreamSpace.jl")
 include("MoriDreamSpace/MoriDreamSpaceDivisor.jl")
@@ -21,6 +23,7 @@ include("ToricSurface/ToricSurfaceDivisor.jl")
 
 include("CStarSurface/ZeroVector.jl")
 include("CStarSurface/DoubleVector.jl")
+include("CStarSurface/CStarSurfaceCase.jl")
 include("CStarSurface/CStarSurface.jl")
 include("CStarSurface/CStarSurfaceDivisor.jl")
 include("CStarSurface/AdmissibleOperation.jl")

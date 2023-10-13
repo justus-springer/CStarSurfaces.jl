@@ -1,10 +1,6 @@
 
 include(filename_for_zerorange)
 
-struct ZeroVector{T} <: AbstractVector{T}
-    parent :: Vector{T}
-end
-
 Vector{T}(v :: ZeroVector{T}) where {T} = v.parent
 
 ZeroVector{T}(::UndefInitializer, m::Integer) where {T} = ZeroVector(Vector{T}(undef, m))

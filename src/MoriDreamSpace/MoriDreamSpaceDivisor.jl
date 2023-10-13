@@ -1,15 +1,3 @@
-#################################################
-# Julia type for divisors on Mori Dream Spaces
-#################################################
-
-mutable struct MoriDreamSpaceDivisor{T <: MoriDreamSpace}
-    variety :: T
-    toric_divisor :: ToricDivisor
-    function MoriDreamSpaceDivisor(variety :: T, toric_divisor :: ToricDivisor) where {T <: MoriDreamSpace}
-        @req canonical_toric_ambient(variety) == toric_divisor.toric_variety "the toric divisor must be defined on the canonical toric ambient variety of X"
-        new{T}(variety, toric_divisor)
-    end
-end
 
 mori_dream_space_divisor(X :: T, d :: ToricDivisor) where {T <: MoriDreamSpace} = 
 MoriDreamSpaceDivisor(X, d)

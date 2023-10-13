@@ -1,19 +1,11 @@
 
 
-#############################################################
-# Julia type for toric surfaces
-#############################################################
-@attributes mutable struct ToricSurface <: ToricVarietyMDS
-    vs :: Vector{Vector{T}} where {T <: Oscar.IntegerUnion}
-    function ToricSurface(vs :: Vector{Vector{T}}) where {T <: Oscar.IntegerUnion}
-        @req all(v -> length(v) == 2, vs) "rays must all be two-dimensional"
-        new(vs)
-    end
-end
-
 Base.:(==)(X :: ToricSurface, Y :: ToricSurface) = X.vs == Y.vs 
 
-toric_surface(vs :: Vector{Vector{T}}) where {T <: Oscar.IntegerUnion} = ToricSurface(vs)
+function toric_surface(vs :: Vector{Vector{T}}) where {T <: Oscar.IntegerUnion} 
+    @req all(v -> length(v) == 2, vs) "rays must all be two-dimensional"
+    return ToricSurface(vs)
+end
 
 function toric_surface(P :: ZZMatrix)
     cols = [[P[j,i] for j = 1 : nrows(P)] for i = 1 : ncols(P)]

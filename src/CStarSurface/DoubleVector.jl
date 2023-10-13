@@ -1,5 +1,4 @@
 
-const DoubleVector{T} = ZeroVector{Vector{T}}
 
 DoubleVector(v :: Vector{Vector{T}}) where {T} = ZeroVector{Vector{T}}(v)
 

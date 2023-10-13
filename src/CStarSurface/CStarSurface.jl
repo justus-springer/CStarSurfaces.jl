@@ -1,48 +1,3 @@
-abstract type CStarSurfaceCase end
-struct EE <: CStarSurfaceCase end
-struct PE <: CStarSurfaceCase end
-struct EP <: CStarSurfaceCase end
-struct PP <: CStarSurfaceCase end
-
-invert_case(::Type{EE}) = EE
-invert_case(::Type{PE}) = EP
-invert_case(::Type{EP}) = PE
-invert_case(::Type{PP}) = PP
-function invert_case(c :: Symbol)
-    c == :ee && return :ee
-    c == :pe && return :ep
-    c == :ep && return :pe
-    c == :pp && return :pp
-    throw(DomainError(c, "symbol must be one of :ee, :pe, :ep and :pp"))
-end
-invert_case(c::Union{Symbol, Type{<:CStarSurfaceCase}}, invert :: Bool) = invert ? invert_case(c) : c
-
-has_x_plus(::Type{EE}) = true
-has_x_plus(::Type{PE}) = false
-has_x_plus(::Type{EP}) = true
-has_x_plus(::Type{PP}) = false
-
-has_x_minus(c::Type{T}) where {T <: CStarSurfaceCase} = has_x_plus(invert_case(c))
-
-has_D_plus(c::Type{T}) where {T <: CStarSurfaceCase} = !has_x_plus(c)
-
-has_D_minus(c::Type{T}) where {T <: CStarSurfaceCase} = !has_x_minus(c)
-
-function _case_sym_to_type(c :: Symbol)
-    c == :ee && return EE
-    c == :pe && return PE
-    c == :ep && return EP
-    c == :pp && return PP
-    throw(DomainError(c, "symbol must be one of :ee, :pe, :ep and :pp"))
-end
-
-@attributes mutable struct CStarSurface{T<:CStarSurfaceCase} <: MoriDreamSpace
-    l :: DoubleVector{Int64}
-    d :: DoubleVector{Int64}
-    case :: Symbol
-
-    CStarSurface(l, d, case) = new{_case_sym_to_type(case)}(l, d, case)
-end
 
 Base.:(==)(X :: CStarSurface, Y :: CStarSurface) = X.l == Y.l && X.d == Y.d && X.case == Y.case
 
@@ -63,7 +18,7 @@ function cstar_surface(ls :: DoubleVector{Int64}, ds :: DoubleVector{Int64}, cas
     @req all(i -> length(ls[i]) == length(ds[i]), axes(ls,1)) "ls[i] and ds[i] must be of the same length for all i"
     @req all2((l,d) -> gcd(l,d) == 1, ls, ds) "ls[i][j] and ds[i][j] must be coprime for all i and j"
 
-    return CStarSurface(ls, ds, case)
+    return CStarSurface{_case_sym_to_type(case)}(ls, ds, case)
 
 end
 

@@ -1,17 +1,3 @@
-#################################################
-# Julia type for Mori Dream Spaces
-#################################################
-
-abstract type MoriDreamSpace end
-
-#################################################
-# Subtypes of `MoriDreamSpace` should implement 
-# the following methods:
-#
-# canonical_toric_ambient(X :: MoriDreamSpace)
-# cox_ring_relations(X :: MoriDreamSpace)
-#################################################
-
 
 #################################################
 # Properties coming from the toric ambient.
