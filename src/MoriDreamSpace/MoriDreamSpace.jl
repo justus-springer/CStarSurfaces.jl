@@ -1,12 +1,36 @@
 
-#################################################
-# Properties coming from the toric ambient.
-#
-# The computation of these fields are simply
-# passed to the canonical toric ambient. Subtypes
-# of `MoriDreamSpace` can and should overwrite
-# these, should a more direct approach exist.
-#################################################
+@doc raw"""
+    canonical_toric_ambient(X :: MoriDreamSpace)
+
+Construct the canonical toric ambient variety of a Mori Dream Space.
+
+This function should be implemented by all subtypes of `MoriDreamSpace`
+
+"""
+function canonical_toric_ambient end
+
+
+@doc raw"""
+    cox_ring_relations(X :: MoriDreamSpace)
+
+Return the list of relations in the Cox Ring of a Mori Dream Space.
+Here, a relation is a `RingElem` whose parent is the Cox Ring of
+the canonical toric ambient variety.
+
+This function should be implemented by all subtypes of `MoriDreamSpace`.
+
+"""
+function cox_ring_relations end
+
+
+@doc raw"""
+    is_toric(X :: MoriDreamSpace)
+
+Check whether a Mori Dream Space is a toric variety.
+
+"""
+is_toric(X :: MoriDreamSpace) = isempty(cox_ring_relations(X))
+
 
 @doc raw"""
     rays(X :: MoriDreamSpace)
