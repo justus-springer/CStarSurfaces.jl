@@ -8,6 +8,7 @@ include("types.jl")
 
 
 include("MoriDreamSpace/MoriDreamSpace.jl")
+include("MoriDreamSpace/MoriDreamSpaceUnion.jl")
 include("MoriDreamSpace/MoriDreamSpaceDivisor.jl")
 #include("MoriDreamSpace/SubvarietyOfToricVariety.jl")
 include("MoriDreamSpace/ToricVarietyMDS.jl")

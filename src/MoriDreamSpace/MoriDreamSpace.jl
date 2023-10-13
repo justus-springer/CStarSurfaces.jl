@@ -8,37 +8,118 @@
 # these, should a more direct approach exist.
 #################################################
 
+@doc raw"""
+    rays(X :: MoriDreamSpace)
+    
+Return the rays of the canonical toric ambient variety of a Mori Dream Space.
+
+"""
 rays(X :: MoriDreamSpace) = rays(canonical_toric_ambient(X))
 
+
+@doc raw"""
+    nrays(X :: MoriDreamSpace)
+
+Return the number of rays of the canonical toric ambient variety of a Mori Dream Space.
+
+"""
 nrays(X :: MoriDreamSpace) = length(rays(X))
 
+
+@doc raw"""
+    maximal_cones(X :: MoriDreamSpace)
+
+Return the maximal cones of the fan of the canonical toric ambient variety
+of a Mori Dream Space.
+
+"""
 maximal_cones(X :: MoriDreamSpace) = maximal_cones(canonical_toric_ambient(X))
 
+
+@doc raw"""
+    class_group(X :: MoriDreamSpace)
+
+Return the class group of a Mori Dream Space.
+
+"""
 @attr class_group(X :: MoriDreamSpace) = class_group(canonical_toric_ambient(X))
 
-@attr class_group_rank(X :: MoriDreamSpace) = rank(class_group(X))
 
-@attr class_group_torsion(X :: MoriDreamSpace) = elementary_divisors(class_group(X))[1 : end - rank(class_group(X))]
+@doc raw"""
+    picard_group(X :: MoriDreamSpace)
 
-@attr class_group_torsion_order(X :: MoriDreamSpace) = prod(class_group_torsion(X))
+Return the Picard group of a Mori Dream Space.
 
+"""
 @attr picard_group(X :: MoriDreamSpace) = picard_group(canonical_toric_ambient(X))
 
+
+@doc raw"""
+    map_from_picard_group_to_class_group(X :: MoriDreamSpace)
+
+Return the embedding of the Picard group into the class group of a
+Mori Dream Space.
+
+"""
 @attr map_from_picard_group_to_class_group(X :: MoriDreamSpace) = map_from_picard_group_to_class_group(canonical_toric_ambient(X))
 
+
+@doc raw"""
+    picard_index(X :: MoriDreamSpace)
+
+Return the index of the Picard group in the class group of a
+Mori Dream Space.
+
+"""
 @attr picard_index(X :: MoriDreamSpace) = picard_index(canonical_toric_ambient(X))
 
+@doc raw"""
+    is_factorial(X :: MoriDreamSpace)
+
+Determine if a Mori Dream Space has at most factorial singularities, i.e.
+its canonical toric ambient variety is smooth.
+
+"""
 @attr is_factorial(X :: MoriDreamSpace) = is_smooth(canonical_toric_ambient(X))
 
+
+@doc raw"""
+    is_q_factorial(X :: MoriDreamSpace)
+
+Determine if a Mori Dream Space has at most $\mathbb{Q}$-factorial
+singularities, i.e. its canonical toric ambient variety is simplicial.
+
+"""
 @attr is_q_factorial(X :: MoriDreamSpace) = is_simplicial(canonical_toric_ambient(X))
 
+
+@doc raw"""
+    cox_ring(X :: MoriDreamSpace)
+
+Compute the Cox Ring of a Mori Dream Space.
+
+"""
 @attr cox_ring(X :: MoriDreamSpace) = 
 isempty(cox_ring_relations(X)) ? 
     cox_ring(canonical_toric_ambient(X)) :
     quo(cox_ring(canonical_toric_ambient(X)), cox_ring_relations(X))[1]
 
+
+@doc raw"""
+    cox_ring_relation_degrees(X :: MoriDreamSpace)
+
+Compute the degrees of the relations in the Cox Ring of a Mori Dream Space.
+
+"""
 @attr cox_ring_relation_degrees(X :: MoriDreamSpace) = map(degree, cox_ring_relations(X))
 
+
+@doc raw"""
+    canonical_divisor(X :: MoriDreamSpace)
+
+Return the canonical divisor of a Mori Dream Space.
+
+"""
 @attr function canonical_divisor(X :: MoriDreamSpace)
     # disabled for now, since it throws error: "Not a Groebner basis"
     #@req is_complete_intersection(cox_ring(X)) "only avaliable for complete intersection cox rings"
@@ -50,79 +131,91 @@ isempty(cox_ring_relations(X)) ?
     return mori_dream_space_divisor(X, can_divisor)
 end
 
+@doc raw"""
+    canonical_divisor(X :: MoriDreamSpace)
+
+Return the anticanonical divisor of a Mori Dream Space.
+
+"""
 @attr anticanonical_divisor(X :: MoriDreamSpace) = -canonical_divisor(X)
 
+
+@doc raw"""
+    canonical_divisor_class(X :: MoriDreamSpace)
+
+Return the canonical divisor class of a Mori Dream Space.
+
+"""
 @attr canonical_divisor_class(X :: MoriDreamSpace) = toric_divisor_class(toric_divisor(canonical_divisor(X)))
 
+
+@doc raw"""
+    anticanonical_divisor_class(X :: MoriDreamSpace)
+
+Return the anticanonical divisor class of a Mori Dream Space.
+
+"""
 @attr anticanonical_divisor_class(X :: MoriDreamSpace) = -canonical_divisor_class(X)
 
+
+@doc raw"""
+    is_fano(X :: MoriDreamSpace)
+
+Check if a Mori Dream Space if fano.
+
+"""
 @attr is_fano(X :: MoriDreamSpace) = is_ample(anticanonical_divisor_class(X))
 
+@doc raw"""
+    gorenstein_index(X :: MoriDreamSpace)
+
+Return the Gorenstein index of a $\mathbb{Q}$-Gorenstein Mori Dream Space.
+
+"""
 @attr function gorenstein_index(X :: MoriDreamSpace)
     c = divisor_class(canonical_divisor_class(X))
     f = cokernel(map_from_picard_group_to_class_group(X))[2]
     order(f(c))
 end
 
+@doc raw"""
+    local_class_groups(X :: MoriDreamSpace)
+
+Compute the local class groups of a Mori Dream Space `X`. The result is 
+a dictionary indexed by the maximal cones of `X`.
+
+"""
 @attr local_class_groups(X :: MoriDreamSpace) = local_class_groups(canonical_toric_ambient(X))
 
+
+@doc raw"""
+    local_class_group(X :: MoriDreamSpace, c :: Vector{Int64})
+
+Compute the local class group of a Mori Dream Space `X` at a maximal
+cone `c` given by a vector of indices.
+
+"""
 local_class_group(X :: MoriDreamSpace, c :: Vector{Int64}) = local_class_groups(X)[c]
 
+
+@doc raw"""
+    maps_from_class_group_to_local_class_groups(X :: MoriDreamSpace)
+
+Compute the canonical maps from the class group of a Mori Dream Space to 
+its local class groups. The result is a dictionary indexed by the maximal 
+cones of `X`.
+
+"""
 @attr maps_from_class_group_to_local_class_groups(X :: MoriDreamSpace) =
 maps_from_class_group_to_local_class_groups(canonical_toric_ambient(X))
 
+
+@doc raw"""
+    map_from_class_group_to_local_class_group(X :: MoriDreamSpace, c :: Vector{Int64})
+
+Compute the canonical map from the class group of a Mori Dream Space `X` to
+its local class group at a cone `c`, given by a vector of indices.
+
+"""
 map_from_class_group_to_local_class_group(X :: MoriDreamSpace, c :: Vector{Int64}) =
 maps_from_class_group_to_local_class_groups(X)[c]
-
-#################################################
-# More attributes for Mori dream spaces and toric varieties
-#################################################
-
-# Union type of MoriDreamSpace's and Oscar's toric varieties
-const MoriDreamSpaceUnion = Union{MoriDreamSpace, Oscar.NormalToricVarietyType}
-
-gen_matrix(X :: MoriDreamSpaceUnion) = transpose(matrix(ZZ, rays(X)))
-
-@attr function maximal_cones_indices(X :: MoriDreamSpaceUnion) 
-    IM = ray_indices(maximal_cones(X))
-    [sort(collect(row(IM,i))) for i = 1 : nrows(IM)]
-end
-
-@attr covering_collection(X :: MoriDreamSpaceUnion) =
-map(c -> [i for i in 1 : nrays(X) if i ∉ c], maximal_cones_indices(X))
-
-@attr cox_ring_weights(X :: MoriDreamSpaceUnion) = map(degree, gens(cox_ring(X)))
-
-@attr degree_matrix(X :: MoriDreamSpaceUnion) =
-transpose(vcat([w.coeff for w in cox_ring_weights(X)]))
-
-@attr function degree_matrix_torsion_part(X :: MoriDreamSpaceUnion)
-    Q = degree_matrix(X)
-    Q[1 : end - rank(class_group(X)), :]
-end
-
-@attr function degree_matrix_free_part(X :: MoriDreamSpaceUnion)
-    Q = degree_matrix(X)
-    Q[end - rank(class_group(X)) + 1 : end, :]
-end
-
-@attr function local_gorenstein_indices(X :: MoriDreamSpaceUnion)
-    gorenstein_indices = Dict{Vector{Int}, ZZRingElem}()
-    K = divisor_class(canonical_divisor_class(X))
-    for c in maximal_cones_indices(X)
-        f = map_from_class_group_to_local_class_group(X, c)
-        gorenstein_indices[c] = order(f(K))
-    end
-    return gorenstein_indices
-end
-
-local_gorenstein_index(X :: MoriDreamSpaceUnion, c :: Vector{Int64}) =
-local_gorenstein_indices(X)[c]
-
-@attr local_picard_indices(X :: MoriDreamSpaceUnion) = 
-Dict([(c, order(g)) for (c,g) in local_class_groups(X)])
-
-local_picard_index(X :: MoriDreamSpaceUnion, c :: Vector{Int64}) =
-local_picard_indices(X)[c]
-
-

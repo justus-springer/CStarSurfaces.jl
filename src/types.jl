@@ -19,11 +19,21 @@ abstract type MoriDreamSpace end
 
 
 @doc raw"""
+    MoriDreamSpaceUnion 
+
+The union of `MoriDreamSpace` and Oscar's `NormalToricVarietyType`.
+
+"""
+const MoriDreamSpaceUnion = Union{MoriDreamSpace, Oscar.NormalToricVarietyType}
+
+
+@doc raw"""
     ToricVarietyMDS
 
 Julia type for toric Mori Dream Spaces.
 """
 abstract type ToricVarietyMDS <: MoriDreamSpace end
+
 
 @doc raw"""
     CStarSurfaceCase
@@ -38,6 +48,7 @@ struct PE <: CStarSurfaceCase end
 struct EP <: CStarSurfaceCase end
 struct PP <: CStarSurfaceCase end
 
+
 @doc raw"""
     ZeroVector{T}
 
@@ -46,6 +57,7 @@ A zero-indexed vector.
 struct ZeroVector{T} <: AbstractVector{T}
     parent :: Vector{T}
 end
+
 
 @doc raw"""
     DoubleVector{T}
@@ -56,6 +68,7 @@ This type of indexing is very common when working with $\mathbb{C}^*$-
 surfaces.
 """
 const DoubleVector{T} = ZeroVector{Vector{T}}
+
 
 @doc raw"""
     CStarSurface{T<:CStarSurfaceCase}
@@ -68,6 +81,7 @@ A $\mathbb{C}^*$-surface of case `T <: CStarSurfaceCase`.
     case :: Symbol
     CStarSurface{T}(l, d, case) where {T <: CStarSurfaceCase} = new{T}(l, d, case)
 end
+
 
 @doc raw"""
     ToricSurface
@@ -103,12 +117,14 @@ mutable struct MoriDreamSpaceDivisor{T <: MoriDreamSpace}
     end
 end
 
+
 @doc raw"""
     CStarSurfaceDivisor{T} 
 
 A Weil divisor on a $\mathbb{C}^*$-surface of type `T <: CStarSurfaceCase`.
 """
 const CStarSurfaceDivisor{T} = MoriDreamSpaceDivisor{CStarSurface{T}}
+
 
 @doc raw"""
     ToricSurfaceDivisor 

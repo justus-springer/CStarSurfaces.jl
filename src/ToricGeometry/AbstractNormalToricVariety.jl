@@ -43,12 +43,35 @@ end
 # Local class groups
 #################################################
 
+@doc raw"""
+    local_class_groups(X :: Oscar.NormalToricVarietyType)
+
+Compute the local class groups of a normal toric variety `X`. The result is 
+a dictionary indexed by the maximal cones of `X`.
+
+"""
 @attr local_class_groups(X :: Oscar.NormalToricVarietyType) =
 Dict([(c, class_group(U)) for (c,U) in affine_toric_charts(X)])
 
+
+@doc raw"""
+    local_class_group(X :: Oscar.NormalToricVarietyType, c :: Vector{Int64})
+
+Compute the local class group of a normal toric variety `X` at a maximal
+cone `c` given by a vector of indices.
+
+"""
 local_class_group(X :: Oscar.NormalToricVarietyType, c :: Vector{Int64}) =
 local_class_groups(X)[c]
 
+@doc raw"""
+    maps_from_class_group_to_local_class_groups(X :: Oscar.NormalToricVarietyType)
+
+Compute the canonical maps from the class group of a normal toric variety to 
+its local class groups. The result is a dictionary indexed by the maximal 
+cones of `X`.
+
+"""
 @attr function maps_from_class_group_to_local_class_groups(X :: Oscar.NormalToricVarietyType)
     K, f = cokernel(map_from_character_lattice_to_torusinvariant_weil_divisor_group(X))
     maps = Dict{Vector{Int}, GrpAbFinGenMap}()
@@ -65,6 +88,13 @@ local_class_groups(X)[c]
     return maps
 end
 
+@doc raw"""
+    map_from_class_group_to_local_class_group(X :: Oscar.NormalToricVarietyType, c :: Vector{Int64})
+
+Compute the canonical map from the class group of a normal toric variety `X` to
+its local class group at a cone `c`, given by a vector of indices.
+
+"""
 map_from_class_group_to_local_class_group(X :: Oscar.NormalToricVarietyType, c :: Vector{Int64}) =
 maps_from_class_group_to_local_class_groups(X)[c]
 
