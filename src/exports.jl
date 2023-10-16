@@ -1,5 +1,10 @@
 export AdmissibleOperation
 export covering_collection
+export cls_cone_normal_form
+export intersect_lines_2D
+export norm_ratio
+export discrepancy
+export hirzebruch_jung
 export is_intrinsic_quadric
 export find_in_database
 export AdmissibleRowOperation

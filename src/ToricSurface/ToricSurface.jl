@@ -2,23 +2,31 @@
 
 Base.:(==)(X :: ToricSurface, Y :: ToricSurface) = X.vs == Y.vs 
 
+@doc raw"""
+    toric_surface(vs :: Vector{Vector{T}})
+
+Construct a toric surface from a list of integral vectors in two-dimensional
+space.
+
+"""
 function toric_surface(vs :: Vector{Vector{T}}) where {T <: Oscar.IntegerUnion} 
     @req all(v -> length(v) == 2, vs) "rays must all be two-dimensional"
     return ToricSurface(vs)
 end
 
+@doc raw"""
+    toric_surface(P :: ZZMatrix)
+    
+Construct a toric surface from an integral matrix, where the columns of
+the matrix are the rays of the describing fan.
+
+"""
 function toric_surface(P :: ZZMatrix)
     cols = [[P[j,i] for j = 1 : nrows(P)] for i = 1 : ncols(P)]
     return toric_surface(cols)
 end
 
 rays(X :: ToricSurface) = X.vs
-
-#############################################################
-# Construction of the canonical toric ambient
-# This amounts to determining the unique complete fan 
-# structure for the given rays.
-#############################################################
 
 # sorts two-dimensional vectors clockwise, where [1,0] is considered
 # minimal
@@ -47,10 +55,15 @@ end
 
 @attr canonical_toric_ambient(X :: ToricSurface) = normal_toric_variety(rays(X), maximal_cones_indices(X))
 
-###############################################################
-# Intersection numbers
-###############################################################
+@doc raw"""
+    intersection_matrix(X :: ToricSurface)
 
+Return the matrix of intersection numbers of all toric prime divisors of a
+toric surface `X` with each other. The result is a rational `n` x `n` matrix,
+where `n = nrays(X)` and the `(i,j)`-th entry is the intersection number of the
+toric prime divisors associated to the `i`-th and `j`-th ray respectively.
+
+"""
 @attr function intersection_matrix(X :: ToricSurface)
     vs, r = rays(X), nrays(X)
     inds = _ordered_ray_indices(X)
@@ -78,12 +91,15 @@ end
 
 end
 
-Base.show(io :: IO, X :: ToricSurface) = Base.print(io, "Normal toric surface")
+@doc raw"""
+    canonical_resolution(X :: ToricSurface)
 
-##############################################################
-# Resolution of singularities
-##############################################################
+Return the canonical resolution of singularities of a toric surface `X`. The result 
+is a triple `(Y, ex_rays, discrepancies)` where `Y` is the smooth toric surface
+in the resolution of singularities of `X`, `ex_rays` contains the rays of the exceptional
+divisors in the resolution and `discrepancies` contains their discrepancies.
 
+"""
 @attr function canonical_resolution(X :: ToricSurface)
     vs = rays(X)
     r = length(vs)
@@ -102,4 +118,14 @@ Base.show(io :: IO, X :: ToricSurface) = Base.print(io, "Normal toric surface")
 
 end
 
+
+@doc raw"""
+    maximal_log_canonicity(X :: ToricSurface)
+
+Given a toric surface $X$, return the maximal rational number $\varepsilon$ such 
+that $X$ is $\varepsilon$-log canonical. By definition, this is the minimal 
+discrepancy in the resolution of singularities plus one.
+
+"""
 @attr maximal_log_canonicity(X :: ToricSurface) = minimum(vcat([0], discrepancies(X)...)) + 1
+Base.show(io :: IO, X :: ToricSurface) = Base.print(io, "Normal toric surface")
