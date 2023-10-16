@@ -1,4 +1,5 @@
 export AdmissibleOperation
+export covering_collection
 export is_intrinsic_quadric
 export find_in_database
 export AdmissibleRowOperation

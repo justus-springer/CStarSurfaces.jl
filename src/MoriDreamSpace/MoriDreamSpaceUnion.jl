@@ -52,6 +52,17 @@ end
 
 
 @doc raw"""
+    covering_collection(X :: MoriDreamSpaceUnion)
+
+Return the covering collection of a Mori Dream Space. The elements are the
+complements of the cones in `maximal_cones_indices(X)`.
+
+"""
+@attr covering_collection(X :: MoriDreamSpaceUnion) =
+map(c -> [i for i in 1 : nrays(X) if i ∉ c], maximal_cones_indices(X))
+
+
+@doc raw"""
     cox_ring_weights(X :: MoriDreamSpaceUnion)
 
 Return the weights in the Cox Ring, i.e. the degrees of its generators.
