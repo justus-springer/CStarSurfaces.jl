@@ -1,5 +1,7 @@
 using Documenter, DocumenterCitations, CStarSurfaces
 
+DocMeta.setdocmeta!(CStarSurfaces, :DocTestSetup, :(using CStarSurfaces, Oscar); recursive=true)
+
 bib = CitationBibliography(
     joinpath(@__DIR__, "references.bib");
     style = :numeric
@@ -7,6 +9,8 @@ bib = CitationBibliography(
 
 makedocs(
     plugins = [bib],
+    #modules = [CStarSurfaces],
+    doctest = true,
     format = Documenter.HTML(prettyurls = false),
     sitename = "CStarSurfaces.jl",
     pages = [
