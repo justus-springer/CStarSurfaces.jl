@@ -1,7 +1,4 @@
 
-
-Base.:(==)(X :: ToricSurface, Y :: ToricSurface) = X.vs == Y.vs 
-
 @doc raw"""
     toric_surface(vs :: Vector{Vector{T}})
 
@@ -94,10 +91,11 @@ end
 @doc raw"""
     canonical_resolution(X :: ToricSurface)
 
-Return the canonical resolution of singularities of a toric surface `X`. The result 
-is a triple `(Y, ex_rays, discrepancies)` where `Y` is the smooth toric surface
-in the resolution of singularities of `X`, `ex_rays` contains the rays of the exceptional
-divisors in the resolution and `discrepancies` contains their discrepancies.
+Return the canonical resolution of singularities of a toric surface `X`. The
+result is a triple `(Y, ex_rays, discrepancies)` where `Y` is the smooth toric
+surface in the resolution of singularities of `X`, `ex_rays` contains the rays
+of the exceptional divisors in the resolution and `discrepancies` contains
+their discrepancies.
 
 """
 @attr function canonical_resolution(X :: ToricSurface)

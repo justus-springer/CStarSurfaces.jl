@@ -19,7 +19,7 @@ abstract type MoriDreamSpace end
 
 
 @doc raw"""
-    MoriDreamSpaceUnion 
+    MoriDreamSpaceUnion
 
 The union of `MoriDreamSpace` and Oscar's `NormalToricVarietyType`.
 
@@ -82,6 +82,8 @@ A $\mathbb{C}^*$-surface of case `T <: CStarSurfaceCase`.
     CStarSurface{T}(l, d, case) where {T <: CStarSurfaceCase} = new{T}(l, d, case)
 end
 
+Base.:(==)(X :: CStarSurface, Y :: CStarSurface) = X.l == Y.l && X.d == Y.d && X.case == Y.case
+
 
 @doc raw"""
     ToricSurface
@@ -93,6 +95,7 @@ A toric surface.
     ToricSurface(vs) = new(vs)
 end
 
+Base.:(==)(X :: ToricSurface, Y :: ToricSurface) = X.vs == Y.vs 
 
 ######################################################################
 # Types of divisors

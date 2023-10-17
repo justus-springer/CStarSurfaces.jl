@@ -1,4 +1,8 @@
 export AdmissibleOperation
+export beta_plus
+export beta_minus
+export beta_plus_sorted
+export beta_minus_sorted
 export covering_collection
 export cls_cone_normal_form
 export intersect_lines_2D
