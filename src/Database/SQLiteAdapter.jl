@@ -1,3 +1,13 @@
+@doc raw"""
+    SQLiteAdapter{T} <: DatabaseAdapter{T}
+
+An adapter to an SQLite database holding objects of type `T` where `T <:
+MoriDreamSpace`. The type `T` should at least implement the following methods
+(see their docstrings for more information):
+
+`default_column_functions`, `find_in_database`, `sqlite_import_row`.
+
+"""
 struct SQLiteAdapter{T} <: DatabaseAdapter{T}
     db :: SQLite.DB
     file_path :: AbstractString
@@ -7,27 +17,55 @@ struct SQLiteAdapter{T} <: DatabaseAdapter{T}
     SQLiteAdapter{T}(f :: AbstractString, table_name :: AbstractString, primary_key :: AbstractString) where {T <: MoriDreamSpace} = new{T}(SQLite.DB(f), f, table_name, primary_key)
 end
 
-######################################################################
-# Exporting to a SQLite database
-######################################################################
 
-# Fallback definition. Subtypes of `MoriDreamSpace` should implement this,
-# describing the default column names the functions to compute them
-# when inserting into a database..
+@doc raw"""
+    default_column_functions(::Type{T}) where {T <: MoriDreamSpace}
+
+Returns a `Dict{Symbol, Function}` that serves as a default for the 
+names of the columns to export and how to export them for a given 
+subtype of `MoriDreamSpace`. Should be implemented by all subtypes
+of `MoriDreamSpace` where database functionality is desired.
+
+The fallback definition for a general `T` returns an empty dictionary.
+
+"""
 default_column_functions(::Type{T}) where {T <: MoriDreamSpace} = 
 Dict{Symbol, Function}([])
 
-# Fallback definition
-function find_in_database(db :: SQLiteAdapter{T}, X :: T) where {T <: MoriDreamSpace}
-    @warn "Used fallback definition for find_in_database"
-    return nothing
-end
 
+@doc raw"""
+    default_insert_predicate(::Type{T}) where {T <: MoriDreamSpace}
+
+Returns a function of type `(db :: SQLiteAdapter{T}, X :: T) -> Bool` that
+serves as the default insert predicate when exporting objects of type `T` to an
+SQLite database. The default implementation returns `true` if and only if
+`find_in_database(db, X)` returns nothing, hence avoiding duplicate entries in
+the database. Note that there is no default implementation for
+`find_in_database`, it has to be implemented for each subtype of
+`MoriDreamSpace` where database functionality is desired.
+
+"""
 default_insert_predicate(::Type{T}) where {T <: MoriDreamSpace} =
 function(db :: SQLiteAdapter{T}, X :: T)
     return isnothing(find_in_database(db, X))
 end
 
+
+@doc raw"""
+    export_to_database(db_adapter :: SQLiteAdapter{T}, Xs :: AbstractVector; kwargs...) where {T <: MoriDreamSpace}
+
+Export a list `Xs` of varieties of type `T` to an SQLite database. The
+following keyword arguments are supported:
+
+- `column_functions`: Defaults to `default_column_functions(T)`. A dictionary of
+  type `Dict{Symbol, Function}` containing for each exported column name a function
+  that tells `export_to_database` how to compute that column. Each function takes
+  an object of type `T` and returns an SQLite compatible data type (`Int`, `Float`, `String` or `Nothing`).
+- `insert_predicate`: Defaults to `default_insert_predicate(T)`. A function of 
+  type `(db :: SQLiteAdapter{T}, X :: T) -> Bool`. Only objects where this
+  predicate evaluates to `true` are exported.
+
+"""
 function export_to_database(
         db_adapter :: SQLiteAdapter{T}, 
         Xs :: AbstractVector;
@@ -76,10 +114,15 @@ function export_to_database(
     
 end
 
-######################################################################
-# Importing from an SQLite database
-######################################################################
 
+@doc raw"""
+    import_from_database(db :: SQLiteAdapter{T}, sql :: String = "TRUE") where {T <: MoriDreamSpace}
+
+Return a list of objects of type `T` that match a given sql query. The string
+`sql` is used after the WHERE in a SELECT statement, hence can contain
+restrictions on the columns as well as an ORDER BY and a LIMIT clause.
+
+"""
 function import_from_database(db :: SQLiteAdapter{T}, sql :: String = "TRUE") where {T <: MoriDreamSpace}
 
     @info "Importing from SQLite database file $(db.file_path)..."
@@ -99,15 +142,35 @@ function import_from_database(db :: SQLiteAdapter{T}, sql :: String = "TRUE") wh
     return Xs
 end
 
+
+@doc raw"""
+    import_from_database(db :: SQLiteAdapter{T}, ids :: AbstractVector{Int}) where {T <: MoriDreamSpace}   
+
+Return the list of objects of type `T` from an SQLite database with the given
+`ids`.
+
+"""
 import_from_database(db :: SQLiteAdapter{T}, ids :: AbstractVector{Int}) where {T <: MoriDreamSpace} = 
 import_from_database(db, "$(db.primary_key) IN ($(join(ids, ", ")))")
 
+
+@doc raw"""
+    import_from_database(db :: SQLiteAdapter{T}, id :: Int) where {T <: MoriDreamSpace}
+
+Return the object of type `T` from an SQLite database with the given `id`.
+
+"""
 import_from_database(db :: SQLiteAdapter{T}, id :: Int) where {T <: MoriDreamSpace} = first(import_from_database(db, [id]))
 
-######################################################################
-# Updating columns in an SQLite database
-######################################################################
 
+@doc raw"""
+    update_in_database(db :: SQLiteAdapter{T}, column_functions :: Dict{Symbol, <:Function}; sql :: String = "TRUE") where {T <: MoriDreamSpace}
+
+Update all rows in an SQLite database matching a given SQL query by recomputing
+the columns given by `column_functions`. See also `export_from_database` and
+`import_from_database`.
+
+"""
 function update_in_database(
         db :: SQLiteAdapter{T}, 
         column_functions :: Dict{Symbol, <:Function};
@@ -140,7 +203,24 @@ function update_in_database(
 
 end
 
+@doc raw"""
+    update_in_database(db :: SQLiteAdapter{T}, ids :: AbstractVector{Int}, column_functions :: Dict{Symbol, <:Function})
+
+Update all rows in an SQLite database with the given `ids` by recomputing the
+columns given by `column_functions`. See also `export_from_database` and
+`import_from_database`.
+
+"""
 update_in_database(db :: SQLiteAdapter{T}, ids :: AbstractVector{Int}, column_functions :: Dict{Symbol, <:Function}) where {T <: MoriDreamSpace} = 
 update_in_database(db, "$(db.primary_key) IN ($(join(ids, ", ")))", column_functions)
 
+
+@doc raw"""
+    update_in_database(db :: SQLiteAdapter{T}, id :: Int, column_functions :: Dict{Symbol, <:Function}) where {T <: MoriDreamSpace}
+
+Update all rows in an SQLite database with the given `id` by recomputing the
+columns given by `column_functions`. See also `export_from_database` and
+`import_from_database`.
+
+"""
 update_in_database(db :: SQLiteAdapter{T}, id :: Int, column_functions :: Dict{Symbol, <:Function}) where {T <: MoriDreamSpace} = update_in_database(db, [id], column_functions)
