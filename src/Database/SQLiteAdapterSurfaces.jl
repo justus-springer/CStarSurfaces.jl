@@ -1,9 +1,11 @@
 
-#####################################################
-# Julia type for an SQLite connection to a database
-# of surfaces with torus action
-#####################################################
+@doc raw"""
+    SQLiteAdapterSurfaces = SQLiteAdapter{SurfaceWithTorusAction}
 
+An adapter to an SQLite database holding objects of type
+`SurfaceWithTorusAction`.
+
+"""
 const SQLiteAdapterSurfaces = SQLiteAdapter{SurfaceWithTorusAction}
 
 ##################################################
@@ -74,6 +76,20 @@ _db_anticanonical_self_intersection_numerator(X :: SurfaceWithTorusAction) = Int
 
 _db_anticanonical_self_intersection_denominator(X :: SurfaceWithTorusAction) = Int(denominator(anticanonical_self_intersection(X)))
 
+
+@doc raw"""
+    default_column_functions(::Type{<:SurfaceWithTorusAction})   
+
+The default columns names and how to compute them when exporting objects
+of type `SurfaceWithTorusAction` to an SQLite database. 
+
+The function names all have the prefix `_db_` followed by the name of the
+column, for instance `CStarSurfaces._db_gen_matrix` (they are not exported by
+default). They basically wrap the corresponding attribute function, giving the
+result as a language-agnostic string for database storage instead of a Julia
+type.
+
+"""
 default_column_functions(::Type{<:SurfaceWithTorusAction}) = Dict([
 :is_toric => _db_is_toric,
 :gen_matrix => _db_gen_matrix,
@@ -100,11 +116,15 @@ default_column_functions(::Type{<:SurfaceWithTorusAction}) = Dict([
 :anticanonical_self_intersection_denominator => _db_anticanonical_self_intersection_denominator,
 ])
 
-######################################################################
-# Find a surface in a database.
-# Returns nothing when the surface is not present.
-######################################################################
 
+@doc raw"""
+    find_in_database(db :: SQLiteAdapterSurfaces, X :: SurfaceWithTorusAction)
+
+Tries to find a `SurfaceWithTorusAction` in an SQLite database. If the surface
+is in the database, this function returns its `id`. Otherwise, it returns
+`nothing`.
+
+"""
 function find_in_database(db :: SQLiteAdapterSurfaces, X :: SurfaceWithTorusAction)
     X = is_toric(X) ? normal_form(X) : normal_form(X)[1]
     is_toric_str, gen_matrix_str = _db_is_toric(X), _db_gen_matrix(X)
@@ -116,10 +136,14 @@ function find_in_database(db :: SQLiteAdapterSurfaces, X :: SurfaceWithTorusActi
     return res[1][Symbol(db.primary_key)]
 end
 
-######################################################################
-# Import a single surface from an SQLite row
-######################################################################
 
+@doc raw"""
+    sqlite_import_row(::Type{SurfaceWithTorusAction}, row :: Union{SQLite.Row, NamedTuple})
+
+Imports a single row from an `SQLiteAdapterSurfaces` into a
+`SurfaceWithTorusAction`.
+
+"""
 function sqlite_import_row(::Type{SurfaceWithTorusAction}, row :: Union{SQLite.Row, NamedTuple})
     P = matrix(ZZ, eval(Meta.parse(row[:gen_matrix])))
     return row[:is_toric] == 1 ? toric_surface(P) : cstar_surface(P)

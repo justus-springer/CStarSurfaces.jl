@@ -1,26 +1,45 @@
-#################################################
-# Julia type for divisors on Mori Dream Spaces
-#################################################
 
-mutable struct MoriDreamSpaceDivisor{T <: MoriDreamSpace}
-    variety :: T
-    toric_divisor :: ToricDivisor
-    function MoriDreamSpaceDivisor(variety :: T, toric_divisor :: ToricDivisor) where {T <: MoriDreamSpace}
-        @req canonical_toric_ambient(variety) == toric_divisor.toric_variety "the toric divisor must be defined on the canonical toric ambient variety of X"
-        new{T}(variety, toric_divisor)
-    end
-end
+@doc raw"""
+    mori_dream_space_divisor(X :: T, d :: ToricDivisor)
 
+Return the Divisor on a Mori Dream Space associated to a toric divisor
+on its canonical toric ambient space.
+
+"""
 mori_dream_space_divisor(X :: T, d :: ToricDivisor) where {T <: MoriDreamSpace} = 
 MoriDreamSpaceDivisor(X, d)
 
+
+@doc raw"""
+    mori_dream_space_divisor(X :: T, coeffs :: Vector{S})
+
+Construct a divisor on a Mori Dream Space as a linear combination of the
+(restrictions of) the torus invariant prime divisors of the canonical 
+toric ambient variety.
+
+"""
 function mori_dream_space_divisor(X :: T, coeffs :: Vector{S}) where {T <: MoriDreamSpace, S <: Oscar.IntegerUnion}
     toric_div = toric_divisor(canonical_toric_ambient(X), coeffs)
     MoriDreamSpaceDivisor(X, toric_div)
 end
 
+
+@doc raw"""
+    toric_divisor(d :: MoriDreamSpaceDivisor)
+
+Return the toric divisor on the canonical toric ambient variety associated 
+to a divisor on a Mori Dream Space.
+
+"""
 toric_divisor(d :: MoriDreamSpaceDivisor) = d.toric_divisor
 
+
+@doc raw"""
+    coefficients(d :: MoriDreamSpaceDivisor)
+
+Return the coefficients of a divisor on a Mori Dream Space.
+
+"""
 coefficients(d :: MoriDreamSpaceDivisor) = coefficients(toric_divisor(d))
 
 

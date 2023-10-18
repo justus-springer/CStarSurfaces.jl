@@ -1,76 +1,68 @@
-abstract type CStarSurfaceCase end
-struct EE <: CStarSurfaceCase end
-struct PE <: CStarSurfaceCase end
-struct EP <: CStarSurfaceCase end
-struct PP <: CStarSurfaceCase end
-
-invert_case(::Type{EE}) = EE
-invert_case(::Type{PE}) = EP
-invert_case(::Type{EP}) = PE
-invert_case(::Type{PP}) = PP
-function invert_case(c :: Symbol)
-    c == :ee && return :ee
-    c == :pe && return :ep
-    c == :ep && return :pe
-    c == :pp && return :pp
-    throw(DomainError(c, "symbol must be one of :ee, :pe, :ep and :pp"))
-end
-invert_case(c::Union{Symbol, Type{<:CStarSurfaceCase}}, invert :: Bool) = invert ? invert_case(c) : c
-
-has_x_plus(::Type{EE}) = true
-has_x_plus(::Type{PE}) = false
-has_x_plus(::Type{EP}) = true
-has_x_plus(::Type{PP}) = false
-
-has_x_minus(c::Type{T}) where {T <: CStarSurfaceCase} = has_x_plus(invert_case(c))
-
-has_D_plus(c::Type{T}) where {T <: CStarSurfaceCase} = !has_x_plus(c)
-
-has_D_minus(c::Type{T}) where {T <: CStarSurfaceCase} = !has_x_minus(c)
-
-function _case_sym_to_type(c :: Symbol)
-    c == :ee && return EE
-    c == :pe && return PE
-    c == :ep && return EP
-    c == :pp && return PP
-    throw(DomainError(c, "symbol must be one of :ee, :pe, :ep and :pp"))
-end
-
-@attributes mutable struct CStarSurface{T<:CStarSurfaceCase} <: MoriDreamSpace
-    l :: DoubleVector{Int64}
-    d :: DoubleVector{Int64}
-    case :: Symbol
-
-    CStarSurface(l, d, case) = new{_case_sym_to_type(case)}(l, d, case)
-end
-
-Base.:(==)(X :: CStarSurface, Y :: CStarSurface) = X.l == Y.l && X.d == Y.d && X.case == Y.case
-
-is_toric(:: CStarSurface) = false
-
-has_x_plus(X :: CStarSurface{T}) where {T <: CStarSurfaceCase} = has_x_plus(T)
-has_x_minus(X :: CStarSurface{T}) where {T <: CStarSurfaceCase} = has_x_minus(T)
-has_D_plus(X :: CStarSurface{T}) where {T <: CStarSurfaceCase} = has_D_plus(T)
-has_D_minus(X :: CStarSurface{T}) where {T <: CStarSurfaceCase} = has_D_minus(T)
 
 #################################################
 # Constructors
 #################################################
 
+@doc raw"""
+    cstar_surface(ls :: DoubleVector{Int64}, ds :: DoubleVector{Int64}, case :: Symbol)
+
+Construct a C-star surface from the integral vectors $l_i=(l_{i1}, ...,
+l_{in_i})$ and $d_i=(d_{i1}, ..., d_{in_i})$ and a given C-star surface case.
+The parameters `ls` and `ds` are given both given as a `DoubleVector`, which is
+a zero-indexed vector of one-indexed vectors. They must be of the same length
+and satisfy `gcd(ls[i][j], ds[i][j]) == 1` for all `i` and `j`. The parameter
+`case` can be one of the four symbols `:ee, :pe, :ep, :pp`.
+
+# Example
+
+The ``E_6`` singular cubic.
+
+```jldoctest
+julia> X = cstar_surface(DoubleVector([[3, 1], [3], [2]]), DoubleVector([[-2, -1], [1], [1]]), :ee)
+C-star surface of type (e-e)
+julia> gen_matrix(X)
+[-3   -1   3   0]
+[-3   -1   0   2]
+[-2   -1   1   1]
+
+```
+
+"""
 function cstar_surface(ls :: DoubleVector{Int64}, ds :: DoubleVector{Int64}, case :: Symbol)
     @req length(ls) == length(ds) "ls and ds must be of the same length"
     r = length(ls)
     @req all(i -> length(ls[i]) == length(ds[i]), axes(ls,1)) "ls[i] and ds[i] must be of the same length for all i"
     @req all2((l,d) -> gcd(l,d) == 1, ls, ds) "ls[i][j] and ds[i][j] must be coprime for all i and j"
 
-    return CStarSurface(ls, ds, case)
+    return CStarSurface{_case_sym_to_type(case)}(ls, ds, case)
 
 end
 
-"""
+
+@doc raw"""
     cstar_surface(ls :: Vector{Vector{Int64}}, ds :: Vector{Vector{Int64}}, case :: Symbol)
 
-Construct a C-Star surface from the given data
+Construct a C-star surface from the integral vectors $l_i=(l_{i1}, ...,
+l_{in_i})$ and $d_i=(d_{i1}, ..., d_{in_i})$ and a given C-star surface case.
+The parameters `ls` and `ds` are given both given as a vector of vectors. They
+must be of the same length and satisfy `gcd(ls[i][j], ds[i][j]) == 1` for all
+`i` and `j`. The parameter `case` can be one of the four symbols `:ee, :pe,
+:ep, :pp`.
+
+# Example
+
+The ``E_6`` singular cubic.
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+julia> gen_matrix(X)
+[-3   -1   3   0]
+[-3   -1   0   2]
+[-2   -1   1   1]
+
+```
+
 """
 cstar_surface(ls :: Vector{Vector{Int64}}, ds :: Vector{Vector{Int64}}, case :: Symbol) = cstar_surface(DoubleVector(ls), DoubleVector(ds), case)
 
@@ -88,6 +80,68 @@ function _is_cstar_column(v :: Vector{T}) where {T <: Oscar.IntegerUnion}
     return nothing
 end
 
+
+@doc raw"""
+    cstar_surface(P :: ZZMatrix)
+
+Construct a C-star surface from a generator matrix of the correct format. That
+is, $P$ must be of one of the following forms:
+
+```math
+\begin{array}{lcclc}
+\text{(e-e)} & 
+\begin{bmatrix}
+L \\
+d
+\end{bmatrix} &
+\qquad &
+\text{(p-e)} &
+\begin{bmatrix}
+L & 0 \\
+d & 1
+\end{bmatrix} \\
+
+\text{(e-p)} &
+\begin{bmatrix}
+L & 0 \\
+d & -1
+\end{bmatrix} &
+\qquad &
+\text{(p-p)} &
+\begin{bmatrix}
+L & 0 & 0 \\
+d & 1 & -1
+\end{bmatrix}
+\end{array},
+```
+
+where for some integral vectors ``l_i=(l_{i1}, ..., l_{in_i}) \in
+\mathbb{Z}^{n_i}_{\geq 0}`` and ``d_i=(d_{i1}, ..., d_{in_i}) \in
+\mathbb{Z}^{n_i}`` with ``\gcd(l_{ij}, d_{ij}) = 1``, we have
+
+```math
+L = \begin{bmatrix}
+-l_0 & l_1 & \dots & 0 \\
+\vdots & & \ddots & 0 \\
+-l_0 & 0 & \dots & l_r
+\end{bmatrix}, 
+\qquad
+d = \begin{bmatrix}
+d_0 & \dots & d_r
+\end{bmatrix}.
+```
+
+# Example
+
+The ``E_6`` singular cubic.
+
+```jldoctest
+julia> cstar_surface(ZZ[-3 -1 3 0 ; -3 -1 0 2 ; -2 -1 1 1])
+C-star surface of type (e-e)
+
+```
+
+"""
 function cstar_surface(P :: ZZMatrix)
     ls = DoubleVector{Int}(undef, 0)
     ds = DoubleVector{Int}(undef, 0)
@@ -137,7 +191,51 @@ end
 # Basic attributes
 #################################################
 
+@doc raw"""
+    has_x_plus(X :: CStarSurface{<:CStarSurfaceCase})
 
+Checks whether a given C-star surface has an elliptic fixed point in the
+source, commonly denoted $x^+$.
+
+"""
+has_x_plus(X :: CStarSurface{T}) where {T <: CStarSurfaceCase} = has_x_plus(T)
+
+
+@doc raw"""
+    has_x_minus(X :: CStarSurface{<:CStarSurfaceCase})
+
+Checks whether a given C-star surface has an elliptic fixed point in the
+sink, commonly denoted $x^-$.
+
+"""
+has_x_minus(X :: CStarSurface{T}) where {T <: CStarSurfaceCase} = has_x_minus(T)
+
+
+@doc raw"""
+    has_D_plus(X :: CStarSurface{<:CStarSurfaceCase})
+
+Checks whether a given C-star surface has a parabolic fixed point curve in the
+source, commonly denoted $D^+$.
+
+"""
+has_D_plus(X :: CStarSurface{T}) where {T <: CStarSurfaceCase} = has_D_plus(T)
+
+
+@doc raw"""
+    has_D_minus(X :: CStarSurface{<:CStarSurfaceCase})
+
+Checks whether a given C-star surface has a parabolic fixed point curve in the
+sink, commonly denoted $D^-$.
+
+"""
+has_D_minus(X :: CStarSurface{T}) where {T <: CStarSurfaceCase} = has_D_minus(T)
+
+@doc raw"""
+    nblocks(X :: CStarSurface)
+
+Returns the number of blocks in the generator matrix of a C-star surface.
+
+"""
 @attr nblocks(X :: CStarSurface) = length(X.l)
 
 _r(X :: CStarSurface) = nblocks(X) - 1
@@ -146,6 +244,14 @@ _n(X :: CStarSurface, i :: Int) = length(X.l[i])
 @attr _ns(X :: CStarSurface) = map(length, X.l)
 @attr _n(X :: CStarSurface) = sum(_ns(X))
 
+
+@doc raw"""
+    block_sizes(X :: CStarSurface)   
+
+Returns the sizes of the blocks in the generator matrix of a C-star surface.
+The result is a zero-indexed vector of type `ZeroVector`.
+
+"""
 block_sizes(X :: CStarSurface) = _ns(X)
 
 _m(X :: CStarSurface{EE}) = 0
@@ -153,12 +259,27 @@ _m(X :: CStarSurface{PE}) = 1
 _m(X :: CStarSurface{EP}) = 1
 _m(X :: CStarSurface{PP}) = 2
 
+
+@doc raw"""
+    number_of_parabolic_fixed_point_curves(X :: CStarSurface)
+
+Returns the number of parabolic fixed point curves of a C-star surface.
+
+"""
 number_of_parabolic_fixed_point_curves(X :: CStarSurface) = _m(X)
 
+
+@doc raw"""
+    slopes(X :: CStarSurface)
+
+Returns the `DoubleVector` of slopes of a C-star surface, i.e a `DoubleVector`
+with `slopes(X)[i][j] = X.d[i][j] // X.l[i][j]`.
+
+"""
 @attr slopes(X :: CStarSurface) = map2(//, X.d, X.l)
 
-@attr _m_plus(X :: CStarSurface) = sum(map(maximum, slopes(X)))
-@attr _m_minus(X :: CStarSurface) = -sum(map(minimum, slopes(X)))
+@attr m_plus(X :: CStarSurface) = sum(map(maximum, slopes(X)))
+@attr m_minus(X :: CStarSurface) = -sum(map(minimum, slopes(X)))
 
 @attr _slope_ordering_permutations(X :: CStarSurface) = map(v -> sortperm(v, rev=true), slopes(X))
 
@@ -169,6 +290,14 @@ number_of_parabolic_fixed_point_curves(X :: CStarSurface) = _m(X)
 @attr _l_plus(X :: CStarSurface) = sum([1 // first(_slope_ordered_l(X)[i]) for i = 0 : _r(X)]) - _r(X) + 1
 @attr _l_minus(X :: CStarSurface) = sum([1 // last(_slope_ordered_l(X)[i]) for i = 0 : _r(X)]) - _r(X) + 1
 
+
+@doc raw"""
+    is_intrinsic_quadric(X :: CStarSurface)
+
+Checks whether a C-star surface is an intrinsic quadric, i.e its Cox Ring
+has a single quadratic relation.
+
+"""
 @attr is_intrinsic_quadric(X :: CStarSurface) = 
 nblocks(X) == 3 && all(ls -> sum(ls) == 2, X.l)
 
@@ -225,6 +354,29 @@ _coordinate_names(X :: CStarSurface{PE}) = push!(_coordinate_names_core(X), "S[1
 _coordinate_names(X :: CStarSurface{EP}) = push!(_coordinate_names_core(X), "S[1]")
 _coordinate_names(X :: CStarSurface{PP}) = push!(_coordinate_names_core(X), "S[1]", "S[2]")
 
+@doc raw"""
+    canonical_toric_ambient(X :: CStarSurface) 
+
+Construct the canonical toric ambient of a C-star surface, as an Oscar type.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> Z = canonical_toric_ambient(X)
+Normal toric variety
+
+julia> rays(Z)
+4-element SubObjectIterator{RayVector{QQFieldElem}}:
+ [-1, -1, -2//3]
+ [-1, -1, -1]
+ [1, 0, 1//3]
+ [0, 1, 1//2]
+```
+
+"""
 @attr function canonical_toric_ambient(X :: CStarSurface) 
     # passing non_redundant=true does two important things here:
     # 1. It skips time-consuming checks on the input rays,
@@ -239,10 +391,35 @@ end
 # Cox Ring
 #################################################
 
-# Returns the variables in the Cox Ring of the canonical toric ambient, according
-# to the double index notation of C-Star surfaces.
-# The result is a tuple, whose first entry is a DoubleVector consisting of the 
-# variables T[i][j] and whose second entry is the Vector of variables (S[1], ... S[m])
+@doc raw"""
+    cox_ring_vars(X :: CStarSurface)
+
+Return the variables in the Cox Ring of the canonical toric ambient of a C-star
+surface, following the double index notation. The result
+is a tuple, whose first entry is a DoubleVector consisting of the variables
+T[i][j] and whose second entry is the Vector of variables [S[1], ... S[m]], 
+where `m` is the number of parabolic fixed point curves.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[1, 1], [2], [2]], [[-3, -4], [1], [1]], :pe)
+C-star surface of type (p-e)
+
+julia> (Ts, Ss) = cox_ring_vars(X);
+
+julia> Ts
+3-element DoubleVector{MPolyDecRingElem} with indices ZeroRange(3):
+ [T[0][1], T[0][2]]
+ [T[1][1]]
+ [T[2][1]]
+
+julia> Ss
+1-element Vector{MPolyDecRingElem{QQFieldElem, QQMPolyRingElem}}:
+ S[1]
+```
+
+"""
 @attr function cox_ring_vars(X :: CStarSurface)
     r, ns, m = _r(X), _ns(X), _m(X)
     Z = canonical_toric_ambient(X)
@@ -267,6 +444,25 @@ end
 
 _trinomial(X :: CStarSurface, i :: Int) = _monomial(X, i) + _monomial(X, i+1) + _monomial(X, i+2)
 
+@doc raw"""
+    cox_ring_relations(X :: CStarSurface)
+
+Return the list of relations in the Cox Ring of a C-star surface. Note that 
+these are all trinomials.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[1, 1], [2], [2]], [[-3, -4], [1], [1]], :pe)
+C-star surface of type (p-e)
+
+julia> cox_ring_relations(X)
+1-element Vector{MPolyDecRingElem{QQFieldElem, QQMPolyRingElem}}:
+ T[0][1]*T[0][2] + T[1][1]^2 + T[2][1]^2
+```
+    
+
+"""
 @attr cox_ring_relations(X :: CStarSurface) :: 
     Vector{MPolyDecRingElem{QQFieldElem, QQMPolyRingElem}} = 
 [_trinomial(X,i) for i = 0 : _r(X) - 2]
@@ -282,8 +478,8 @@ _trinomial(X :: CStarSurface, i :: Int) = _monomial(X, i) + _monomial(X, i+1) + 
 function _mcal(X :: CStarSurface, i :: Int, j :: Int)
     @req 0 ≤ j ≤ _ns(X)[i] "j must be between 0 and n_i"
 
-    j == 0 && return has_x_plus(X) ? -1/_m_plus(X) : 0
-    j == _ns(X)[i] && return has_x_minus(X) ? -1/_m_minus(X) : 0
+    j == 0 && return has_x_plus(X) ? -1/m_plus(X) : 0
+    j == _ns(X)[i] && return has_x_minus(X) ? -1/m_minus(X) : 0
 
     ms = sort(slopes(X)[i], rev=true)
     return 1 / (ms[j] - ms[j+1])
@@ -291,6 +487,27 @@ end
 
 @attr _mcals(X :: CStarSurface) = ZeroVector([[_mcal(X, i, j) for j = 0 : _ns(X)[i]] for i = 0 : _r(X)])
 
+
+@doc raw"""
+    intersection_matrix(X :: CStarSurface)
+
+Return the matrix of intersection numbers of all restrictions of toric prime
+divisors of a C-star surface `X` with each other. The result is a rational `n` x
+`n` matrix, where `n = nrays(X)` and the `(i,j)`-th entry is the intersection
+number of the toric prime divisors associated to the `i`-th and `j`-th ray
+respectively.
+
+# Example
+
+```jldoctest
+julia> intersection_matrix(cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee))
+[1//3   1   2//3   1]
+[   1   3      2   3]
+[2//3   2   4//3   2]
+[   1   3      2   3]
+```
+
+"""
 @attr function intersection_matrix(X :: CStarSurface)
     r, n, m, ns = _r(X), _n(X), _m(X), _ns(X)
 
@@ -333,10 +550,10 @@ end
 
     # 3. Self intersection numbers
     if has_D_plus(X)
-        IM[_vplus_index(X), _vplus_index(X)] = - _m_plus(X)
+        IM[_vplus_index(X), _vplus_index(X)] = - m_plus(X)
     end
     if has_D_minus(X)
-        IM[_vminus_index(X), _vminus_index(X)] = - _m_minus(X)
+        IM[_vminus_index(X), _vminus_index(X)] = - m_minus(X)
     end
     for i = 0 : r, j = 1 : ns[i]
         IM[inds[i][j], inds[i][j]] = - 1 // ls[i][j]^2 * (_mcal(X, i, j-1) + _mcal(X, i, j))
@@ -368,14 +585,14 @@ end
 # See Section 9 of "Classifying log del Pezzo surfaces with 
 # torus action" (arxiv:2302.03095) for the definition of 
 # these numbers
-_d_plus(X :: CStarSurface{EE}) = _m_plus(X) // _l_plus(X)
-_d_plus(X :: CStarSurface{EP}) = _m_plus(X) // _l_plus(X)
+_d_plus(X :: CStarSurface{EE}) = m_plus(X) // _l_plus(X)
+_d_plus(X :: CStarSurface{EP}) = m_plus(X) // _l_plus(X)
 _d_plus(X :: CStarSurface{PE}) = 1
 _d_plus(X :: CStarSurface{PP}) = 1
 
-_d_minus(X :: CStarSurface{EE}) = _m_minus(X) // _l_minus(X)
+_d_minus(X :: CStarSurface{EE}) = m_minus(X) // _l_minus(X)
 _d_minus(X :: CStarSurface{EP}) = 1
-_d_minus(X :: CStarSurface{PE}) = _m_minus(X) // _l_minus(X)
+_d_minus(X :: CStarSurface{PE}) = m_minus(X) // _l_minus(X)
 _d_minus(X :: CStarSurface{PP}) = 1
 
 
@@ -385,13 +602,58 @@ _d_minus(X :: CStarSurface{PP}) = 1
 _slope_ordered_extended_l(X :: CStarSurface) = map(ls -> [0 ; ls ; 0], _slope_ordered_l(X))
 _slope_ordered_extended_d(X :: CStarSurface) = map(ds -> [_d_plus(X) ; ds ; -_d_minus(X)], _slope_ordered_d(X))
 
-# Computes the canonical resolution of singularities of a C-star surface
-# together with the exceptional rays and discrepancies. The output format is:
-# (Y, ex_rays, discrepancies), where `Y` is the smooth C-star surface that 
-# is the resolution of X. `ex_rays` and `discrepancies` are both given as pairs, 
-# where the first entry comes from the toric step and the second entry from the 
-# tropical step. The toric ones are given as a `DoubleVector`, adhering the double
-# index notation.
+
+@doc raw"""
+    canonical_resolution(X :: CStarSurface)
+
+Return the canonical resolution of singularities of a C-star surface surface
+`X`. The result is a triple `(Y, ex_rays, discrepancies)` where `Y` is the
+smooth C-star surface in the resolution of singularities of `X`, `ex_rays`
+contains the rays of the exceptional divisors in the resolution and
+`discrepancies` contains their discrepancies. `ex_rays` and `discrepancies`
+itself are given as pairs, where the first entry comes from the toric step and
+the second entry from the tropical step. The first entry is given as a
+`DoubleVector`, adhering to the double index notation of C-star surfaces.
+
+# Example
+
+Resolution of singularities of the $E_6$ singular cubic surface.
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> (Y, (ex_toric, ex_tropic), (discr_toric, discr_tropic)) = canonical_resolution(X);
+
+julia> gen_matrix(Y)
+[-3   -1   -1   -2   3   1   2   1   0   0   0   0    0]
+[-3   -1   -1   -2   0   0   0   0   2   1   1   0    0]
+[-2   -1    0   -1   1   1   1   0   1   1   0   1   -1]
+
+julia> ex_toric
+3-element DoubleVector{Vector{Vector{Int64}}} with indices ZeroRange(3):
+ [[[1, 0], [2, -1]], [], []]
+ [[[1, 1], [2, 1]], [[1, 0]]]
+ [[[1, 1]], [[1, 0]]]
+
+julia> ex_tropic
+2-element Vector{Vector{Int64}}:
+ [0, 1]
+ [0, -1]
+
+julia> discr_toric
+3-element DoubleVector{Vector{Rational{Int64}}} with indices ZeroRange(3):
+ [[0//1, 0//1], [], []]
+ [[0//1, 0//1], [1//1]]
+ [[0//1], [2//1]]
+
+julia> discr_tropic
+2-element Vector{Rational{Int64}}:
+ 0//1
+ 4//1
+```
+
+"""
 @attr function canonical_resolution(X :: CStarSurface)
     ns, r = _ns(X), _r(X) 
     l, d = _slope_ordered_extended_l(X), _slope_ordered_extended_d(X)
@@ -412,11 +674,11 @@ _slope_ordered_extended_d(X :: CStarSurface) = map(ds -> [_d_plus(X) ; ds ; -_d_
     discrepancies_tropic = Rational{Int}[]
     if has_x_plus(X)
         push!(ex_rays_tropic, [0,1])
-        push!(discrepancies_tropic, _l_plus(X) // _m_plus(X) - 1)
+        push!(discrepancies_tropic, _l_plus(X) // m_plus(X) - 1)
     end
     if has_x_minus(X)
         push!(ex_rays_tropic, [0,-1])
-        push!(discrepancies_tropic, _l_minus(X) // _m_minus(X) - 1)
+        push!(discrepancies_tropic, _l_minus(X) // m_minus(X) - 1)
     end
 
     ex_rays = (ex_rays_toric, ex_rays_tropic)
@@ -426,6 +688,21 @@ _slope_ordered_extended_d(X :: CStarSurface) = map(ds -> [_d_plus(X) ; ds ; -_d_
 end
 
 
+@doc raw"""
+    maximal_log_canonicity(X :: CStarSurface)
+
+Given a C-star surface $X$, return the maximal rational number $\varepsilon$
+such that $X$ is $\varepsilon$-log canonical. By definition, this is the
+minimal discrepancy in the resolution of singularities plus one.
+
+# Example
+
+```jldoctest
+julia> maximal_log_canonicity(cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee))
+1//1
+```
+
+"""
 @attr function maximal_log_canonicity(X :: CStarSurface) 
     (ds_tor, ds_tro) = discrepancies(X) 
     # we add a superficial zero into the list of discrepancies to ensure a
