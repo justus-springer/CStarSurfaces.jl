@@ -73,10 +73,20 @@ end
 @doc raw"""
     intersection_matrix(X :: ToricSurface)
 
-Return the matrix of intersection numbers of all toric prime divisors of a
-toric surface `X` with each other. The result is a rational `n` x `n` matrix,
-where `n = nrays(X)` and the `(i,j)`-th entry is the intersection number of the
-toric prime divisors associated to the `i`-th and `j`-th ray respectively.
+Return the matrix of intersection numbers of all toric prime divisors of a toric
+surface `X` with each other. The result is a rational `n` x `n` matrix, where `n
+= nrays(X)` and the `(i,j)`-th entry is the intersection number of the toric
+prime divisors associated to the `i`-th and `j`-th ray respectively.
+
+# Example
+
+```jldoctest
+julia> intersection_matrix(toric_surface(ZZ[1 0 -1 0 ; 0 1 -17 -1]))
+[0    1   0     1]
+[1   17   1     0]
+[0    1   0     1]
+[1    0   1   -17]
+```
 
 """
 @attr function intersection_matrix(X :: ToricSurface)
@@ -115,6 +125,31 @@ surface in the resolution of singularities of `X`, `ex_rays` contains the rays
 of the exceptional divisors in the resolution and `discrepancies` contains
 their discrepancies.
 
+# Example
+
+```jldoctest
+julia> X = toric_surface(ZZ[1 1 -3 ; 0 4 -7])
+Normal toric surface
+
+julia> (Y, ex, discr) = canonical_resolution(X);
+
+julia> gen_matrix(Y)
+[1   1   -3   1   1   1   0   -1   -2   -1    0]
+[0   4   -7   1   2   3   1   -2   -5   -3   -1]
+
+julia> ex
+3-element Vector{Vector{Vector{Int64}}}:
+ [[1, 1], [1, 2], [1, 3]]
+ [[0, 1], [-1, -2]]
+ [[-2, -5], [-1, -3], [0, -1]]
+
+julia> discr
+3-element Vector{Vector{Rational{Int64}}}:
+ [0//1, 0//1, 0//1]
+ [-1//5, -2//5]
+ [-1//7, -2//7, -3//7]
+```
+
 """
 @attr function canonical_resolution(X :: ToricSurface)
     vs = rays(X)
@@ -141,6 +176,16 @@ end
 Given a toric surface $X$, return the maximal rational number $\varepsilon$ such 
 that $X$ is $\varepsilon$-log canonical. By definition, this is the minimal 
 discrepancy in the resolution of singularities plus one.
+
+# Example
+
+```jldoctest
+julia> X = toric_surface(ZZ[1 1 -3 ; 0 4 -7])
+Normal toric surface
+
+julia> maximal_log_canonicity(X)
+4//7
+```
 
 """
 @attr maximal_log_canonicity(X :: ToricSurface) = minimum(vcat([0], discrepancies(X)...)) + 1

@@ -18,12 +18,12 @@ and satisfy `gcd(ls[i][j], ds[i][j]) == 1` for all `i` and `j`. The parameter
 The ``E_6`` singular cubic.
 
 ```jldoctest
-julia> X = cstar_surface(DoubleVector([[3, 1], [3], [2]]), DoubleVector([[2, 1], [1], [1]]), :ee)
+julia> X = cstar_surface(DoubleVector([[3, 1], [3], [2]]), DoubleVector([[-2, -1], [1], [1]]), :ee)
 C-star surface of type (e-e)
 julia> gen_matrix(X)
 [-3   -1   3   0]
 [-3   -1   0   2]
-[ 2    1   1   1]
+[-2   -1   1   1]
 
 ```
 
@@ -54,12 +54,12 @@ must be of the same length and satisfy `gcd(ls[i][j], ds[i][j]) == 1` for all
 The ``E_6`` singular cubic.
 
 ```jldoctest
-julia> X = cstar_surface([[3, 1], [3], [2]], [[2, 1], [1], [1]], :ee)
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
 C-star surface of type (e-e)
 julia> gen_matrix(X)
 [-3   -1   3   0]
 [-3   -1   0   2]
-[ 2    1   1   1]
+[-2   -1   1   1]
 
 ```
 
@@ -431,10 +431,20 @@ end
     intersection_matrix(X :: CStarSurface)
 
 Return the matrix of intersection numbers of all restrictions of toric prime
-divisors of a C-star surface `X` with each other. The result is a rational `n`
-x `n` matrix, where `n = nrays(X)` and the `(i,j)`-th entry is the intersection
+divisors of a C-star surface `X` with each other. The result is a rational `n` x
+`n` matrix, where `n = nrays(X)` and the `(i,j)`-th entry is the intersection
 number of the toric prime divisors associated to the `i`-th and `j`-th ray
 respectively.
+
+# Example
+
+```jldoctest
+julia> intersection_matrix(cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee))
+[1//3   1   2//3   1]
+[   1   3      2   3]
+[2//3   2   4//3   2]
+[   1   3      2   3]
+```
 
 """
 @attr function intersection_matrix(X :: CStarSurface)
@@ -544,6 +554,44 @@ itself are given as pairs, where the first entry comes from the toric step and
 the second entry from the tropical step. The first entry is given as a
 `DoubleVector`, adhering to the double index notation of C-star surfaces.
 
+# Example
+
+Resolution of singularities of the $E_6$ singular cubic surface.
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> (Y, (ex_toric, ex_tropic), (discr_toric, discr_tropic)) = canonical_resolution(X);
+
+julia> gen_matrix(Y)
+[-3   -1   -1   -2   3   1   2   1   0   0   0   0    0]
+[-3   -1   -1   -2   0   0   0   0   2   1   1   0    0]
+[-2   -1    0   -1   1   1   1   0   1   1   0   1   -1]
+
+julia> ex_toric
+3-element DoubleVector{Vector{Vector{Int64}}} with indices ZeroRange(3):
+ [[[1, 0], [2, -1]], [], []]
+ [[[1, 1], [2, 1]], [[1, 0]]]
+ [[[1, 1]], [[1, 0]]]
+
+julia> ex_tropic
+2-element Vector{Vector{Int64}}:
+ [0, 1]
+ [0, -1]
+
+julia> discr_toric
+3-element DoubleVector{Vector{Rational{Int64}}} with indices ZeroRange(3):
+ [[0//1, 0//1], [], []]
+ [[0//1, 0//1], [1//1]]
+ [[0//1], [2//1]]
+
+julia> discr_tropic
+2-element Vector{Rational{Int64}}:
+ 0//1
+ 4//1
+```
+
 """
 @attr function canonical_resolution(X :: CStarSurface)
     ns, r = _ns(X), _r(X) 
@@ -585,6 +633,13 @@ end
 Given a C-star surface $X$, return the maximal rational number $\varepsilon$
 such that $X$ is $\varepsilon$-log canonical. By definition, this is the
 minimal discrepancy in the resolution of singularities plus one.
+
+# Example
+
+```jldoctest
+julia> maximal_log_canonicity(cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee))
+1//1
+```
 
 """
 @attr function maximal_log_canonicity(X :: CStarSurface) 

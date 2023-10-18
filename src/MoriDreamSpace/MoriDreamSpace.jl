@@ -65,6 +65,13 @@ maximal_cones(X :: MoriDreamSpace) = maximal_cones(canonical_toric_ambient(X))
 
 Return the class group of a Mori Dream Space.
 
+# Example
+
+```jldoctest
+julia> class_group(cstar_surface([[1, 1], [2], [2]], [[0, -2], [1], [1]], :ee))
+GrpAb: Z/4 x Z
+```
+
 """
 @attr class_group(X :: MoriDreamSpace) = class_group(canonical_toric_ambient(X))
 
@@ -73,6 +80,13 @@ Return the class group of a Mori Dream Space.
     picard_group(X :: MoriDreamSpace)
 
 Return the Picard group of a Mori Dream Space.
+
+# Example
+
+```jldoctest
+julia> picard_group(cstar_surface([[1, 1], [2], [2]], [[0, -2], [1], [1]], :ee))
+GrpAb: Z
+```
 
 """
 @attr picard_group(X :: MoriDreamSpace) = picard_group(canonical_toric_ambient(X))
@@ -94,6 +108,13 @@ Mori Dream Space.
 Return the index of the Picard group in the class group of a
 Mori Dream Space.
 
+# Example
+
+```jldoctest
+julia> picard_index(cstar_surface([[1, 1], [7], [7]], [[0, -1], [3], [3]], :ee))
+42
+```
+
 """
 @attr picard_index(X :: MoriDreamSpace) = picard_index(canonical_toric_ambient(X))
 
@@ -102,6 +123,13 @@ Mori Dream Space.
 
 Determine if a Mori Dream Space has at most factorial singularities, i.e.
 its canonical toric ambient variety is smooth.
+
+# Example
+
+```jldoctest
+julia> is_factorial(cstar_surface([[1, 1], [7], [7]], [[0, -1], [3], [3]], :ee))
+false
+```
 
 """
 @attr is_factorial(X :: MoriDreamSpace) = is_smooth(canonical_toric_ambient(X))
@@ -143,6 +171,20 @@ Compute the degrees of the relations in the Cox Ring of a Mori Dream Space.
 
 Return the canonical divisor of a Mori Dream Space.
 
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[1, 1], [2], [2]], [[0, -2], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> coefficients(canonical_divisor(X))
+4-element Vector{ZZRingElem}:
+ -1
+ -1
+ 1
+ -1
+```
+
 """
 @attr function canonical_divisor(X :: MoriDreamSpace)
     # disabled for now, since it throws error: "Not a Groebner basis"
@@ -156,9 +198,23 @@ Return the canonical divisor of a Mori Dream Space.
 end
 
 @doc raw"""
-    canonical_divisor(X :: MoriDreamSpace)
+    anticanonical_divisor(X :: MoriDreamSpace)
 
 Return the anticanonical divisor of a Mori Dream Space.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[1, 1], [2], [2]], [[0, -2], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> coefficients(anticanonical_divisor(X))
+4-element Vector{ZZRingElem}:
+ 1
+ 1
+ -1
+ 1
+```
 
 """
 @attr anticanonical_divisor(X :: MoriDreamSpace) = -canonical_divisor(X)
@@ -169,6 +225,18 @@ Return the anticanonical divisor of a Mori Dream Space.
 
 Return the canonical divisor class of a Mori Dream Space.
 
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[1, 1], [2], [2]], [[0, -2], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> divisor_class(canonical_divisor_class(X))
+Element of
+GrpAb: Z/4 x Z
+with components [0 -2]
+```
+
 """
 @attr canonical_divisor_class(X :: MoriDreamSpace) = toric_divisor_class(toric_divisor(canonical_divisor(X)))
 
@@ -177,6 +245,18 @@ Return the canonical divisor class of a Mori Dream Space.
     anticanonical_divisor_class(X :: MoriDreamSpace)
 
 Return the anticanonical divisor class of a Mori Dream Space.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[1, 1], [2], [2]], [[0, -2], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> divisor_class(anticanonical_divisor_class(X))
+Element of
+GrpAb: Z/4 x Z
+with components [0 2]
+```
 
 """
 @attr anticanonical_divisor_class(X :: MoriDreamSpace) = -canonical_divisor_class(X)
@@ -195,6 +275,13 @@ Check if a Mori Dream Space if fano.
 
 Return the Gorenstein index of a $\mathbb{Q}$-Gorenstein Mori Dream Space.
 
+# Example
+
+```jldoctest
+julia> gorenstein_index(cstar_surface([[1, 1], [11], [5]], [[0, -2], [9], [3]], :ee))
+78
+```
+
 """
 @attr function gorenstein_index(X :: MoriDreamSpace)
     c = divisor_class(canonical_divisor_class(X))
@@ -208,6 +295,16 @@ end
 Compute the local class groups of a Mori Dream Space `X`. The result is 
 a dictionary indexed by the maximal cones of `X`.
 
+# Example
+
+```jldoctest
+julia> local_class_groups(cstar_surface([[2, 2], [2], [4]], [[3, -3], [1], [1]], :ee))
+Dict{Vector{Int64}, GrpAbFinGen} with 3 entries:
+  [1, 3, 4] => Abelian group with structure: Z/2 x Z/18
+  [2, 3, 4] => Abelian group with structure: Z/2 x Z/6
+  [1, 2]    => Abelian group with structure: Z/12
+```
+
 """
 @attr local_class_groups(X :: MoriDreamSpace) = local_class_groups(canonical_toric_ambient(X))
 
@@ -217,6 +314,13 @@ a dictionary indexed by the maximal cones of `X`.
 
 Compute the local class group of a Mori Dream Space `X` at a maximal
 cone `c` given by a vector of indices.
+
+# Example
+
+```jldoctest
+julia> local_class_group(cstar_surface([[2, 2], [2], [4]], [[3, -3], [1], [1]], :ee), [1, 2])
+GrpAb: Z/12
+```
 
 """
 local_class_group(X :: MoriDreamSpace, c :: Vector{Int64}) = local_class_groups(X)[c]

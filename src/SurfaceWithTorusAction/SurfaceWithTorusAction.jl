@@ -29,6 +29,13 @@ picard_index(X :: SurfaceWithTorusAction) = prod(values(local_picard_indices(X))
 Return the self intersection number of the anticanonical divisor on a surface
 with torus action.
 
+# Example
+
+```jldoctest
+julia> anticanonical_self_intersection(cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee))
+3
+```
+
 """
 anticanonical_self_intersection(X :: SurfaceWithTorusAction) = anticanonical_divisor(X) * anticanonical_divisor(X)
 

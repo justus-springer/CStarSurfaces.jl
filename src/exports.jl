@@ -4,6 +4,10 @@ export beta_minus
 export beta_plus_sorted
 export beta_minus_sorted
 export covering_collection
+export m_plus
+export m_minus
+export MoriDreamSpaceUnion
+export default_insert_predicate
 export cls_cone_normal_form
 export intersect_lines_2D
 export norm_ratio
