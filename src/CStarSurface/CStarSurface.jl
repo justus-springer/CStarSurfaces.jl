@@ -18,8 +18,12 @@ and satisfy `gcd(ls[i][j], ds[i][j]) == 1` for all `i` and `j`. The parameter
 The ``E_6`` singular cubic.
 
 ```jldoctest
-julia> cstar_surface(DoubleVector([[3, 1], [3], [2]]), DoubleVector([[2, 1], [1], [1]]), :ee)
+julia> X = cstar_surface(DoubleVector([[3, 1], [3], [2]]), DoubleVector([[2, 1], [1], [1]]), :ee)
 C-star surface of type (e-e)
+julia> gen_matrix(X)
+[-3   -1   3   0]
+[-3   -1   0   2]
+[ 2    1   1   1]
 
 ```
 
@@ -50,8 +54,12 @@ must be of the same length and satisfy `gcd(ls[i][j], ds[i][j]) == 1` for all
 The ``E_6`` singular cubic.
 
 ```jldoctest
-julia> cstar_surface([[3, 1], [3], [2]], [[2, 1], [1], [1]], :ee)
+julia> X = cstar_surface([[3, 1], [3], [2]], [[2, 1], [1], [1]], :ee)
 C-star surface of type (e-e)
+julia> gen_matrix(X)
+[-3   -1   3   0]
+[-3   -1   0   2]
+[ 2    1   1   1]
 
 ```
 
@@ -264,7 +272,8 @@ number_of_parabolic_fixed_point_curves(X :: CStarSurface) = _m(X)
 @doc raw"""
     slopes(X :: CStarSurface)
 
-Returns the `DoubleVector` of slopes of a C-star surface.
+Returns the `DoubleVector` of slopes of a C-star surface, i.e a `DoubleVector`
+with `slopes(X)[i][j] = X.d[i][j] // X.l[i][j]`.
 
 """
 @attr slopes(X :: CStarSurface) = map2(//, X.d, X.l)

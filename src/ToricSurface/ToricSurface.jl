@@ -5,6 +5,15 @@
 Construct a toric surface from a list of integral vectors in two-dimensional
 space.
 
+# Example
+
+The 5-th Hirzebruch surface.
+
+```jldoctest
+julia> toric_surface([[1,0], [0,1], [-1,-5], [0,-1]])
+Normal toric surface
+```
+
 """
 function toric_surface(vs :: Vector{Vector{T}}) where {T <: Oscar.IntegerUnion} 
     @req all(v -> length(v) == 2, vs) "rays must all be two-dimensional"
@@ -16,6 +25,15 @@ end
     
 Construct a toric surface from an integral matrix, where the columns of
 the matrix are the rays of the describing fan.
+
+# Example
+
+The 5-th Hirzebruch surface.
+
+```jldoctest
+julia> toric_surface(ZZ[1 0 -1 0 ; 0 1 -17 -1])
+Normal toric surface
+```
 
 """
 function toric_surface(P :: ZZMatrix)

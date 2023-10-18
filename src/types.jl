@@ -38,8 +38,13 @@ abstract type ToricVarietyMDS <: MoriDreamSpace end
 @doc raw"""
     CStarSurfaceCase
 
-The abstract supertype of the four possible cases `EE`, `PE`, `EP` and
-`PP` of $\mathbb{C}^*$-surfaces.
+The abstract supertype of the possible possible configurations of source and
+sink of a $\mathbb{C}^*$-surface.
+
+This type has the four subtypes `EE`, `EP`, `PE` and `PP`, named after the
+existence of elliptic fixed points and parabolic fixed point curves in the
+source and sink of a $\mathbb{C}^*$-surface respectively.
+
 """
 abstract type CStarSurfaceCase end
 
@@ -66,6 +71,7 @@ A zero-indexed vector of one-indexed vectors.
 
 This type of indexing is very common when working with $\mathbb{C}^*$-
 surfaces.
+
 """
 const DoubleVector{T} = ZeroVector{Vector{T}}
 
@@ -73,7 +79,11 @@ const DoubleVector{T} = ZeroVector{Vector{T}}
 @doc raw"""
     CStarSurface{T<:CStarSurfaceCase}
 
-A $\mathbb{C}^*$-surface of case `T <: CStarSurfaceCase`.
+A $\mathbb{C}^*$-surface of case `T <: CStarSurfaceCase`. As a Julia type, it
+gets modeled by a stuct with fields `l`, `d` and `case`, where `l` and `d` are
+zero-indexed vectors of one-indexed vectors of integers and `case` is one of
+the four symbols `:ee`, `:pe`, `:ep` and `:pp`.
+
 """
 @attributes mutable struct CStarSurface{T<:CStarSurfaceCase} <: MoriDreamSpace
     l :: DoubleVector{Int64}
@@ -88,7 +98,10 @@ Base.:(==)(X :: CStarSurface, Y :: CStarSurface) = X.l == Y.l && X.d == Y.d && X
 @doc raw"""
     ToricSurface
 
-A toric surface.
+A toric surface. As a Julia type, it gets modeled by a struct with a single
+field `vs` that stores the primitive generator of the rays of the
+two-dimensional complete fan describing the toric surface.
+
 """
 @attributes mutable struct ToricSurface <: ToricVarietyMDS
     vs :: Vector{Vector{T}} where {T <: Oscar.IntegerUnion}
