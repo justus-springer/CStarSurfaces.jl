@@ -20,12 +20,18 @@ reference, we mention [ArDeHaLa15](@cite).
 
 ## Features
 
-- Canonical toric ambient variety, divisor class group, local class
-  groups, (anti)canonical divisor class,
-- Cox Ring, Gorenstein index, Picard index,
-- intersection numbers, anticanonical self intersection,
-- resolution of singularities, exceptional divisors and discrepancies,
-- normal form of defining data, admissible operations, isomorphy test. 
+The following invariants can be computed for $\mathbb{C}^*$-surfaces and toric
+surfaces:
+
+- [divisor class group](@ref class_group(X :: MoriDreamSpace)), [local class groups](@ref local_class_groups), [(anti)canonical divisor class](@ref canonical_divisor),
+- [Cox Ring](@ref cox_ring), [Gorenstein index](@ref gorenstein_index), [Picard index](@ref picard_index),
+- [intersection numbers](@ref Base.:*(d1 :: SurfaceWithTorusActionDivisor, d2 :: SurfaceWithTorusActionDivisor)), [anticanonical self intersection](@ref anticanonical_self_intersection),
+- [resolution of singularities](@ref canonical_resolution), [exceptional divisors](@ref exceptional_rays), [discrepancies](@ref discrepancies), [log canonicity](@ref maximal_log_canonicity),
+- [normal form of defining data](@ref normal_form(X :: CStarSurface)), [admissible operations](@ref AdmissibleOperation), [isomorphy test](@ref are_isomorphic(X :: CStarSurface, Y :: CStarSurface)).
+
+Furthermore, some functionality to save and retrieve $\mathbb{C}^*$-surfaces
+from a database is [provided](@ref "Database functionality"), see also the
+[`ldp-database`](https://www.math.uni-tuebingen.de/forschung/algebra/ldp-database/).
 
 ## Installation
 
