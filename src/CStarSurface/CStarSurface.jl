@@ -354,6 +354,29 @@ _coordinate_names(X :: CStarSurface{PE}) = push!(_coordinate_names_core(X), "S[1
 _coordinate_names(X :: CStarSurface{EP}) = push!(_coordinate_names_core(X), "S[1]")
 _coordinate_names(X :: CStarSurface{PP}) = push!(_coordinate_names_core(X), "S[1]", "S[2]")
 
+@doc raw"""
+    canonical_toric_ambient(X :: CStarSurface) 
+
+Construct the canonical toric ambient of a C-star surface, as an Oscar type.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> Z = canonical_toric_ambient(X)
+Normal toric variety
+
+julia> rays(Z)
+4-element SubObjectIterator{RayVector{QQFieldElem}}:
+ [-1, -1, -2//3]
+ [-1, -1, -1]
+ [1, 0, 1//3]
+ [0, 1, 1//2]
+```
+
+"""
 @attr function canonical_toric_ambient(X :: CStarSurface) 
     # passing non_redundant=true does two important things here:
     # 1. It skips time-consuming checks on the input rays,
@@ -376,6 +399,25 @@ surface, following the double index notation. The result
 is a tuple, whose first entry is a DoubleVector consisting of the variables
 T[i][j] and whose second entry is the Vector of variables [S[1], ... S[m]], 
 where `m` is the number of parabolic fixed point curves.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[1, 1], [2], [2]], [[-3, -4], [1], [1]], :pe)
+C-star surface of type (p-e)
+
+julia> (Ts, Ss) = cox_ring_vars(X);
+
+julia> Ts
+3-element DoubleVector{MPolyDecRingElem} with indices ZeroRange(3):
+ [T[0][1], T[0][2]]
+ [T[1][1]]
+ [T[2][1]]
+
+julia> Ss
+1-element Vector{MPolyDecRingElem{QQFieldElem, QQMPolyRingElem}}:
+ S[1]
+```
 
 """
 @attr function cox_ring_vars(X :: CStarSurface)
@@ -402,6 +444,25 @@ end
 
 _trinomial(X :: CStarSurface, i :: Int) = _monomial(X, i) + _monomial(X, i+1) + _monomial(X, i+2)
 
+@doc raw"""
+    cox_ring_relations(X :: CStarSurface)
+
+Return the list of relations in the Cox Ring of a C-star surface. Note that 
+these are all trinomials.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[1, 1], [2], [2]], [[-3, -4], [1], [1]], :pe)
+C-star surface of type (p-e)
+
+julia> cox_ring_relations(X)
+1-element Vector{MPolyDecRingElem{QQFieldElem, QQMPolyRingElem}}:
+ T[0][1]*T[0][2] + T[1][1]^2 + T[2][1]^2
+```
+    
+
+"""
 @attr cox_ring_relations(X :: CStarSurface) :: 
     Vector{MPolyDecRingElem{QQFieldElem, QQMPolyRingElem}} = 
 [_trinomial(X,i) for i = 0 : _r(X) - 2]
