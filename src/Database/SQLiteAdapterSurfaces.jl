@@ -128,9 +128,7 @@ is in the database, this function returns its `id`. Otherwise, it returns
 function find_in_database(db :: SQLiteAdapterSurfaces, X :: SurfaceWithTorusAction)
     X = is_toric(X) ? normal_form(X) : normal_form(X)[1]
     is_toric_str, gen_matrix_str = _db_is_toric(X), _db_gen_matrix(X)
-    sql = "SELECT $(db.primary_key) FROM $(db.table_name) WHERE \
-             is_toric == $is_toric_str AND \
-             gen_matrix == \"$gen_matrix_str\""
+    sql = "SELECT $(db.primary_key) FROM $(db.table_name) WHERE is_toric == $is_toric_str AND gen_matrix == \"$(gen_matrix_str)\""
     res = DBInterface.execute(db.db, sql) |> rowtable
     isempty(res) && return nothing
     return res[1][Symbol(db.primary_key)]
