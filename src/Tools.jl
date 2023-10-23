@@ -56,3 +56,10 @@ is_complete_intersection(R :: MPolyQuoRing) = is_complete_intersection(R.I)
 
 is_complete_intersection(R :: MPolyRing) = true
 
+
+#################################################
+# missing polymake interfaace functions
+#################################################
+
+centroid(P :: Polyhedron{QQFieldElem}) = P.pm_polytope.CENTROID[begin+1 : end]
+

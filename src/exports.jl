@@ -1,4 +1,9 @@
 export AdmissibleOperation
+export centroid
+export special_indices
+export moment_polytope
+export fano_polytope
+export admits_kaehler_einstein_metric
 export beta_plus
 export beta_minus
 export beta_plus_sorted

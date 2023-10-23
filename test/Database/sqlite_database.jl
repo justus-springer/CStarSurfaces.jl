@@ -41,6 +41,7 @@ PRIMARY_KEY = "surface_id"
         @test row[:maximal_log_canonicity_denominator] == 3
         @test row[:anticanonical_self_intersection_numerator] == 169
         @test row[:anticanonical_self_intersection_denominator] == 693
+        @test row[:admits_kaehler_einstein_metric] == 0
 
         @test import_from_database(db, row[:surface_id]) == X
 
@@ -79,6 +80,7 @@ PRIMARY_KEY = "surface_id"
         @test row[:maximal_log_canonicity_denominator] == 2
         @test row[:anticanonical_self_intersection_numerator] == 3
         @test row[:anticanonical_self_intersection_denominator] == 1
+        @test row[:admits_kaehler_einstein_metric] == 0
 
         @test import_from_database(db, row[:surface_id]) == X
 

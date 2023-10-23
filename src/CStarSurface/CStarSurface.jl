@@ -467,6 +467,26 @@ julia> cox_ring_relations(X)
     Vector{MPolyDecRingElem{QQFieldElem, QQMPolyRingElem}} = 
 [_trinomial(X,i) for i = 0 : _r(X) - 2]
 
+
+@doc raw"""
+    canonical_divisor(X :: CStarSurface)
+
+Return the canonical divisor of a C-star surface.
+
+"""
+canonical_divisor(X :: CStarSurface{EE}) = 
+cstar_surface_divisor(X, [[-1 .+ (_r(X)-1) .* X.l[0]] ; [-one.(X.l[i]) for i = 1 : _r(X)]])
+
+canonical_divisor(X :: CStarSurface{PE}) = 
+cstar_surface_divisor(X, [[-1 .+ (_r(X)-1) .* X.l[0]] ; [-one.(X.l[i]) for i = 1 : _r(X)]], -1)
+
+canonical_divisor(X :: CStarSurface{EP}) = 
+cstar_surface_divisor(X, [[-1 .+ (_r(X)-1) .* X.l[0]] ; [-one.(X.l[i]) for i = 1 : _r(X)]], -1)
+
+canonical_divisor(X :: CStarSurface{PP}) = 
+cstar_surface_divisor(X, [[-1 .+ (_r(X)-1) .* X.l[0]] ; [-one.(X.l[i]) for i = 1 : _r(X)]], -1, -1)
+
+
 #################################################
 # Intersection numbers
 #
@@ -712,6 +732,101 @@ julia> maximal_log_canonicity(cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], 
     # the maximal log canonicity equals the minimal discrepancy plus one
     return minimum(ds) + 1
 end
+
+#################################################
+# Kaehler Einstein metric
+#################################################
+
+
+_sigma_plus_l(X :: CStarSurface) = map(first, _slope_ordered_l(X))
+_sigma_minus_l(X :: CStarSurface) = map(last, _slope_ordered_l(X))
+
+_almost_all_one(xs :: Vector) = length(filter(x -> x != 1, xs)) <= 1
+
+_is_special_index(X :: CStarSurface{EE}, k :: Int) = 
+_almost_all_one(Vector(_sigma_plus_l(X))[1 : nblocks(X) .!= k+1]) && 
+_almost_all_one(Vector(_sigma_minus_l(X))[1 : nblocks(X) .!= k+1])
+
+_is_special_index(X :: CStarSurface{PE}, k :: Int) = 
+_almost_all_one(Vector(_sigma_minus_l(X))[1 : nblocks(X) .!= k+1])
+
+_is_special_index(X :: CStarSurface{EP}, k :: Int) = 
+_almost_all_one(Vector(_sigma_plus_l(X))[1 : nblocks(X) .!= k+1])
+
+_is_special_index(X :: CStarSurface{PP}, k :: Int) = 
+true
+
+
+@doc raw"""
+    special_indices(X :: CStarSurface)
+
+Returns the subset of indices in `0 : r` that are special in the sense
+of Definition 5.2/Proposition 5.3 of [HaHaSu23](@cite).
+
+"""
+@attr special_indices(X :: CStarSurface) = filter(i -> _is_special_index(X, i), 0 : _r(X))
+
+
+function _antitrop_transform(k :: Int, v)
+    sign = k == 0 ? 1 : -1
+    if k == 0 
+        k += 1
+    end
+    return [v[end-1], v[end], sign*v[k]]
+end
+
+
+@doc raw"""
+    moment_polytope(X :: CStarSurface, k :: Int)
+
+Returns the moment polytope for a given `k = 0, ..., r`, as constructed 
+in Construction 5.5 of [HaHaSu23](@cite).
+
+"""
+function moment_polytope(X :: CStarSurface, k :: Int)
+    r = _r(X)
+    @req 0 ≤ k ≤ r "Must have 0 ≤ k ≤ r"
+
+    vs = rays(X)
+    α = coefficients(anticanonical_divisor(X))
+    σ = positive_hull([[vs[i] ; α[i]] for i = 1 : length(vs)], non_redundant = true)
+
+    V_gen = [[basis_vector(r, k) ; [0,0]], basis_vector(r+2, r+1), basis_vector(r+2, r+2)]
+    V = positive_hull(V_gen[1], V_gen, non_redundant = true)
+    σ = intersect(σ, V)
+
+    τ = positive_hull(map(v -> _antitrop_transform(k, v), rays(σ)), non_redundant = true)
+    ω = polarize(τ)
+
+    C = convex_hull([[v[1] // v[2], v[3] // v[2]] for v in rays(ω)], non_redundant = true)
+
+    if k ∈ special_indices(X)
+        u = interior_lattice_points(C)[1]
+        B = convex_hull([v - u for v in vertices(C)], non_redundant = true)
+        return B
+    else
+        return C
+    end
+end
+
+@doc raw"""
+    admits_kaehler_einstein_metric(X :: CStarSurface)
+
+Checks whether a C-star surface admits a Kaehler-Einstein metric.
+
+# Example
+
+```jldoctest
+julia> admits_kaehler_einstein_metric(cstar_surface([[1,1], [4], [4]], [[-1,-2], [3], [3]], :ee))
+true
+
+```
+
+"""
+admits_kaehler_einstein_metric(X :: CStarSurface) =
+all(v -> v[1] == 0, map(i -> centroid(moment_polytope(X,i)), 0 : _r(X))) &&
+all(v -> v[2] > 0, map(i -> centroid(moment_polytope(X,i)), special_indices(X)))
+
 
 
 #################################################

@@ -76,6 +76,9 @@ _db_anticanonical_self_intersection_numerator(X :: SurfaceWithTorusAction) = Int
 
 _db_anticanonical_self_intersection_denominator(X :: SurfaceWithTorusAction) = Int(denominator(anticanonical_self_intersection(X)))
 
+_db_admits_kaehler_einstein_metric(X :: SurfaceWithTorusAction) = 
+admits_kaehler_einstein_metric(X) ? 1 : 0 
+
 
 @doc raw"""
     default_column_functions(::Type{<:SurfaceWithTorusAction})   
@@ -114,6 +117,7 @@ default_column_functions(::Type{<:SurfaceWithTorusAction}) = Dict([
 :maximal_log_canonicity_denominator => _db_maximal_log_canonicity_denominator,
 :anticanonical_self_intersection_numerator => _db_anticanonical_self_intersection_numerator,
 :anticanonical_self_intersection_denominator => _db_anticanonical_self_intersection_denominator,
+:admits_kaehler_einstein_metric => _db_admits_kaehler_einstein_metric
 ])
 
 

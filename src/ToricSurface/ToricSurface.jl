@@ -43,6 +43,25 @@ end
 
 rays(X :: ToricSurface) = X.vs
 
+@attr fano_polytope(X :: ToricSurface) = convex_hull(rays(X), non_redundant = true)
+
+@doc raw"""
+    admits_kaehler_einstein_metric(X :: ToricSurface)
+
+Checks whether a toric surface admits a Kaehler-Einstein metric.
+
+# Example
+
+```jldoctest
+julia> admits_kaehler_einstein_metric(toric_surface([[1,0], [1,5], [-2,-5]]))
+true
+
+```
+
+"""
+@attr admits_kaehler_einstein_metric(X :: ToricSurface) =
+polarize(fano_polytope(X)).pm_polytope.CENTROID == [1, 0, 0]
+
 # sorts two-dimensional vectors clockwise, where [1,0] is considered
 # minimal
 function _is_less(v :: Vector{T}, w :: Vector{T}) where {T <: Integer}
