@@ -102,6 +102,9 @@ export map_from_picard_group_to_class_group
 export maps_from_class_group_to_local_class_groups
 export maximal_cones_indices
 export maximal_log_canonicity
+export m_minus
+export moment_polytope
+export moment_polytopes
 export MoriDreamSpace
 export mori_dream_space_divisor
 export MoriDreamSpaceDivisor

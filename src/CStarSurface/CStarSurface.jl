@@ -775,7 +775,6 @@ function _antitrop_transform(k :: Int, v)
     return [v[end-1], v[end], sign*v[k]]
 end
 
-
 @doc raw"""
     moment_polytope(X :: CStarSurface, k :: Int)
 
@@ -783,30 +782,45 @@ Returns the moment polytope for a given `k = 0, ..., r`, as constructed
 in Construction 5.5 of [HaHaSu23](@cite).
 
 """
-function moment_polytope(X :: CStarSurface, k :: Int)
-    r = _r(X)
-    @req 0 ≤ k ≤ r "Must have 0 ≤ k ≤ r"
+moment_polytope(X :: CStarSurface, k :: Int) = moment_polytopes(X)[k]
 
+
+@doc raw"""
+    moment_polytopes(X :: CStarSurface)
+
+Return the moment polytopes for all `k = 0, ..., r`, as constructed 
+in Construction 5.5 of [HaHaSu23](@cite).
+
+"""
+@attr function moment_polytopes(X :: CStarSurface)
+
+    r = _r(X)
     vs = rays(X)
     α = coefficients(anticanonical_divisor(X))
-    σ = positive_hull([[vs[i] ; α[i]] for i = 1 : length(vs)], non_redundant = true)
+    σ0 = positive_hull([[vs[i] ; α[i]] for i = 1 : length(vs)], non_redundant = true)
 
-    V_gen = [[basis_vector(r, k) ; [0,0]], basis_vector(r+2, r+1), basis_vector(r+2, r+2)]
-    V = positive_hull(V_gen[1], V_gen, non_redundant = true)
-    σ = intersect(σ, V)
+    result = ZeroVector{Polyhedron{QQFieldElem}}(undef, r+1)
+    for k = 0 : r
+        V_gen = [[basis_vector(r, k) ; [0,0]], basis_vector(r+2, r+1), basis_vector(r+2, r+2)]
+        V = positive_hull(V_gen[1], V_gen, non_redundant = true)
+        σ = intersect(σ0, V)
 
-    τ = positive_hull(map(v -> _antitrop_transform(k, v), rays(σ)), non_redundant = true)
-    ω = polarize(τ)
+        τ = positive_hull(map(v -> _antitrop_transform(k, v), rays(σ)), non_redundant = true)
+        ω = polarize(τ)
 
-    C = convex_hull([[v[1] // v[2], v[3] // v[2]] for v in rays(ω)], non_redundant = true)
+        C = convex_hull([[v[1] // v[2], v[3] // v[2]] for v in rays(ω)], non_redundant = true)
 
-    if k ∈ special_indices(X)
-        u = interior_lattice_points(C)[1]
-        B = convex_hull([v - u for v in vertices(C)], non_redundant = true)
-        return B
-    else
-        return C
+        ints = interior_lattice_points(C)
+        if isempty(ints)
+            result[k] = C
+        else
+            u = ints[1]
+            result[k] = convex_hull([v - u for v in vertices(C)], non_redundant = true)
+        end
     end
+
+    return result
+
 end
 
 @doc raw"""
@@ -823,7 +837,7 @@ true
 ```
 
 """
-admits_kaehler_einstein_metric(X :: CStarSurface) =
+@attr admits_kaehler_einstein_metric(X :: CStarSurface) =
 all(v -> v[1] == 0, map(i -> centroid(moment_polytope(X,i)), 0 : _r(X))) &&
 all(v -> v[2] > 0, map(i -> centroid(moment_polytope(X,i)), special_indices(X)))
 
