@@ -60,7 +60,7 @@ true
 
 """
 @attr admits_kaehler_einstein_metric(X :: ToricSurface) =
-polarize(fano_polytope(X)).pm_polytope.CENTROID == [1, 0, 0]
+centroid(polarize(fano_polytope(X))) == [1, 0, 0]
 
 # sorts two-dimensional vectors clockwise, where [1,0] is considered
 # minimal

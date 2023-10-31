@@ -306,12 +306,13 @@ nblocks(X) == 3 && all(ls -> sum(ls) == 2, X.l)
 # Construction of canonical toric ambient
 #################################################
 
-
-@attr function _slope_ordered_ray_indices(X :: CStarSurface) 
+@attr function _ray_indices(X :: CStarSurface) 
     ns, r = _ns(X), _r(X)
-    is = ZeroVector([sum(ns[0 : i-1]) .+ collect(1 : ns[i]) for i = 0 : r])
-    return map(getindex, is, _slope_ordering_permutations(X))
+    return ZeroVector([sum(ns[0 : i-1]) .+ collect(1 : ns[i]) for i = 0 : r])
 end
+
+@attr _slope_ordered_ray_indices(X :: CStarSurface) =
+map(getindex, _ray_indices(X), _slope_ordering_permutations(X))
 
 _sigma_plus(X :: CStarSurface) = Vector(map(first, _slope_ordered_ray_indices(X)))
 
@@ -737,34 +738,76 @@ end
 # Kaehler Einstein metric
 #################################################
 
+@doc raw"""
+    is_special_index(X :: CStarSurface, k :: Int)
 
-_sigma_plus_l(X :: CStarSurface) = map(first, _slope_ordered_l(X))
-_sigma_minus_l(X :: CStarSurface) = map(last, _slope_ordered_l(X))
+Check whether a given index `0 ≤ k ≤ r` is special in the sense of 
+Definition 5.2/Proposition 5.3 of [HaHaSu23](@cite), i.e the special
+fiber of the toric degeneration $\psi_k : \mathcal{X}_k \to \mathbb{C}$
+is a normal toric variety.
 
-_almost_all_one(xs :: Vector) = length(filter(x -> x != 1, xs)) <= 1
+# Example
 
-_is_special_index(X :: CStarSurface{EE}, k :: Int) = 
-_almost_all_one(Vector(_sigma_plus_l(X))[1 : nblocks(X) .!= k+1]) && 
-_almost_all_one(Vector(_sigma_minus_l(X))[1 : nblocks(X) .!= k+1])
+Example 6.4 from [HaHaSu23](@cite).
 
-_is_special_index(X :: CStarSurface{PE}, k :: Int) = 
-_almost_all_one(Vector(_sigma_minus_l(X))[1 : nblocks(X) .!= k+1])
+```jldoctest
+julia> X = cstar_surface([[2,1],[1,1],[2]], [[3,-1],[0,-1],[1]], :ee)
+C-star surface of type (e-e)
 
-_is_special_index(X :: CStarSurface{EP}, k :: Int) = 
-_almost_all_one(Vector(_sigma_plus_l(X))[1 : nblocks(X) .!= k+1])
-
-_is_special_index(X :: CStarSurface{PP}, k :: Int) = 
+julia> is_special_index(X,0)
 true
+```
+
+"""
+function is_special_index(X :: CStarSurface, k :: Int)
+    r, ns, n, m, rayinds = _r(X), _ns(X), _n(X), _m(X), _ray_indices(X)
+    Q0 = degree_matrix_free_part(X)
+    is = [i for i = 0 : r if i ≠ k]
+
+    # The set of all tuples (j_i)_{i ≠ k} such that at l_i > 1 for
+    # at least two distinct i ≠ k.
+    Js = [last.(J) for J in 
+          Iterators.product([zip(X.l[i], 1:ns[i]) for i in is]...)
+          if length(filter(l -> l > 1, first.(J))) > 1]
+
+    isempty(Js) && return true
+
+    # convert to single index notation
+    Js = map(J -> [rayinds[is[i]][J[i]] for i = 1 : r], Js)
+    # take the complement for each list of indices
+    Js = map(J -> [k for k in 1 : n + m if k ∉ J], Js) 
+    cones = map(J -> positive_hull(transpose(Q0[:,J])), Js)
+
+    α = QQ.(free_part(anticanonical_divisor_class(X)))
+    return all(c -> !Polymake.polytope.contains_in_interior(pm_object(c), α), cones)
+end
 
 
 @doc raw"""
     special_indices(X :: CStarSurface)
 
 Returns the subset of indices in `0 : r` that are special in the sense
-of Definition 5.2/Proposition 5.3 of [HaHaSu23](@cite).
+of Definition 5.2/Proposition 5.3 of [HaHaSu23](@cite), i.e. those where
+the special fiber of the toric degeneration $\psi_k : \mathcal{X}_k \to
+\mathbb{C}$ is a normal toric variety.
+
+# Example
+
+Example 6.4 from [HaHaSu23](@cite).
+
+```jldoctest
+julia> X = cstar_surface([[2,1],[1,1],[2]], [[3,-1],[0,-1],[1]], :ee)
+C-star surface of type (e-e)
+
+julia> special_indices(X)
+2-element Vector{Int64}:
+ 0
+ 2
+
+```
 
 """
-@attr special_indices(X :: CStarSurface) = filter(i -> _is_special_index(X, i), 0 : _r(X))
+@attr special_indices(X :: CStarSurface) = filter(i -> is_special_index(X, i), 0 : _r(X))
 
 
 function _antitrop_transform(k :: Int, v)
@@ -781,6 +824,23 @@ end
 Returns the moment polytope for a given `k = 0, ..., r`, as constructed 
 in Construction 5.5 of [HaHaSu23](@cite).
 
+# Example
+
+Example 6.4 from [HaHaSu23](@cite).
+
+```jldoctest
+julia> X = cstar_surface([[2,1],[1,1],[2]], [[3,-1],[0,-1],[1]], :ee)
+C-star surface of type (e-e)
+
+julia> vertices(moment_polytope(X, 0))
+4-element SubObjectIterator{PointVector{QQFieldElem}}:
+ [1, 0]
+ [0, -1//2]
+ [-1//2, -1//4]
+ [1//5, 4//5]
+
+```
+
 """
 moment_polytope(X :: CStarSurface, k :: Int) = moment_polytopes(X)[k]
 
@@ -790,6 +850,22 @@ moment_polytope(X :: CStarSurface, k :: Int) = moment_polytopes(X)[k]
 
 Return the moment polytopes for all `k = 0, ..., r`, as constructed 
 in Construction 5.5 of [HaHaSu23](@cite).
+
+# Example
+
+Example 6.4 from [HaHaSu23](@cite).
+
+```jldoctest
+julia> X = cstar_surface([[2,1],[1,1],[2]], [[3,-1],[0,-1],[1]], :ee)
+C-star surface of type (e-e)
+
+julia> map(vertices, moment_polytopes(X))
+3-element ZeroVector{SubObjectIterator{PointVector{QQFieldElem}}} with indices ZeroRange(3):
+ [[1, 0], [0, -1//2], [-1//2, -1//4], [1//5, 4//5]]
+ [[1, 0], [0, 1], [-1//2, 1], [1//5, -2//5]]
+ [[1//5, -3//5], [1, 1], [-1//2, 1//4], [0, -1//2]]
+
+```
 
 """
 @attr function moment_polytopes(X :: CStarSurface)
@@ -810,12 +886,11 @@ in Construction 5.5 of [HaHaSu23](@cite).
 
         C = convex_hull([[v[1] // v[2], v[3] // v[2]] for v in rays(ω)], non_redundant = true)
 
-        ints = interior_lattice_points(C)
-        if isempty(ints)
-            result[k] = C
-        else
-            u = ints[1]
+        if k ∈ special_indices(X)
+            u = interior_lattice_points(C)[1]
             result[k] = convex_hull([v - u for v in vertices(C)], non_redundant = true)
+        else
+            result[k] = C
         end
     end
 
