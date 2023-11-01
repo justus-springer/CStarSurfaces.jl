@@ -163,18 +163,34 @@ Return the object of type `T` from an SQLite database with the given `id`.
 import_from_database(db :: SQLiteAdapter{T}, id :: Int) where {T <: MoriDreamSpace} = first(import_from_database(db, [id]))
 
 
+_argsym_to_arg(T :: Type{<:MoriDreamSpace}, row :: Union{SQLite.Row, NamedTuple}, argsym :: Symbol) = 
+argsym == :variety ? sqlite_import_row(T, row) : row[argsym]
+
 @doc raw"""
-    update_in_database(db :: SQLiteAdapter{T}, column_functions :: Dict{Symbol, <:Function}; sql :: String = "TRUE") where {T <: MoriDreamSpace}
+    update_in_database(db :: SQLiteAdapter{T}, column_functions :: Dict{Symbol, <:Function}; sql :: String, column_function_args :: AbstractVector{Symbol}) where {T <: MoriDreamSpace}
 
 Update all rows in an SQLite database matching a given SQL query by recomputing
-the columns given by `column_functions`. See also `export_from_database` and
+the columns given by `column_functions`. See also `export_to_database` and
 `import_from_database`.
+
+Keyword arguments:
+
+- `sql :: String`, defaults to `"TRUE"`. The SQL expression used for filtering the 
+  rows in the database that should be updated. It is inserted into a SELECT statement
+  after the WHERE, hence can contain restrictions on the columns as well as 
+  an ORDER BY and a LIMIT clause.
+- `column_function_args :: AbstractVector{String}`, defaults to `[:variety]`. The 
+  list of arguments that each column function receives. These can either be names of
+  columns in the database, or the special symbol `:variety`, in which case the 
+  variety corresponding to the row is imported using `sqlite_import_row` and then 
+  passed as an argument.
 
 """
 function update_in_database(
         db :: SQLiteAdapter{T}, 
         column_functions :: Dict{Symbol, <:Function};
-        sql :: String = "TRUE") where {T <: MoriDreamSpace}
+        sql :: String = "TRUE",
+        column_function_args :: AbstractVector{Symbol} = [:variety]) where {T <: MoriDreamSpace}
 
     table_name, primary_key = db.table_name, db.primary_key
 
@@ -195,8 +211,8 @@ function update_in_database(
 
     @progress for i = 1 : count
         row = rows[i]
-        X = sqlite_import_row(T, row)
-        val_dict = Dict{Symbol,Any}([k => f(X) for (k,f) in column_functions])
+        arglist = [_argsym_to_arg(T, row, argsym) for argsym in column_function_args]
+        val_dict = Dict{Symbol,Any}([k => f(arglist...) for (k,f) in column_functions])
         push!(val_dict, Symbol(primary_key) => row[Symbol(primary_key)])
         DBInterface.execute(update_stmt, val_dict)
     end
@@ -204,23 +220,30 @@ function update_in_database(
 end
 
 @doc raw"""
-    update_in_database(db :: SQLiteAdapter{T}, ids :: AbstractVector{Int}, column_functions :: Dict{Symbol, <:Function})
+    update_in_database(db :: SQLiteAdapter{T}, ids :: AbstractVector{Int}, column_functions :: Dict{Symbol, <:Function}; column_function_args :: AbstractVector{Symbol}) where {T <: MoriDreamSpace})
 
 Update all rows in an SQLite database with the given `ids` by recomputing the
-columns given by `column_functions`. See also `export_from_database` and
-`import_from_database`.
+columns given by `column_functions`.
 
 """
-update_in_database(db :: SQLiteAdapter{T}, ids :: AbstractVector{Int}, column_functions :: Dict{Symbol, <:Function}) where {T <: MoriDreamSpace} = 
-update_in_database(db, "$(db.primary_key) IN ($(join(ids, ", ")))", column_functions)
+update_in_database(
+        db :: SQLiteAdapter{T}, 
+        column_functions :: Dict{Symbol, <:Function},
+        ids :: AbstractVector{Int}; 
+        column_function_args :: AbstractVector{Symbol} = [:variety]) where {T <: MoriDreamSpace} =
+update_in_database(db, column_functions; sql = "$(db.primary_key) IN ($(join(ids, ", ")))", column_function_args = column_function_args)
 
 
 @doc raw"""
-    update_in_database(db :: SQLiteAdapter{T}, id :: Int, column_functions :: Dict{Symbol, <:Function}) where {T <: MoriDreamSpace}
+    update_in_database(db :: SQLiteAdapter{T}, id :: Int, column_functions :: Dict{Symbol, <:Function}, column_function_args :: AbstractVector{Symbol}) where {T <: MoriDreamSpace}))
 
 Update all rows in an SQLite database with the given `id` by recomputing the
-columns given by `column_functions`. See also `export_from_database` and
-`import_from_database`.
+columns given by `column_functions`.
 
 """
-update_in_database(db :: SQLiteAdapter{T}, id :: Int, column_functions :: Dict{Symbol, <:Function}) where {T <: MoriDreamSpace} = update_in_database(db, [id], column_functions)
+update_in_database(
+        db :: SQLiteAdapter{T}, 
+        id :: Int, 
+        column_functions :: Dict{Symbol, <:Function};
+        column_function_args :: AbstractVector{Symbol} = [:variety]) where {T <: MoriDreamSpace} =
+update_in_database(db, column_functions, [id]; column_function_args = column_function_args)
