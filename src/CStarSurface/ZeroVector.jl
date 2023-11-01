@@ -1,6 +1,8 @@
 
 include(filename_for_zerorange)
 
+ZeroVector(v :: OffsetArrays.OffsetVector) = ZeroVector(v.parent)
+
 Vector{T}(v :: ZeroVector{T}) where {T} = v.parent
 
 ZeroVector{T}(::UndefInitializer, m::Integer) where {T} = ZeroVector(Vector{T}(undef, m))
@@ -12,10 +14,6 @@ Base.size(v :: ZeroVector) = size(v.parent)
 
 function Base.similar(A::AbstractArray, T::Type, shape::Tuple{ZeroRange,Vararg{ZeroRange}})
     similar(A, T, map(r -> Base.OneTo(length(r)), shape))
-end
-
-function Base.similar(f::Union{Function,DataType}, shape::Tuple{ZeroRange,Vararg{ZeroRange}})
-    similar(f, map(r -> Base.OneTo(length(r)), shape))
 end
 
 getindex(a :: ZeroVector, i :: Int) = a.parent[i+1]
