@@ -86,6 +86,14 @@ discrepancies
 maximal_log_canonicity
 ```
 
+## Kaehler Einstein metrics
+
+```@docs
+admits_kaehler_einstein_metric
+special_indices
+moment_polytopes
+```
+
 ## Attributes of $\mathbb{C}^*$-surfaces
 
 ```@docs

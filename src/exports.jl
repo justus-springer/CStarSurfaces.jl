@@ -81,6 +81,7 @@ export is_q_gorenstein
 export is_rcef
 export is_semiample
 export is_smooth
+export is_special_index
 export is_toric
 export local_class_group
 export local_class_groups
@@ -97,7 +98,9 @@ export maps_from_class_group_to_local_class_groups
 export maximal_cones_indices
 export maximal_log_canonicity
 export m_minus
+export m_minus
 export moment_polytope
+export moment_polytopes
 export MoriDreamSpace
 export mori_dream_space_divisor
 export MoriDreamSpaceDivisor
