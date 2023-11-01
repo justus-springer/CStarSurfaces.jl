@@ -247,3 +247,39 @@ update_in_database(
         column_functions :: Dict{Symbol, <:Function};
         column_function_args :: AbstractVector{Symbol} = [:variety]) where {T <: MoriDreamSpace} =
 update_in_database(db, column_functions, [id]; column_function_args = column_function_args)
+
+
+@doc raw"""
+    execute_on_database(f :: Function, db :: SQLiteAdapter{T}; sql :: String = "TRUE", function_args :: AbstractVector{Symbol} = [:variety]) where {T <: MoriDreamSpace}
+
+Executes `f` on all rows of an SQLite database that are filtered `sql`. The
+argument `function_args` can be used to control the arguments that will be
+passed to `f`. See also [`update_in_database`](@ref).
+
+"""
+function execute_on_database(
+        f :: Function,
+        db :: SQLiteAdapter{T};
+        sql :: String = "TRUE",
+        function_args :: AbstractVector{Symbol} = [:variety]) where {T <: MoriDreamSpace}
+
+    table_name, primary_key = db.table_name, db.primary_key
+
+    @info "Executing on SQLite database file $(db.file_path)."
+    @info "Importing..."
+
+    select_stmt = SQLite.Stmt(db.db, "SELECT * FROM $(db.table_name) WHERE $sql")
+    rows = DBInterface.execute(select_stmt) |> rowtable
+    count = length(rows)
+
+    @info "Number of affected rows: $count."
+
+    @info "Executing..."
+
+    @progress for i = 1 : count
+        row = rows[i]
+        arglist = [_argsym_to_arg(T, row, argsym) for argsym in function_args]
+        f(arglist...)
+    end
+
+end

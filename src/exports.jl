@@ -51,6 +51,7 @@ export EE
 export effective_cone
 export EP
 export exceptional_rays
+export execute_on_database
 export export_to_database
 export fano_polytope
 export find_in_database

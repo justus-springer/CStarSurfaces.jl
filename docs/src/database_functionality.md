@@ -19,4 +19,5 @@ default_column_functions
 default_insert_predicate
 export_to_database
 update_in_database
+execute_on_database
 ```
