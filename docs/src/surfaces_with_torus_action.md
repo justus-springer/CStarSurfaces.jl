@@ -77,9 +77,10 @@ intersection_matrix
 anticanonical_self_intersection
 ```
 
-## Resolution of singularities
+## Singularities and resolutions
 
 ```@docs
+is_quasismooth
 canonical_resolution
 exceptional_rays
 discrepancies

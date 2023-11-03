@@ -80,6 +80,7 @@ export is_principal
 export is_principal_on_stratum
 export is_q_factorial
 export is_q_gorenstein
+export is_quasismooth
 export is_rcef
 export is_semiample
 export is_smooth

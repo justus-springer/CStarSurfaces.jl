@@ -330,6 +330,38 @@ has a single quadratic relation.
 nblocks(X) == 3 && all(ls -> sum(ls) == 2, X.l)
 
 
+_almost_all_one(v :: AbstractVector) = length(filter(x -> x > 1, v)) <= 2
+
+@doc raw"""
+    is_quasismooth(X :: CStarSurface)
+
+Checks whether a $\mathbb{C}^*$-surface $X$ is quasismooth, i.e. its
+characteristic space $\hat X$ is smooth.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[2,1],[1,1],[2]], [[3,-1],[0,-1],[1]], :ee)
+C-star surface of type (e-e)
+
+julia> is_quasismooth(X)
+true
+```
+
+"""
+@attr is_quasismooth(X :: CStarSurface{EE}) =
+_almost_all_one(first.(_slope_ordered_l(X))) &&
+_almost_all_one(last.(_slope_ordered_l(X)))
+
+@attr is_quasismooth(X :: CStarSurface{PE}) =
+_almost_all_one(last.(_slope_ordered_l(X)))
+
+@attr is_quasismooth(X :: CStarSurface{EP}) =
+_almost_all_one(first.(_slope_ordered_l(X)))
+
+@attr is_quasismooth(X :: CStarSurface{PP}) = true
+
+
 #################################################
 # Construction of canonical toric ambient
 #################################################

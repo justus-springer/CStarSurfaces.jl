@@ -62,6 +62,9 @@ true
 @attr admits_kaehler_einstein_metric(X :: ToricSurface) =
 centroid(polarize(fano_polytope(X))) == [0, 0]
 
+
+@attr is_quasismooth(X :: ToricSurface) = true 
+
 # sorts two-dimensional vectors clockwise, where [1,0] is considered
 # minimal
 function _is_less(v :: Vector{T}, w :: Vector{T}) where {T <: Integer}

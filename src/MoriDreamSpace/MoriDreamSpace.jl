@@ -24,6 +24,19 @@ function cox_ring_relations end
 
 
 @doc raw"""
+    is_quasismooth(X :: MoriDreamSpace)
+
+Checks whether the Mori Dream Space $X$ is quasismooth, i.e. its characteristic
+space $\hat X$ is smooth.
+
+This function should be implemented by all subtypes of `MoriDreamSpace`
+(A generic implementation is possible, but not yet available).
+
+"""
+function is_quasismooth end
+
+
+@doc raw"""
     is_toric(X :: MoriDreamSpace)
 
 Check whether a Mori Dream Space is a toric variety.
