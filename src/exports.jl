@@ -49,6 +49,7 @@ export DoubleVector
 export DoubleVector
 export EE
 export effective_cone
+export elliptic_fixed_points
 export EP
 export exceptional_rays
 export execute_on_database

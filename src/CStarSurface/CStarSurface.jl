@@ -270,6 +270,34 @@ number_of_parabolic_fixed_point_curves(X :: CStarSurface) = _m(X)
 
 
 @doc raw"""
+    elliptic_fixed_points(X :: CStarSurface)
+
+Return the index vectors of the cones associated to the elliptic fixed
+points of a C-star surface.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[2,1],[1,1],[2]], [[3,-1],[0,-1],[1]], :ee)
+C-star surface of type (e-e)
+
+julia> elliptic_fixed_points(X)
+2-element Vector{Vector{Int64}}:
+ [1, 3, 5]
+ [2, 4, 5]
+```
+
+"""
+elliptic_fixed_points(X :: CStarSurface{EE}) = [_sigma_plus(X), _sigma_minus(X)]
+
+elliptic_fixed_points(X :: CStarSurface{PE}) = [_sigma_minus(X)]
+
+elliptic_fixed_points(X :: CStarSurface{EP}) = [_sigma_plus(X)]
+
+elliptic_fixed_points(X :: CStarSurface{PP}) = []
+
+
+@doc raw"""
     slopes(X :: CStarSurface)
 
 Returns the `DoubleVector` of slopes of a C-star surface, i.e a `DoubleVector`

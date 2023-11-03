@@ -107,6 +107,7 @@ has_D_minus(X :: CStarSurface)
 nblocks
 block_sizes
 number_of_parabolic_fixed_point_curves
+elliptic_fixed_points
 slopes
 is_intrinsic_quadric
 cox_ring_vars
