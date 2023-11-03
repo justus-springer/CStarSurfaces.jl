@@ -149,6 +149,15 @@ false
 
 
 @doc raw"""
+    is_smooth(X :: MoriDreamSpace
+
+Checks whether a Mori Dream Space is smooth, i.e. factorial and quasismooth.
+
+"""
+@attr is_smooth(X :: MoriDreamSpace) = is_factorial(X) && is_quasismooth(X)
+
+
+@doc raw"""
     is_q_factorial(X :: MoriDreamSpace)
 
 Determine if a Mori Dream Space has at most $\mathbb{Q}$-factorial

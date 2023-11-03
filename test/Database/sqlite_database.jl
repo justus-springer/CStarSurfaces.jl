@@ -43,6 +43,8 @@ PRIMARY_KEY = "surface_id"
         @test row[:anticanonical_self_intersection_denominator] == 693
         @test row[:admits_kaehler_einstein_metric] == 0
         @test row[:is_quasismooth] == 0
+        @test row[:is_factorial] == 0
+        @test row[:is_smooth] == 0
 
         @test import_from_database(db, row[:surface_id]) == X
 
@@ -83,6 +85,8 @@ PRIMARY_KEY = "surface_id"
         @test row[:anticanonical_self_intersection_denominator] == 1
         @test row[:admits_kaehler_einstein_metric] == 0
         @test row[:is_quasismooth] == 1
+        @test row[:is_factorial] == 0
+        @test row[:is_smooth] == 0
 
         @test import_from_database(db, row[:surface_id]) == X
 

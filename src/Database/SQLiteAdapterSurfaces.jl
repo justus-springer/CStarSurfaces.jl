@@ -82,6 +82,12 @@ admits_kaehler_einstein_metric(X) ? 1 : 0
 _db_is_quasismooth(X :: SurfaceWithTorusAction) = 
 is_quasismooth(X) ? 1 : 0
 
+_db_is_factorial(X :: SurfaceWithTorusAction) = 
+is_factorial(X) ? 1 : 0
+
+_db_is_smooth(X :: SurfaceWithTorusAction) = 
+is_smooth(X) ? 1 : 0
+
 @doc raw"""
     default_column_functions(::Type{<:SurfaceWithTorusAction})   
 
@@ -120,7 +126,9 @@ default_column_functions(::Type{<:SurfaceWithTorusAction}) = Dict([
 :anticanonical_self_intersection_numerator => _db_anticanonical_self_intersection_numerator,
 :anticanonical_self_intersection_denominator => _db_anticanonical_self_intersection_denominator,
 :admits_kaehler_einstein_metric => _db_admits_kaehler_einstein_metric,
-:is_quasismooth => _db_is_quasismooth
+:is_quasismooth => _db_is_quasismooth,
+:is_factorial => _db_is_factorial,
+:is_smooth => _db_is_smooth
 ])
 
 

@@ -110,7 +110,13 @@ CREATE TABLE IF NOT EXISTS surfaces (
     admits_sasaki_einstein_metric INTEGER,
 
     -- whether the surface is quasi-smooth
-    is_quasismooth INTEGER
+    is_quasismooth INTEGER,
+
+    -- whether the surface is factorial
+    is_factorial INTEGER,
+
+    -- whether the surface is smooth
+    is_smooth INTEGER
 
 )
 

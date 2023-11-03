@@ -43,6 +43,7 @@ import Oscar:
     gorenstein_index,
     is_ample,
     is_fano,
+    is_smooth,
     map_from_picard_group_to_class_group,
     normal_toric_variety,
     dim,
