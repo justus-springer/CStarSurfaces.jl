@@ -18,9 +18,6 @@ import Base:
 import Combinatorics:
     powerset
 
-using CustomUnitRanges: 
-    filename_for_zerorange
-
 using SQLite
 
 using ProgressLogging

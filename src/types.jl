@@ -59,9 +59,7 @@ struct PP <: CStarSurfaceCase end
 
 A zero-indexed vector. 
 """
-struct ZeroVector{T} <: AbstractVector{T}
-    parent :: Vector{T}
-end
+const ZeroVector{T, S} = OffsetVector{T, S}
 
 
 @doc raw"""
@@ -73,7 +71,7 @@ This type of indexing is very common when working with $\mathbb{C}^*$-
 surfaces.
 
 """
-const DoubleVector{T} = ZeroVector{Vector{T}}
+const DoubleVector{T, S} = ZeroVector{Vector{T}, S}
 
 
 @doc raw"""

@@ -1,8 +1,11 @@
 
 
-DoubleVector(v :: Vector{Vector{T}}) where {T} = ZeroVector{Vector{T}}(v)
+DoubleVector{T}(v :: AbstractVector{Vector{T}}) where {T} = ZeroVector{T}(v)
+
+DoubleVector(v :: AbstractVector{Vector{T}}) where {T} = ZeroVector(v)
 
 DoubleVector{T}(::UndefInitializer, ns :: AbstractVector{Int}) where {T} = ZeroVector([Vector{T}(undef, n) for n in ns])
+
 DoubleVector(::UndefInitializer, ns :: AbstractVector{Int}) = ZeroVector([Vector(undef, n) for n in ns])
 
 @doc raw"""
