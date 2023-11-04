@@ -425,7 +425,7 @@ Return the elliptic fixed point $x^+$ of a $\mathbb{C}^*$-surface of type
 maximal cone in the ambient toric variety.
 
 """
-x_plus(X :: CStarSurface{<:Union{EE,EP}}) = CStarSurfaces._sigma_plus(X)
+@attr x_plus(X :: CStarSurface{<:Union{EE,EP}}) = CStarSurfaces._sigma_plus(X)
 
 
 @doc raw"""
@@ -436,7 +436,7 @@ Return the elliptic fixed point $x^-$ of a $\mathbb{C}^*$-surface of type
 maximal cone in the ambient toric variety.
 
 """
-x_minus(X :: CStarSurface{<:Union{EE,PE}}) = CStarSurfaces._sigma_minus(X)
+@attr x_minus(X :: CStarSurface{<:Union{EE,PE}}) = CStarSurfaces._sigma_minus(X)
 
 
 @doc raw"""
@@ -458,10 +458,10 @@ julia> elliptic_fixed_points(X)
 ```
 
 """
-elliptic_fixed_points(X :: CStarSurface{EE}) = [x_plus(X), x_minus(X)]
-elliptic_fixed_points(X :: CStarSurface{PE}) = [x_minus(X)]
-elliptic_fixed_points(X :: CStarSurface{EP}) = [x_plus(X)]
-elliptic_fixed_points(X :: CStarSurface{PP}) = Vector{Int}[]
+@attr elliptic_fixed_points(X :: CStarSurface{EE}) = [x_plus(X), x_minus(X)]
+@attr elliptic_fixed_points(X :: CStarSurface{PE}) = [x_minus(X)]
+@attr elliptic_fixed_points(X :: CStarSurface{EP}) = [x_plus(X)]
+@attr elliptic_fixed_points(X :: CStarSurface{PP}) = Vector{Int}[]
 
 
 @doc raw"""
@@ -471,7 +471,7 @@ Return the index vectors of the cones associated to the hyperbolic fixed
 points of a $\mathbb{C}^*$-surface.
 
 """
-hyperbolic_fixed_points(X :: CStarSurface) = _taus(X)
+@attr hyperbolic_fixed_points(X :: CStarSurface) = _taus(X)
 
 
 @doc raw"""
@@ -482,10 +482,10 @@ parabolic fixed points of a $\mathbb{C}^*$-surface. See also
 [`parabolic_fixed_point_curves`](@ref).
 
 """
-parabolic_fixed_points(X :: CStarSurface{EE}) = Vector{Int}[]
-parabolic_fixed_points(X :: CStarSurface{PE}) = _taus_plus(X)
-parabolic_fixed_points(X :: CStarSurface{EP}) = _taus_minus(X)
-parabolic_fixed_points(X :: CStarSurface{PP}) = [_taus_plus(X) ; _taus_minus(X)]
+@attr parabolic_fixed_points(X :: CStarSurface{EE}) = Vector{Int}[]
+@attr parabolic_fixed_points(X :: CStarSurface{PE}) = _taus_plus(X)
+@attr parabolic_fixed_points(X :: CStarSurface{EP}) = _taus_minus(X)
+@attr parabolic_fixed_points(X :: CStarSurface{PP}) = [_taus_plus(X) ; _taus_minus(X)]
 
 
 @doc raw"""
@@ -495,9 +495,9 @@ Return the parabolic fixed point curve $D^+$ of a $\mathbb{C}^*$-surface of
 type (p-e) or (p-p).
 
 """
-D_plus(X :: CStarSurface{PE}) = 
+@attr D_plus(X :: CStarSurface{PE}) = 
 cstar_surface_divisor(X, [repeat([0], n) for n in _ns(X)], 1)
-D_plus(X :: CStarSurface{PP}) = 
+@attr D_plus(X :: CStarSurface{PP}) = 
 cstar_surface_divisor(X, [repeat([0], n) for n in _ns(X)], 1, 0)
 
 
@@ -508,9 +508,9 @@ Return the parabolic fixed point curve $D^-$ of a $\mathbb{C}^*$-surface of
 type (e-p) or (p-p).
 
 """
-D_minus(X :: CStarSurface{EP}) = 
+@attr D_minus(X :: CStarSurface{EP}) = 
 cstar_surface_divisor(X, [repeat([0], n) for n in _ns(X)], 1)
-D_minus(X :: CStarSurface{PP}) = 
+@attr D_minus(X :: CStarSurface{PP}) = 
 cstar_surface_divisor(X, [repeat([0], n) for n in _ns(X)], 0, 1)
 
 
@@ -520,10 +520,10 @@ cstar_surface_divisor(X, [repeat([0], n) for n in _ns(X)], 0, 1)
 Return the parabolic fixed point curves of a $\mathbb{C}^*$-surface.
 
 """
-parabolic_fixed_point_curves(X :: CStarSurface{EE}) = CStarSurfaceDivisor{EE}[]
-parabolic_fixed_point_curves(X :: CStarSurface{PE}) = [D_plus(X)]
-parabolic_fixed_point_curves(X :: CStarSurface{EP}) = [D_minus(X)]
-parabolic_fixed_point_curves(X :: CStarSurface{PP}) = [D_plus(X), D_minus(X)]
+@attr parabolic_fixed_point_curves(X :: CStarSurface{EE}) = CStarSurfaceDivisor{EE}[]
+@attr parabolic_fixed_point_curves(X :: CStarSurface{PE}) = [D_plus(X)]
+@attr parabolic_fixed_point_curves(X :: CStarSurface{EP}) = [D_minus(X)]
+@attr parabolic_fixed_point_curves(X :: CStarSurface{PP}) = [D_plus(X), D_minus(X)]
 
 
 @doc raw"""
@@ -532,7 +532,7 @@ parabolic_fixed_point_curves(X :: CStarSurface{PP}) = [D_plus(X), D_minus(X)]
 Returns the number of parabolic fixed point curves of a $\mathbb{C}^*$-surface.
 
 """
-number_of_parabolic_fixed_point_curves(X :: CStarSurface) = _m(X)
+@attr number_of_parabolic_fixed_point_curves(X :: CStarSurface) = _m(X)
 
 
 @doc raw"""
@@ -564,10 +564,10 @@ pair with first entry the divisors of the form $D^{ij}$ and second entry the
 divisors of the form $D^{\pm}$.
 
 """
-invariant_divisors(X :: CStarSurface{EE}) = (_invariant_divisors_core(X), CStarSurfaceDivisor{EE}[])
-invariant_divisors(X :: CStarSurface{PE}) = (_invariant_divisors_core(X), [D_plus(X)])
-invariant_divisors(X :: CStarSurface{EP}) = (_invariant_divisors_core(X), [D_minus(X)])
-invariant_divisors(X :: CStarSurface{PP}) = (_invariant_divisors_core(X), [D_plus(X), D_minus(X)])
+@attr invariant_divisors(X :: CStarSurface{EE}) = (_invariant_divisors_core(X), CStarSurfaceDivisor{EE}[])
+@attr invariant_divisors(X :: CStarSurface{PE}) = (_invariant_divisors_core(X), [D_plus(X)])
+@attr invariant_divisors(X :: CStarSurface{EP}) = (_invariant_divisors_core(X), [D_minus(X)])
+@attr invariant_divisors(X :: CStarSurface{PP}) = (_invariant_divisors_core(X), [D_plus(X), D_minus(X)])
 
 #################################################
 # Cox Ring
