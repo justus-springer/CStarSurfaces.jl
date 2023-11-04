@@ -70,6 +70,8 @@ export hyperbolic_fixed_points
 export import_from_database
 export intersection_matrix
 export intersect_lines_2D
+export invariant_divisor
+export invariant_divisors
 export InvertLastRow
 export is_ample
 export is_complete_intersection

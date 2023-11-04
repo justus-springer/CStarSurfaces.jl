@@ -114,6 +114,8 @@ D_plus
 D_minus
 parabolic_fixed_point_curves
 number_of_parabolic_fixed_point_curves
+invariant_divisor
+invariant_divisors
 nblocks
 block_sizes
 slopes
