@@ -45,8 +45,10 @@ export degree_matrix_free_part
 export degree_matrix_torsion_part
 export discrepancies
 export discrepancy
+export D_minus
 export DoubleVector
 export DoubleVector
+export D_plus
 export EE
 export effective_cone
 export elliptic_fixed_points
@@ -64,6 +66,7 @@ export has_x_minus
 export has_x_plus
 export hilbert_basis_2D
 export hirzebruch_jung
+export hyperbolic_fixed_points
 export import_from_database
 export intersection_matrix
 export intersect_lines_2D
@@ -118,6 +121,8 @@ export normal_toric_variety
 export norm_ratio
 export number_of_parabolic_fixed_point_curves
 export orientation
+export parabolic_fixed_point_curves
+export parabolic_fixed_points
 export PE
 export PermutationOfBlocks
 export PermutationOfRays
@@ -154,4 +159,6 @@ export ToricVarietyMDS
 export tropical_resolution
 export update_in_database
 export xcones
+export x_minus
+export x_plus
 export ZeroVector

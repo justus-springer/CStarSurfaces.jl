@@ -105,11 +105,17 @@ has_x_plus(X :: CStarSurface)
 has_x_minus(X :: CStarSurface)
 has_D_plus(X :: CStarSurface)
 has_D_minus(X :: CStarSurface)
+x_plus
+x_minus
+elliptic_fixed_points
+hyperbolic_fixed_points
+parabolic_fixed_points
+D_plus
+D_minus
+parabolic_fixed_point_curves
+number_of_parabolic_fixed_point_curves
 nblocks
 block_sizes
-number_of_parabolic_fixed_point_curves
-elliptic_fixed_points
 slopes
 is_intrinsic_quadric
-cox_ring_vars
 ```
