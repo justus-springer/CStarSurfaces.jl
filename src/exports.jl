@@ -53,7 +53,7 @@ export EE
 export effective_cone
 export elliptic_fixed_points
 export EP
-export exceptional_rays
+export exceptional_divisors
 export execute_on_database
 export export_to_database
 export fano_polytope
@@ -66,6 +66,7 @@ export has_x_minus
 export has_x_plus
 export hilbert_basis_2D
 export hirzebruch_jung
+export hyperbolic_fixed_point
 export hyperbolic_fixed_points
 export import_from_database
 export intersection_matrix
@@ -124,6 +125,8 @@ export norm_ratio
 export number_of_parabolic_fixed_point_curves
 export orientation
 export parabolic_fixed_point_curves
+export parabolic_fixed_point_minus
+export parabolic_fixed_point_plus
 export parabolic_fixed_points
 export PE
 export PermutationOfBlocks

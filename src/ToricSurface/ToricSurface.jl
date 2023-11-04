@@ -92,6 +92,29 @@ end
 
 @attr canonical_toric_ambient(X :: ToricSurface) = normal_toric_variety(rays(X), maximal_cones_indices(X))
 
+
+@doc raw"""
+    invariant_divisor(X :: ToricSurface, i :: Int)
+
+Return the $i$-th toric divisor $D^i_X$.
+
+"""
+function invariant_divisor(X :: ToricSurface, i :: Int)
+    @req 1 ≤ i ≤ nrays(X) "must have 1 ≤ i ≤ nrays(X)"
+    coeffs = repeat([0], nrays(X))
+    coeffs[i] = 1
+    return toric_surface_divisor(X, coeffs)
+end
+
+@doc raw"""
+    invariant_divisors(X :: ToricSurface)
+
+Return all toric divisors $D^i_X$.
+
+"""
+@attr invariant_divisors(X :: ToricSurface) = [invariant_divisor(X, i) for i = 1 : nrays(X)]
+
+
 @doc raw"""
     intersection_matrix(X :: ToricSurface)
 
@@ -179,36 +202,24 @@ julia> discr
     inds = _ordered_ray_indices(X)
 
     new_vs = deepcopy(vs)
-    ex_rays = Vector{Vector{Vector{Int}}}(undef, r)
-    discrepancies = Vector{Vector{Rational{Int}}}(undef, r)
+
+    discrepancies = Dict{Vector{Int}, Vector{Rational{Int}}}()
+    ex_div_indices = Dict{Vector{Int}, Vector{Int}}()
     for i = 1 : r
-        v1, v2 = vs[inds[i]], vs[inds[mod(i+1, 1:r)]]
-        ex_rays[i], discrepancies[i] = toric_affine_surface_resolution(v1, v2) 
-        append!(new_vs, ex_rays[i])
+        x = [inds[i], inds[mod(i+1, 1:r)]]
+        v1, v2 = vs[x[1]], vs[x[2]]
+        new_rays, discrepancies[x] = toric_affine_surface_resolution(v1, v2) 
+        ex_div_indices[x] = [length(new_vs) + j for j = 1 : length(new_rays)]
+        append!(new_vs, new_rays)
     end
 
-    return (toric_surface(new_vs), ex_rays, discrepancies)
+    Y = toric_surface(new_vs)
+
+    ex_div = Dict([c => [invariant_divisor(Y, i) for i in inds] for (c, inds) in ex_div_indices]) 
+
+    return (Y, ex_div, discrepancies)
 
 end
 
 
-@doc raw"""
-    maximal_log_canonicity(X :: ToricSurface)
-
-Given a toric surface $X$, return the maximal rational number $\varepsilon$ such 
-that $X$ is $\varepsilon$-log canonical. By definition, this is the minimal 
-discrepancy in the resolution of singularities plus one.
-
-# Example
-
-```jldoctest
-julia> X = toric_surface(ZZ[1 1 -3 ; 0 4 -7])
-Normal toric surface
-
-julia> maximal_log_canonicity(X)
-4//7
-```
-
-"""
-@attr maximal_log_canonicity(X :: ToricSurface) = minimum(vcat([0], discrepancies(X)...)) + 1
 Base.show(io :: IO, X :: ToricSurface) = Base.print(io, "Normal toric surface")

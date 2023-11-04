@@ -82,7 +82,7 @@ anticanonical_self_intersection
 ```@docs
 is_quasismooth
 canonical_resolution
-exceptional_rays
+exceptional_divisors
 discrepancies
 maximal_log_canonicity
 ```

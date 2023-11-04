@@ -342,17 +342,23 @@ _sigma_plus(X :: CStarSurface) = Vector(map(first, _slope_ordered_ray_indices(X)
 
 _sigma_minus(X :: CStarSurface) = Vector(map(last, _slope_ordered_ray_indices(X)))
 
-_taus(X :: CStarSurface) = vcat(map(vs -> [[vs[j], vs[j+1]] for j = 1 : length(vs) - 1], _slope_ordered_ray_indices(X))...)
+_tau(X :: CStarSurface, i :: Int, j :: Int) = [_slope_ordered_ray_indices(X)[i][j], _slope_ordered_ray_indices(X)[i][j+1]]
+
+_taus(X :: CStarSurface) = Vector{Int}[_tau(X, i, j) for i = 0 : _r(X) for j = 1 : _ns(X)[i] - 1]
 
 _vplus_index(X :: CStarSurface{PE}) = sum(map(length, X.l)) + 1
 _vplus_index(X :: CStarSurface{PP}) = sum(map(length, X.l)) + 1
 
-_taus_plus(X :: CStarSurface) = Vector(map(vs -> [first(vs), _vplus_index(X)], _slope_ordered_ray_indices(X)))
+_tau_plus(X :: CStarSurface, i :: Int) = [first(_slope_ordered_ray_indices(X)[i]), _vplus_index(X)]
+
+_taus_plus(X :: CStarSurface) = Vector{Int}[_tau_plus(X, i) for i = 0 : _r(X)]
 
 _vminus_index(X :: CStarSurface{EP}) = sum(map(length, X.l)) + 1
 _vminus_index(X :: CStarSurface{PP}) = sum(map(length, X.l)) + 2
 
-_taus_minus(X :: CStarSurface) = Vector(map(vs -> [last(vs), _vminus_index(X)], _slope_ordered_ray_indices(X)))
+_tau_minus(X :: CStarSurface, i :: Int) = [last(_slope_ordered_ray_indices(X)[i]), _vminus_index(X)]
+
+_taus_minus(X :: CStarSurface) = Vector{Int}[_tau_minus(X, i) for i = 0 : _r(X)]
 
 @attr maximal_cones_indices(X :: CStarSurface{EE}) = append!(_taus(X), [_sigma_plus(X), _sigma_minus(X)])
 @attr maximal_cones_indices(X :: CStarSurface{PE}) = append!(_taus(X), [_sigma_minus(X)], _taus_plus(X))
@@ -465,14 +471,60 @@ julia> elliptic_fixed_points(X)
 
 
 @doc raw"""
+    hyperbolic_fixed_point(X :: CStarSurface, i :: Int, j :: Int)
+
+Return the hyperbolic fixed point $x_{ij}$ of a $\mathbb{C}^*$-surface, where
+$0 ≤ i ≤ r$ and $1 ≤ j ≤ n_i - 1$. The point is encoded by the index vector of
+the associated maximal cone in the ambient toric variety.
+
+"""
+function hyperbolic_fixed_point(X :: CStarSurface, i :: Int, j :: Int)
+    r, ns = _r(X), _ns(X)
+    @req 0 ≤ i ≤ r "must have 0 ≤ i ≤ r"
+    @req 1 ≤ j ≤ ns[i] - 1 "must have 1 ≤ j ≤ ns[i] - 1"
+    return _tau(X, i, j)
+end
+
+
+@doc raw"""
     hyperbolic_fixed_points(X :: CStarSurface)   
 
 Return the index vectors of the cones associated to the hyperbolic fixed 
 points of a $\mathbb{C}^*$-surface.
 
 """
-@attr hyperbolic_fixed_points(X :: CStarSurface) = _taus(X)
+@attr hyperbolic_fixed_points(X :: CStarSurface) = 
+DoubleVector([[hyperbolic_fixed_point(X, i, j) for j = 1 : _ns(X)[i] - 1] for i = 0 : _r(X)])
 
+
+@doc raw"""
+    parabolic_fixed_point_plus(X :: CStarSurface{<:Union{PE,PP}}, i :: Int)
+
+Return the parabolic fixed point $x_i^+$ of a $\mathbb{C}^*$-surface, where $0
+≤ i ≤ r$. The point is encoded by the index vector of the associated maximal
+cone in the ambient toric variety.
+
+"""
+function parabolic_fixed_point_plus(X :: CStarSurface{<:Union{PE,PP}}, i :: Int)
+    r = _r(X)
+    @req 0 ≤ i ≤ r "must have 0 ≤ i ≤ r"
+    return _tau_plus(X, i)
+end
+
+
+@doc raw"""
+    parabolic_fixed_point_minus(X :: CStarSurface{<:Union{EP,PP}}, i :: Int)
+
+Return the parabolic fixed point $x_i^-$ of a $\mathbb{C}^*$-surface, where $0
+≤ i ≤ r$. The point is encoded by the index vector of the associated maximal
+cone in the ambient toric variety.
+
+"""
+function parabolic_fixed_point_minus(X :: CStarSurface{<:Union{EP,PP}}, i :: Int)
+    r = _r(X)
+    @req 0 ≤ i ≤ r "must have 0 ≤ i ≤ r"
+    return _tau_minus(X, i)
+end
 
 @doc raw"""
     parabolic_fixed_points(X :: CStarSurface)
@@ -798,24 +850,16 @@ _d_minus(X :: CStarSurface{PE}) = m_minus(X) // _l_minus(X)
 _d_minus(X :: CStarSurface{PP}) = 1
 
 
-# We extend the ls and ds on both sides to make it easier to loop through all the 
-# cones of the fan. Together, these numbers form the outer vertices of the 
-# simplicial complex \mathcal{A}_P from arxiv:2302.03095.
-_slope_ordered_extended_l(X :: CStarSurface) = map(ls -> [0 ; ls ; 0], _slope_ordered_l(X))
-_slope_ordered_extended_d(X :: CStarSurface) = map(ds -> [_d_plus(X) ; ds ; -_d_minus(X)], _slope_ordered_d(X))
-
-
 @doc raw"""
     canonical_resolution(X :: CStarSurface)
 
 Return the canonical resolution of singularities of a C-star surface surface
-`X`. The result is a triple `(Y, ex_rays, discrepancies)` where `Y` is the
-smooth C-star surface in the resolution of singularities of `X`, `ex_rays`
-contains the rays of the exceptional divisors in the resolution and
-`discrepancies` contains their discrepancies. `ex_rays` and `discrepancies`
-itself are given as pairs, where the first entry comes from the toric step and
-the second entry from the tropical step. The first entry is given as a
-`DoubleVector`, adhering to the double index notation of C-star surfaces.
+`X`. The result is a triple `(Y, ex_div, discr)` where `Y` is the smooth C-star
+surface in the resolution of singularities of `X`, `ex_div` contains the
+exceptional divisors in the resolution and `discrepancies` contains their
+discrepancies. `ex_rays` and `discr` are both dictionaries indexed by the fixed
+points of `X`, i.e. `ex_div[x]` contains those exceptional divisors lying over
+the fixed point `x`.
 
 # Example
 
@@ -825,95 +869,122 @@ Resolution of singularities of the $E_6$ singular cubic surface.
 julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
 C-star surface of type (e-e)
 
-julia> (Y, (ex_toric, ex_tropic), (discr_toric, discr_tropic)) = canonical_resolution(X);
+julia> (Y, ex_div, discr) = canonical_resolution(X);
 
 julia> gen_matrix(Y)
-[-3   -1   -1   -2   3   1   2   1   0   0   0   0    0]
-[-3   -1   -1   -2   0   0   0   0   2   1   1   0    0]
-[-2   -1    0   -1   1   1   1   0   1   1   0   1   -1]
+[-3   -1   -2   -1   3   2   1   1   0   0   0   0    0]
+[-3   -1   -2   -1   0   0   0   0   2   1   1   0    0]
+[-2   -1   -1    0   1   1   1   0   1   1   0   1   -1]
 
-julia> ex_toric
-3-element DoubleVector{Vector{Vector{Int64}}} with indices ZeroRange(3):
- [[[1, 0], [2, -1]], [], []]
- [[[1, 1], [2, 1]], [[1, 0]]]
- [[[1, 1]], [[1, 0]]]
+julia> map(E -> E * E, ex_div[x_plus(X)])
+6-element Vector{QQFieldElem}:
+ -2
+ -2
+ -2
+ -2
+ -2
+ -2
 
-julia> ex_tropic
-2-element Vector{Vector{Int64}}:
- [0, 1]
- [0, -1]
-
-julia> discr_toric
-3-element DoubleVector{Vector{Rational{Int64}}} with indices ZeroRange(3):
- [[0//1, 0//1], [], []]
- [[0//1, 0//1], [1//1]]
- [[0//1], [2//1]]
-
-julia> discr_tropic
-2-element Vector{Rational{Int64}}:
+julia> discr[x_plus(X)]
+6-element Vector{Rational{Int64}}:
  0//1
- 4//1
+ 0//1
+ 0//1
+ 0//1
+ 0//1
+ 0//1
+
 ```
 
 """
 @attr function canonical_resolution(X :: CStarSurface)
     ns, r = _ns(X), _r(X) 
-    l, d = _slope_ordered_extended_l(X), _slope_ordered_extended_d(X)
+    l, d = _slope_ordered_l(X), _slope_ordered_d(X)
 
-    # The toric step
+    discrepancies = Dict{Vector{Int}, Vector{Rational{Int}}}()
+    ex_div_indices = Dict{Vector{Int}, Vector{Tuple{Int, Int}}}()
+
     new_l, new_d = deepcopy(X.l), deepcopy(X.d)
-    ex_rays_toric = DoubleVector{Vector{Vector{Int}}}(undef, Vector(ns) .+ 1)
-    discrepancies_toric = DoubleVector{Vector{Rational{Int}}}(undef, Vector(ns) .+ 1)
-    for i = 0 : r, j = 1 : ns[i] + 1
+
+    # Resolve hyperbolic fixed points $x_{ij}$
+    for i = 0 : r, j = 1 : ns[i] - 1
+        x = hyperbolic_fixed_point(X, i, j)
+
         v1, v2 = [l[i][j], d[i][j]], [l[i][j+1], d[i][j+1]]
-        ex_rays_toric[i][j], discrepancies_toric[i][j] = toric_affine_surface_resolution(v1, v2)
-        append!(new_l[i], map(first, ex_rays_toric[i][j]))
-        append!(new_d[i], map(last, ex_rays_toric[i][j]))
+        new_rays, discrepancies[x] = toric_affine_surface_resolution(v1, v2)
+        ex_div_indices[x] = [(i, length(new_l[i]) + j) for j = 1 : length(new_rays)]
+
+        append!(new_l[i], map(first, new_rays))
+        append!(new_d[i], map(last, new_rays))
     end
 
-    # The tropical step
-    ex_rays_tropic = Vector{Int}[]
-    discrepancies_tropic = Rational{Int}[]
     if has_x_plus(X)
-        push!(ex_rays_tropic, [0,1])
-        push!(discrepancies_tropic, _l_plus(X) // m_plus(X) - 1)
+        # Resolve elliptic fixed point $x^+$
+        x = x_plus(X)
+        discrepancies[x], ex_div_indices[x] = [], []
+        for i = 0 : r
+            v = [first(l[i]), first(d[i])]
+            new_rays, new_discr = toric_affine_surface_resolution(v, [0, _d_plus(X)])
+            append!(discrepancies[x], new_discr)
+            append!(ex_div_indices[x], [(i, length(new_l[i]) + j) for j = 1 : length(new_rays)])
+            append!(new_l[i], map(first, new_rays))
+            append!(new_d[i], map(last, new_rays))
+        end
+    else
+        # Resolve parabolic fixed points $x^+_i$
+        for i = 0 : r
+            x = parabolic_fixed_point_plus(X, i)
+            v = [first(l[i]), first(d[i])]
+            new_rays, discrepancies[x] = toric_affine_surface_resolution(v, [0, _d_plus(X)])
+            ex_div_indices[x] = [(i, length(new_l[i]) + j) for j = 1 : length(new_rays)]
+
+            append!(new_l[i], map(first, new_rays))
+            append!(new_d[i], map(last, new_rays))
+        end
     end
+
     if has_x_minus(X)
-        push!(ex_rays_tropic, [0,-1])
-        push!(discrepancies_tropic, _l_minus(X) // m_minus(X) - 1)
+        # Resolve elliptic fixed point $x^-$
+        x = x_minus(X)
+        discrepancies[x], ex_div_indices[x] = [], []
+        for i = 0 : r
+            v = [last(l[i]), last(d[i])]
+            new_rays, new_discr = toric_affine_surface_resolution(v, [0, -_d_minus(X)])
+            append!(discrepancies[x], new_discr)
+            append!(ex_div_indices[x], [(i, length(new_l[i]) + j) for j = 1 : length(new_rays)])
+            append!(new_l[i], map(first, new_rays))
+            append!(new_d[i], map(last, new_rays))
+        end
+    else
+        # Resolve parabolic fixed points $x^+_i$
+        for i = 0 : r
+            x = parabolic_fixed_point_minus(X, i)
+            v = [last(l[i]), last(d[i])]
+            new_rays, discrepancies[x] = toric_affine_surface_resolution(v, [0, -d_minus(X)])
+            ex_div_indices[x] = [(i, length(new_l[i]) + j) for j = 1 : length(new_rays)]
+
+            append!(new_l[i], map(first, new_rays))
+            append!(new_d[i], map(last, new_rays))
+        end
     end
 
-    ex_rays = (ex_rays_toric, ex_rays_tropic)
-    discrepancies = (discrepancies_toric, discrepancies_tropic)
+    Y = cstar_surface(new_l, new_d, :pp)
+
+    ex_div = Dict([c => [invariant_divisor(Y, ij...) for ij in inds] for (c, inds) in ex_div_indices]) 
+
+    if has_x_plus(X)
+        push!(ex_div[x_plus(X)], D_plus(Y))
+        push!(discrepancies[x_plus(X)], _l_plus(X) // m_plus(X) - 1)
+    end
+
+    if has_x_minus(X)
+        push!(ex_div[x_minus(X)], D_minus(Y))
+        push!(discrepancies[x_minus(X)], _l_minus(X) // m_minus(X) - 1)
+    end
     
-    return (cstar_surface(new_l, new_d, :pp), ex_rays, discrepancies)
+    return (Y, ex_div, discrepancies)
 end
 
-
-@doc raw"""
-    maximal_log_canonicity(X :: CStarSurface)
-
-Given a C-star surface $X$, return the maximal rational number $\varepsilon$
-such that $X$ is $\varepsilon$-log canonical. By definition, this is the
-minimal discrepancy in the resolution of singularities plus one.
-
-# Example
-
-```jldoctest
-julia> maximal_log_canonicity(cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee))
-1//1
-```
-
-"""
-@attr function maximal_log_canonicity(X :: CStarSurface) 
-    (ds_tor, ds_tro) = discrepancies(X) 
-    # we add a superficial zero into the list of discrepancies to ensure a
-    # well-defined (and correct) result in case there are no exceptional rays
-    # (i.e. the surface is already smooth).
-    ds = vcat([0], ds_tro, map(d -> vcat(d...), ds_tor)...)
-    # the maximal log canonicity equals the minimal discrepancy plus one
-    return minimum(ds) + 1
-end
 
 #################################################
 # Kaehler Einstein metric
