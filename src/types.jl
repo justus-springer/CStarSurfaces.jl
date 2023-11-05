@@ -122,13 +122,10 @@ on a Mori Dream Space and (classes of) divisors on its canonical
 toric ambient variety, this type is modeled as a wrapper around
 the `ToricDivisor` from Oscar.
 """
-mutable struct MoriDreamSpaceDivisor{T <: MoriDreamSpace}
+@attributes mutable struct MoriDreamSpaceDivisor{T <: MoriDreamSpace}
     variety :: T
-    toric_divisor :: ToricDivisor
-    function MoriDreamSpaceDivisor(variety :: T, toric_divisor :: ToricDivisor) where {T <: MoriDreamSpace}
-        @req canonical_toric_ambient(variety) == toric_divisor.toric_variety "the toric divisor must be defined on the canonical toric ambient variety of X"
-        new{T}(variety, toric_divisor)
-    end
+    coeffs :: Vector{<:Oscar.IntegerUnion}
+    MoriDreamSpaceDivisor(variety :: T, coeffs :: Vector{<:Oscar.IntegerUnion}) where {T <: MoriDreamSpace} = new{T}(variety, coeffs)
 end
 
 

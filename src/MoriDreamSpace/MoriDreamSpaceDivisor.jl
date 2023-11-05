@@ -1,16 +1,5 @@
 
 @doc raw"""
-    mori_dream_space_divisor(X :: T, d :: ToricDivisor)
-
-Return the Divisor on a Mori Dream Space associated to a toric divisor
-on its canonical toric ambient space.
-
-"""
-mori_dream_space_divisor(X :: T, d :: ToricDivisor) where {T <: MoriDreamSpace} = 
-MoriDreamSpaceDivisor(X, d)
-
-
-@doc raw"""
     mori_dream_space_divisor(X :: T, coeffs :: Vector{S})
 
 Construct a divisor on a Mori Dream Space as a linear combination of the
@@ -19,8 +8,22 @@ toric ambient variety.
 
 """
 function mori_dream_space_divisor(X :: T, coeffs :: Vector{S}) where {T <: MoriDreamSpace, S <: Oscar.IntegerUnion}
-    toric_div = toric_divisor(canonical_toric_ambient(X), coeffs)
-    MoriDreamSpaceDivisor(X, toric_div)
+    MoriDreamSpaceDivisor(X, coeffs)
+end
+
+
+@doc raw"""
+    mori_dream_space_divisor(X :: T, d :: ToricDivisor)
+
+Return the Divisor on a Mori Dream Space associated to a toric divisor
+on its canonical toric ambient space.
+
+"""
+function mori_dream_space_divisor(X :: T, td :: ToricDivisor) where {T <: MoriDreamSpace}
+    @req td.toric_variety === canonical_toric_ambient(X) "the given toric divisor must be defined on the canonical toric ambient space of X"
+    d = MoriDreamSpaceDivisor(X, coefficients(td))
+    set_attribute!(d, :toric_divisor, td)
+    return d
 end
 
 
@@ -31,7 +34,7 @@ Return the toric divisor on the canonical toric ambient variety associated
 to a divisor on a Mori Dream Space.
 
 """
-toric_divisor(d :: MoriDreamSpaceDivisor) = d.toric_divisor
+@attr toric_divisor(d :: MoriDreamSpaceDivisor) = toric_divisor(canonical_toric_ambient(d.variety), d.coeffs)
 
 
 @doc raw"""
@@ -40,7 +43,7 @@ toric_divisor(d :: MoriDreamSpaceDivisor) = d.toric_divisor
 Return the coefficients of a divisor on a Mori Dream Space.
 
 """
-coefficients(d :: MoriDreamSpaceDivisor) = coefficients(toric_divisor(d))
+coefficients(d :: MoriDreamSpaceDivisor) = d.coeffs
 
 
 #################################################
