@@ -68,6 +68,7 @@ anticanonical_divisor(X :: MoriDreamSpace)
 canonical_divisor_class(X :: MoriDreamSpace)
 anticanonical_divisor_class(X :: MoriDreamSpace)
 Base.:*(d1 :: SurfaceWithTorusActionDivisor, d2 :: SurfaceWithTorusActionDivisor)
+contract_prime_divisor
 ```
 
 ## Intersection numbers
@@ -85,6 +86,7 @@ canonical_resolution
 exceptional_divisors
 discrepancies
 maximal_log_canonicity
+minimal_resolution
 ```
 
 ## Kaehler Einstein metrics

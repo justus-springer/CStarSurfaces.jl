@@ -970,7 +970,7 @@ julia> discr[x_plus(X)]
 
     Y = cstar_surface(new_l, new_d, :pp)
 
-    ex_div = Dict([c => [invariant_divisor(Y, ij...) for ij in inds] for (c, inds) in ex_div_indices]) 
+    ex_div = Dict{Vector{Int}, Vector{CStarSurfaceDivisor}}([c => [invariant_divisor(Y, ij...) for ij in inds] for (c, inds) in ex_div_indices]) 
 
     if has_x_plus(X)
         push!(ex_div[x_plus(X)], D_plus(Y))
@@ -983,6 +983,76 @@ julia> discr[x_plus(X)]
     end
     
     return (Y, ex_div, discrepancies)
+end
+
+@doc raw"""
+    minimal_resolution(X :: CStarSurface)
+
+Return the minimal resolution of singularities of a C-star surface surface `X`.
+The minimal resolution is obtained by contracting all (-1)-curves of the
+canonical resolution. The result is a triple `(Y, ex_div, discr)` where `Y` is
+the smooth C-star surface in the resolution of singularities of `X`, `ex_div`
+contains the exceptional divisors in the resolution and `discrepancies`
+contains their discrepancies. `ex_rays` and `discr` are both dictionaries
+indexed by the fixed points of `X`, i.e. `ex_div[x]` contains those exceptional
+divisors lying over the fixed point `x`.
+
+# Example
+
+Resolution of singularities of the $E_6$ singular cubic surface.
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> (Y, ex_div, discr) = minimal_resolution(X);
+
+julia> gen_matrix(Y)
+[-3   -1   -2   -1   3   2   1   0   0   0]
+[-3   -1   -2   -1   0   0   0   2   1   0]
+[-2   -1   -1    0   1   1   1   1   1   1]
+
+```
+
+"""
+@attr function minimal_resolution(X :: CStarSurface)
+    (Y, ex_div, discrepancies) = deepcopy(canonical_resolution(X))
+
+    contractible_curves = [(x, k, divs[k]) 
+        for (x, divs) in ex_div for k = 1 : length(divs) 
+        if divs[k] * divs[k] == -1]
+
+    while !is_empty(contractible_curves)
+        x, k, d = first(contractible_curves)
+        Y = contract_prime_divisor(d)
+        deleteat!(ex_div[x], k)
+        deleteat!(discrepancies[x], k)
+
+        # adjust the coefficients of the remaining exceptional divisors
+        d_case, inds = is_prime_with_indices(d)
+        m = number_of_parabolic_fixed_point_curves(Y)
+        for (y, divs) in ex_div, l = 1 : length(divs)
+            if d_case == :D_ij
+                i, j = inds
+                new_coeffs = deleteat!(double_coefficients(divs[l]), i, j)
+                last_coeffs = coefficients(divs[l])[end-m+1 : end]
+                new_d = cstar_surface_divisor(Y, new_coeffs, last_coeffs...)
+            else
+                k = inds
+                new_coeffs = deleteat!(coefficients(divs[l]), k)
+                new_d = cstar_surface_divisor(Y, new_coeffs)
+            end
+            ex_div[y][l] = new_d
+        end
+
+        # compute the new contractible curves
+        contractible_curves = [(x, k, divs[k]) 
+            for (x, divs) in ex_div for k = 1 : length(divs) 
+            if divs[k] * divs[k] == -1]
+    end
+
+    return (Y, ex_div, discrepancies)
+
 end
 
 

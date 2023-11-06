@@ -8,6 +8,12 @@ DoubleVector{T}(::UndefInitializer, ns :: AbstractVector{Int}) where {T} = ZeroV
 
 DoubleVector(::UndefInitializer, ns :: AbstractVector{Int}) = ZeroVector([Vector(undef, n) for n in ns])
 
+function deleteat!(d :: DoubleVector, i :: Integer, j :: Integer)
+    deleteat!(d[i], j)
+    return d
+end
+
+
 @doc raw"""
     map2(f, vs :: DoubleVector...)   
 

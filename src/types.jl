@@ -128,6 +128,9 @@ the `ToricDivisor` from Oscar.
     MoriDreamSpaceDivisor(variety :: T, coeffs :: Vector{<:Oscar.IntegerUnion}) where {T <: MoriDreamSpace} = new{T}(variety, coeffs)
 end
 
+Base.:(==)(d1 :: MoriDreamSpaceDivisor{T}, d2 :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace} = 
+d1.variety === d2.variety && d1.coeffs == d2.coeffs
+
 
 @doc raw"""
     CStarSurfaceDivisor{T} 

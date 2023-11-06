@@ -23,6 +23,7 @@ export class_group_torsion
 export class_group_torsion_order
 export cls_cone_normal_form
 export CompositeAdmissibleOperation
+export contract_prime_divisor
 export covering_collection
 export covering_collection
 export cox_ring
@@ -46,6 +47,7 @@ export degree_matrix_torsion_part
 export discrepancies
 export discrepancy
 export D_minus
+export double_coefficients
 export DoubleVector
 export DoubleVector
 export D_plus
@@ -82,6 +84,7 @@ export is_gorenstein
 export is_intrinsic_quadric
 export is_movable
 export is_normal_form
+export is_prime_with_indices
 export is_principal
 export is_principal_on_stratum
 export is_q_factorial
@@ -106,6 +109,7 @@ export map_from_picard_group_to_class_group
 export maps_from_class_group_to_local_class_groups
 export maximal_cones_indices
 export maximal_log_canonicity
+export minimal_resolution
 export m_minus
 export m_minus
 export moment_polytope

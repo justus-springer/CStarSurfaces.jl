@@ -13,7 +13,8 @@ import Base:
     iterate,
     map,
     resize!,
-    one
+    one,
+    deleteat!
 
 import Combinatorics:
     powerset
@@ -54,6 +55,7 @@ import Oscar:
     pm_object,
     rays,
     nrays,
-    maximal_cones
+    maximal_cones,
+    is_prime
 
 

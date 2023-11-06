@@ -68,5 +68,14 @@ mori_dream_space_divisor(d.variety, -coefficients(d))
 Base.:*(c :: S, d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace, S <: Oscar.IntegerUnion} = 
 mori_dream_space_divisor(d.variety, [ZZRingElem(c)*x for x in coefficients(d)])
 
+#################################################
+# Basic properties
+#################################################
+
+@attr is_prime(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace} = 
+sum(coefficients(d)) == 1 && all(c -> c ∈ [0,1], coefficients(d))
+
+
+
 
 
