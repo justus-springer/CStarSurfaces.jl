@@ -24,7 +24,7 @@ abstract type MoriDreamSpace end
 The union of `MoriDreamSpace` and Oscar's `NormalToricVarietyType`.
 
 """
-const MoriDreamSpaceUnion = Union{MoriDreamSpace, Oscar.NormalToricVarietyType}
+const MoriDreamSpaceUnion = Union{MoriDreamSpace, NormalToricVarietyType}
 
 
 @doc raw"""
@@ -102,7 +102,7 @@ two-dimensional complete fan describing the toric surface.
 
 """
 @attributes mutable struct ToricSurface <: ToricVarietyMDS
-    vs :: Vector{Vector{T}} where {T <: Oscar.IntegerUnion}
+    vs :: Vector{Vector{T}} where {T <: IntegerUnion}
     ToricSurface(vs) = new(vs)
 end
 

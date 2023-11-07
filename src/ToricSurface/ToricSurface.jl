@@ -15,7 +15,7 @@ Normal toric surface
 ```
 
 """
-function toric_surface(vs :: Vector{Vector{T}}) where {T <: Oscar.IntegerUnion} 
+function toric_surface(vs :: Vector{Vector{T}}) where {T <: IntegerUnion} 
     @req all(v -> length(v) == 2, vs) "rays must all be two-dimensional"
     return ToricSurface(vs)
 end

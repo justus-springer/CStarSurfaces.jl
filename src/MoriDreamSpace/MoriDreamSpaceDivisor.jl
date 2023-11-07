@@ -18,7 +18,7 @@ Construct a divisor on a Mori Dream Space as a linear combination of the
 toric ambient variety.
 
 """
-function mori_dream_space_divisor(X :: T, coeffs :: Vector{S}) where {T <: MoriDreamSpace, S <: Oscar.IntegerUnion}
+function mori_dream_space_divisor(X :: T, coeffs :: Vector{S}) where {T <: MoriDreamSpace, S <: IntegerUnion}
     toric_div = toric_divisor(canonical_toric_ambient(X), coeffs)
     MoriDreamSpaceDivisor(X, toric_div)
 end
@@ -62,7 +62,7 @@ end
 Base.:-(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace} = 
 mori_dream_space_divisor(d.variety, -coefficients(d))
 
-Base.:*(c :: S, d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace, S <: Oscar.IntegerUnion} = 
+Base.:*(c :: S, d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace, S <: IntegerUnion} = 
 mori_dream_space_divisor(d.variety, [ZZRingElem(c)*x for x in coefficients(d)])
 
 
