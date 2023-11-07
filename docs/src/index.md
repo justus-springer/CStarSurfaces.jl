@@ -26,7 +26,7 @@ surfaces:
 - [divisor class group](@ref class_group(X :: MoriDreamSpace)), [local class groups](@ref local_class_groups), [(anti)canonical divisor class](@ref canonical_divisor),
 - [Cox Ring](@ref cox_ring), [Gorenstein index](@ref gorenstein_index), [Picard index](@ref picard_index),
 - [intersection numbers](@ref Base.:*(d1 :: SurfaceWithTorusActionDivisor, d2 :: SurfaceWithTorusActionDivisor)), [anticanonical self intersection](@ref anticanonical_self_intersection),
-- [resolution of singularities](@ref canonical_resolution), [exceptional divisors](@ref exceptional_divisors), [discrepancies](@ref discrepancies), [log canonicity](@ref maximal_log_canonicity),
+- [resolution of singularities](@ref canonical_resolution), [exceptional divisors](@ref canonical_resolution_exceptional_divisors), [discrepancies](@ref canonical_resolution_discrepancies), [log canonicity](@ref maximal_log_canonicity),
 - [normal form of defining data](@ref normal_form(X :: CStarSurface)), [admissible operations](@ref AdmissibleOperation), [isomorphy test](@ref are_isomorphic(X :: CStarSurface, Y :: CStarSurface)).
 
 Furthermore, some functionality to save and retrieve $\mathbb{C}^*$-surfaces

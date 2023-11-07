@@ -15,6 +15,8 @@ export beta_plus_sorted
 export block_sizes
 export canonical_divisor
 export canonical_resolution
+export canonical_resolution_discrepancies
+export canonical_resolution_exceptional_divisors
 export canonical_toric_ambient
 export centroid
 export class_group
@@ -22,6 +24,7 @@ export class_group_rank
 export class_group_torsion
 export class_group_torsion_order
 export cls_cone_normal_form
+export nrays
 export CompositeAdmissibleOperation
 export contract_prime_divisor
 export covering_collection
@@ -44,7 +47,6 @@ export default_insert_predicate
 export degree_matrix
 export degree_matrix_free_part
 export degree_matrix_torsion_part
-export discrepancies
 export discrepancy
 export D_minus
 export double_coefficients
@@ -55,7 +57,6 @@ export EE
 export effective_cone
 export elliptic_fixed_points
 export EP
-export exceptional_divisors
 export execute_on_database
 export export_to_database
 export fano_polytope
@@ -84,7 +85,8 @@ export is_gorenstein
 export is_intrinsic_quadric
 export is_movable
 export is_normal_form
-export is_prime_with_indices
+export is_prime_with_double_indices
+export is_prime_with_index
 export is_principal
 export is_principal_on_stratum
 export is_q_factorial
@@ -110,6 +112,8 @@ export maps_from_class_group_to_local_class_groups
 export maximal_cones_indices
 export maximal_log_canonicity
 export minimal_resolution
+export minimal_resolution_discrepancies
+export minimal_resolution_exceptional_divisors
 export m_minus
 export m_minus
 export moment_polytope
@@ -144,6 +148,8 @@ export rcef
 export rcef_rational
 export remove_torusfactor
 export reset_attributes!
+export resolution_graph
+export resolution_graphs
 export restrict_to_stratum
 export semiample_cone
 export slope_ordered_indices

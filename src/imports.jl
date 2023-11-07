@@ -49,6 +49,7 @@ import Oscar:
     normal_toric_variety,
     NormalToricVariety,
     NormalToricVarietyType,
+    nrays,
     nrows,
     order,
     perm,
@@ -98,3 +99,5 @@ using ProgressLogging
 using Tables
 
 using OffsetArrays
+
+import Graphs

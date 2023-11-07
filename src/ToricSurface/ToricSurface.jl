@@ -222,4 +222,7 @@ julia> discr
 end
 
 
+minimal_resolution(X :: ToricSurface) = canonical_resolution(X)
+
+
 Base.show(io :: IO, X :: ToricSurface) = Base.print(io, "Normal toric surface")

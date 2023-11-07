@@ -41,23 +41,43 @@ anticanonical_self_intersection(X :: SurfaceWithTorusAction) = anticanonical_div
 
 
 @doc raw"""
-    exceptional_divisors(X :: SurfaceWithTorusAction)   
+    minimal_resolution_exceptional_divisors(X :: SurfaceWithTorusAction)   
 
-Return the exceptional divisors in the resolution of singularities of a surface
+Return the exceptional divisors in the minimal resolution of singularities of a surface
 with torus action.
 
 """
-exceptional_divisors(X :: SurfaceWithTorusAction) = canonical_resolution(X)[2]
+minimal_resolution_exceptional_divisors(X :: SurfaceWithTorusAction) = minimal_resolution(X)[2]
 
 
 @doc raw"""
-    discrepancies(X :: SurfaceWithTorusAction)
+    minimal_resolution_discrepancies(X :: SurfaceWithTorusAction)
 
 Return the discrepancies associated to the exceptional divisors in the
-resolution of singularities of a surface with torus action.
+minimal resolution of singularities of a surface with torus action.
 
 """
-discrepancies(X :: SurfaceWithTorusAction) = canonical_resolution(X)[3]
+minimal_resolution_discrepancies(X :: SurfaceWithTorusAction) = minimal_resolution(X)[3]
+
+
+@doc raw"""
+    canonical_resolution_exceptional_divisors(X :: SurfaceWithTorusAction)   
+
+Return the exceptional divisors in the canonical resolution of singularities of a surface
+with torus action.
+
+"""
+canonical_resolution_exceptional_divisors(X :: SurfaceWithTorusAction) = canonical_resolution(X)[2]
+
+
+@doc raw"""
+    canonical_resolution_discrepancies(X :: SurfaceWithTorusAction)
+
+Return the discrepancies associated to the exceptional divisors in the
+canonical resolution of singularities of a surface with torus action.
+
+"""
+canonical_resolution_discrepancies(X :: SurfaceWithTorusAction) = canonical_resolution(X)[3]
 
 
 @doc raw"""
@@ -79,7 +99,87 @@ julia> maximal_log_canonicity(cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], 
     # we add a superficial zero into the list of discrepancies to ensure a
     # well-defined (and correct) result in case there are no exceptional rays
     # (i.e. the surface is already smooth).
-    ds = vcat([0], [d for (_,d) in discrepancies(X)]...)
+    ds = vcat([0], [d for (_,d) in canonical_resolution_discrepancies(X)]...)
     # the maximal log canonicity equals the minimal discrepancy plus one
     return minimum(ds) + 1
 end
+
+
+@doc raw"""
+    resolution_graphs(X :: SurfaceWithTorusAction)
+
+Return the resolution graphs of the minimal resolution of a surface with
+torus action. The result is a dictionary indexed by the fixed points of $X$,
+where each value is a pair with first entry a `Graphs.SimpleGraph` and second
+entry the list of self intersection numbers of the exceptional divisors,
+which serve as node labels of the graph.
+
+# Example
+
+Drawing the resolution graph of the $E_6$ singular cubic surface using 
+`GraphPlot.jl`.
+
+```jldoctest
+julia> import Graphs, GraphPlot
+
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> res_graphs = resolution_graphs(X);
+
+julia> (graph, nodelabel) = res_graphs[x_plus(X)];
+
+julia> Graphs.nv(graph)
+6
+
+julia> GraphPlot.gplothtml(graph; nodelabel = nodelabel); # Opens a browser window displaying the graph
+
+```
+
+"""
+@attr function resolution_graphs(X :: SurfaceWithTorusAction)
+    (Y, ex_div, _) = minimal_resolution(X)
+    M = Matrix(intersection_matrix(Y))
+    res_graphs = Dict{Vector{Int}, Tuple{Graphs.SimpleGraph, Vector}}()
+    for (x, divs) in ex_div
+        inds = map(is_prime_with_index, divs)
+        adj_matrix = M[inds, inds]
+        nodelabel = [adj_matrix[k, k] for k = 1 : length(divs)]
+        res_graphs[x] = (Graphs.SimpleGraph(adj_matrix), nodelabel)
+    end
+    return res_graphs
+end
+
+
+@doc raw"""
+    resolution_graph(X :: SurfaceWithTorusAction, x :: Vector{Int})   
+
+Return the resolution graph of the minimal resolution of singularities at a
+given point of a surface with torus action. The point must be given as an index
+vector of the corresponding maximal cone. The result is a pair with first entry
+a `Graphs.SimpleGraph` and second entry the list of self intersection numbers
+of the exceptional divisors, which serve as node labels of the graph.
+
+
+# Example
+
+Drawing the resolution graph of the $E_6$ singular cubic surface using 
+`GraphPlot.jl`.
+
+```jldoctest
+julia> import Graphs, GraphPlot
+
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> (graph, nodelabel) = resolution_graph(X, x_plus(X))
+
+julia> Graphs.nv(graph)
+6
+
+julia> GraphPlot.gplothtml(graph; nodelabel = nodelabel); # Opens a browser window displaying the graph
+
+```
+
+"""
+resolution_graph(X :: SurfaceWithTorusAction, x :: Vector{Int}) = resolution_graphs(X)[x]

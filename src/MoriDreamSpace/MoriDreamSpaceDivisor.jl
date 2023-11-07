@@ -75,6 +75,16 @@ mori_dream_space_divisor(d.variety, [ZZRingElem(c)*x for x in coefficients(d)])
 @attr is_prime(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace} = 
 sum(coefficients(d)) == 1 && all(c -> c ∈ [0,1], coefficients(d))
 
+function is_prime_with_index(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace}
+    !is_prime(d) && return nothing
+    cs = coefficients(d)
+    for i = 1 : length(cs)
+        cs[i] == 1 && return i
+    end
+    return nothing
+end
+
+
 
 
 

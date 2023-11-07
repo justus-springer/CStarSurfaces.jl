@@ -63,7 +63,7 @@ double index notation.
 end
 
 
-@attr function is_prime_with_indices(d :: CStarSurfaceDivisor)
+@attr function is_prime_with_double_indices(d :: CStarSurfaceDivisor)
     !is_prime(d) && return nothing
     X, cs = d.variety, double_coefficients(d)
     r, ns = nblocks(X) - 1, block_sizes(X)
@@ -95,7 +95,7 @@ generator matrix.
 function contract_prime_divisor(d :: CStarSurfaceDivisor{T}) where {T <: CStarSurfaceCase}
     @req is_prime(d) "The given divisor is not prime."
     X = d.variety
-    d_case, inds = is_prime_with_indices(d)
+    d_case, inds = is_prime_with_double_indices(d)
 
     if d_case == :D_ij
         i, j = inds

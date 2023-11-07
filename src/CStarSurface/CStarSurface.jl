@@ -983,7 +983,9 @@ julia> discr[x_plus(X)]
     end
     
     return (Y, ex_div, discrepancies)
+
 end
+
 
 @doc raw"""
     minimal_resolution(X :: CStarSurface)
@@ -1029,7 +1031,7 @@ julia> gen_matrix(Y)
         deleteat!(discrepancies[x], k)
 
         # adjust the coefficients of the remaining exceptional divisors
-        d_case, inds = is_prime_with_indices(d)
+        d_case, inds = is_prime_with_double_indices(d)
         m = number_of_parabolic_fixed_point_curves(Y)
         for (y, divs) in ex_div, l = 1 : length(divs)
             if d_case == :D_ij
@@ -1054,6 +1056,9 @@ julia> gen_matrix(Y)
     return (Y, ex_div, discrepancies)
 
 end
+
+
+
 
 
 #################################################

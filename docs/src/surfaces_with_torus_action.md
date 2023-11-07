@@ -83,10 +83,14 @@ anticanonical_self_intersection
 ```@docs
 is_quasismooth
 canonical_resolution
-exceptional_divisors
-discrepancies
+canonical_resolution_exceptional_divisors
+canonical_resolution_discrepancies
 maximal_log_canonicity
 minimal_resolution
+minimal_resolution_exceptional_divisors
+minimal_resolution_discrepancies
+resolution_graphs
+resolution_graph
 ```
 
 ## Kaehler Einstein metrics
