@@ -1,6 +1,6 @@
 
 @doc raw"""
-    cstar_surface_divisor(X :: CStarSurface, coeffs :: Vector{<:Oscar.IntegerUnion})
+    cstar_surface_divisor(X :: CStarSurface, coeffs :: Vector{<:IntegerUnion})
 
 Construct a divisor on a C-star surface as a linear combination
 of the the torus invariant prime divisors. 
@@ -23,21 +23,21 @@ julia> coefficients(D)
 ```
 
 """
-cstar_surface_divisor(X :: CStarSurface, coeffs :: Vector{<:Oscar.IntegerUnion}) = mori_dream_space_divisor(X, coeffs)
+cstar_surface_divisor(X :: CStarSurface, coeffs :: Vector{<:IntegerUnion}) = mori_dream_space_divisor(X, coeffs)
 
-cstar_surface_divisor(X :: CStarSurface{EE}, coeffs :: DoubleVector{<:Oscar.IntegerUnion}) = 
+cstar_surface_divisor(X :: CStarSurface{EE}, coeffs :: DoubleVector{<:IntegerUnion}) = 
 cstar_surface_divisor(X, vcat(coeffs...))
 
-cstar_surface_divisor(X :: CStarSurface{PE}, coeffs :: DoubleVector{T}, coeff_plus :: T) where {T <: Oscar.IntegerUnion} = 
+cstar_surface_divisor(X :: CStarSurface{PE}, coeffs :: DoubleVector{T}, coeff_plus :: T) where {T <: IntegerUnion} = 
 cstar_surface_divisor(X, vcat(coeffs..., [coeff_plus]))
 
-cstar_surface_divisor(X :: CStarSurface{EP}, coeffs :: DoubleVector{T}, coeff_minus :: T) where {T <: Oscar.IntegerUnion} = 
+cstar_surface_divisor(X :: CStarSurface{EP}, coeffs :: DoubleVector{T}, coeff_minus :: T) where {T <: IntegerUnion} = 
 cstar_surface_divisor(X, vcat(coeffs..., [coeff_minus]))
 
-cstar_surface_divisor(X :: CStarSurface{PP}, coeffs :: DoubleVector{T}, coeff_plus :: T, coeff_minus :: T) where {T <: Oscar.IntegerUnion} = 
+cstar_surface_divisor(X :: CStarSurface{PP}, coeffs :: DoubleVector{T}, coeff_plus :: T, coeff_minus :: T) where {T <: IntegerUnion} = 
 cstar_surface_divisor(X, vcat(coeffs..., [coeff_plus, coeff_minus]))
 
-cstar_surface_divisor(X :: CStarSurface, coeffs :: Vector{Vector{T}}, coeffs_plus_minus...) where {T <: Oscar.IntegerUnion} = 
+cstar_surface_divisor(X :: CStarSurface, coeffs :: Vector{Vector{T}}, coeffs_plus_minus...) where {T <: IntegerUnion} = 
 cstar_surface_divisor(X, DoubleVector(coeffs), coeffs_plus_minus...)
 
 

@@ -14,7 +14,7 @@ reset_attributes!(xs :: AbstractVector) = map(reset_attributes!, xs)
 
 # i-th canonical basis vector, with the convention that the zeroth 
 # one has minus ones everywhere
-function basis_vector(::Type{T}, n, i) where {T <: Oscar.IntegerUnion}
+function basis_vector(::Type{T}, n, i) where {T <: IntegerUnion}
     @req i >= 0 "index cannot be negative"
     @req i <= n "index cannot exceed n"
     i == 0 && return fill(T(-1), n)

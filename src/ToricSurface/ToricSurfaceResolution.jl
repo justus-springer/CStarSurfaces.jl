@@ -31,7 +31,7 @@ end
 Return the Hirzebruch-Jung continued fraction associated to `x/y`.
 
 """
-function hirzebruch_jung(x :: T, y :: T) where {T <: Oscar.IntegerUnion}
+function hirzebruch_jung(x :: T, y :: T) where {T <: IntegerUnion}
     res = T[]
     while y > 0
         push!(res, (x + mod(-x, y)) ÷ y)
@@ -72,7 +72,7 @@ Return the hilbert basis of a two-dimensional cone spanned by given integral
 vectors `v1` and `v2`.
 
 """
-function hilbert_basis_2D(v1 :: Vector{T}, v2 :: Vector{T}) where {T <: Oscar.IntegerUnion}
+function hilbert_basis_2D(v1 :: Vector{T}, v2 :: Vector{T}) where {T <: IntegerUnion}
     hb = hilbert_basis_2D(matrix(ZZ, [v1[1] v2[1] ; v1[2] v2[2]]))
     return [[v[1,1], v[2,1]] for v in hb]
 end

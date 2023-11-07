@@ -66,7 +66,7 @@ julia> gen_matrix(X)
 """
 cstar_surface(ls :: Vector{Vector{Int64}}, ds :: Vector{Vector{Int64}}, case :: Symbol) = cstar_surface(DoubleVector(ls), DoubleVector(ds), case)
 
-function _is_cstar_column(v :: Vector{T}) where {T <: Oscar.IntegerUnion}
+function _is_cstar_column(v :: Vector{T}) where {T <: IntegerUnion}
     r = length(v) - 1
     v0 = v[begin : end-1]
     l = maximum(abs.(v0))
@@ -1022,7 +1022,7 @@ julia> gen_matrix(Y)
         for (x, divs) in ex_div for k = 1 : length(divs) 
         if divs[k] * divs[k] == -1]
 
-    while !is_empty(contractible_curves)
+    while !isempty(contractible_curves)
         x, k, d = first(contractible_curves)
         Y = contract_prime_divisor(d)
         deleteat!(ex_div[x], k)
