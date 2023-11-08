@@ -3,7 +3,8 @@ import Base:
     +, 
     -, 
     one,
-    deleteat!
+    deleteat!,
+    parent
 
 import Oscar:
     anticanonical_divisor,
