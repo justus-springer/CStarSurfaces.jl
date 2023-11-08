@@ -13,22 +13,6 @@ function normal_toric_variety(P :: MatElem; non_redundant :: Bool)
     normal_toric_variety(P, cones, non_redundant=non_redundant)
 end
 
-@doc raw"""
-    affine_toric_charts(X :: NormalToricVarietyType)
-
-Return the affine toric charts of a normal toric variety. The result is a
-dictionary indexed by the maximal cones of `X`.
-
-"""
-@attr function affine_toric_charts(X :: NormalToricVarietyType)
-    P = gen_matrix(X)
-    charts = Dict{Vector{Int}, NormalToricVariety}()
-    for c in maximal_cones_indices(X)
-        charts[c] = normal_toric_variety(transpose(P[:, c]), [collect(1:length(c))]; non_redundant=true)
-    end
-    return charts
-end
-
 
 @doc raw"""
     affine_toric_chart(X :: NormalToricVarietyType, c :: Vector{Int64})
@@ -36,7 +20,10 @@ end
 Return the affine toric chart associated to a cone `c`, given by a list of ray indices.
 
 """
-affine_toric_chart(X :: NormalToricVarietyType, c :: Vector{Int64}) = affine_toric_charts(X)[c]
+function affine_toric_chart(X :: NormalToricVarietyType, c :: Vector{Int64})
+    P = gen_matrix(X)
+    return normal_toric_variety(transpose(P[:, c]), [collect(1:length(c))]; non_redundant=true)
+end
 
 @doc raw"""
     remove_torusfactor(X :: NormalToricVarietyType)

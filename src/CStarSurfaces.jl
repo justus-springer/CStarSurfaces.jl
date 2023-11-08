@@ -22,6 +22,8 @@ include("ToricSurface/Resolution.jl")
 include("ToricSurface/ToricSurface.jl")
 include("ToricSurface/normal_form.jl")
 include("ToricSurface/ToricSurfaceDivisor.jl")
+include("ToricSurface/Point.jl")
+include("ToricSurface/FixedPoint.jl")
 
 include("CStarSurface/ZeroVector.jl")
 include("CStarSurface/DoubleVector.jl")
@@ -35,6 +37,8 @@ include("CStarSurface/FixedPoint.jl")
 
 include("SurfaceWithTorusAction/SurfaceWithTorusAction.jl")
 include("SurfaceWithTorusAction/Divisor.jl")
+include("SurfaceWithTorusAction/Point.jl")
+include("SurfaceWithTorusAction/FixedPoint.jl")
 
 include("Database/DatabaseAdapter.jl")
 include("Database/SQLiteAdapter.jl")

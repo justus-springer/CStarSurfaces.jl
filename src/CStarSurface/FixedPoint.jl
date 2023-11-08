@@ -7,9 +7,6 @@ A fixed point on a $\mathbb{C}^*$-surface.
 """
 abstract type CStarSurfaceFixedPoint{T} <: CStarSurfacePoint{T} end
 
-cox_coordinates(x :: CStarSurfaceFixedPoint{T}) where {T <: CStarSurfaceCase} = 
-[i ∈ orbit_cone(x) ? 0 : 1 for i = 1 : nrays(parent(x))]
-
 
 #################################################
 # Elliptic fixed points
@@ -135,7 +132,7 @@ Base.parent(x :: HyperbolicFixedPoint) = x.parent
 
 Base.show(io :: IO, x :: HyperbolicFixedPoint) = print(io, "hyperbolic fixed point x($(x.i), $(x.j))")
 
-orbit_cone(x :: HyperbolicFixedPoint) = _tau(parent(x), x.i, x.j)
+@attr orbit_cone(x :: HyperbolicFixedPoint) = _tau(parent(x), x.i, x.j)
 
 
 @doc raw"""
@@ -202,7 +199,7 @@ Base.parent(x :: ParabolicFixedPointPlus) = x.parent
 
 Base.show(io :: IO, x :: ParabolicFixedPointPlus) = print(io, "parabolic fixed point x^+($(x.i))")
 
-orbit_cone(x :: ParabolicFixedPointPlus) = _tau_plus(parent(x), x.i)
+@attr orbit_cone(x :: ParabolicFixedPointPlus) = _tau_plus(parent(x), x.i)
 
 
 @doc raw"""
@@ -251,7 +248,7 @@ Base.parent(x :: ParabolicFixedPointMinus) = x.parent
 
 Base.show(io :: IO, x :: ParabolicFixedPointMinus) = print(io, "parabolic fixed point x^-($(x.i))")
 
-orbit_cone(x :: ParabolicFixedPointMinus) = _tau_minus(parent(x), x.i)
+@attr orbit_cone(x :: ParabolicFixedPointMinus) = _tau_minus(parent(x), x.i)
 
 
 @doc raw"""

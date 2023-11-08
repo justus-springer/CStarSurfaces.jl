@@ -1,8 +1,12 @@
+export ToricSurfacePoint
+export ToricSurfaceFixedPoint
+export SurfaceWithTorusActionFixedPoint
+export SurfaceWithTorusActionPoint
+export toric_surface_fixed_point
 export AdmissibleOperation
 export AdmissibleRowOperation
 export admits_kaehler_einstein_metric
 export affine_toric_chart
-export affine_toric_charts
 export all2
 export anticanonical_divisor
 export anticanonical_self_intersection
