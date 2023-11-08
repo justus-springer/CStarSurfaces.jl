@@ -44,7 +44,7 @@ end
     new_vs = deepcopy(vs)
 
     v1, v2 = vs[c[1]], vs[c[2]]
-    new_rays, discrepancies = toric_affine_surface_resolution(v1, v2) 
+    new_rays :: Vector{Vector{Int}}, discrepancies :: Vector{Rational{Int}} = toric_affine_surface_resolution(v1, v2) 
     new_vs = [vs ; new_rays]
     Y = toric_surface(new_vs)
 

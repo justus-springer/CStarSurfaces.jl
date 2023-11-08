@@ -53,7 +53,7 @@ end
 
 @testset "examples - (C-star) maximal log canonicity" begin
     for i = 1 : length(Xs)
-        @test maximal_log_canonicity(Xs[i]) == df[i, "maximalLogCanonicity"]
+        @test log_canonicity(Xs[i]) == df[i, "maximalLogCanonicity"]
     end
 end
 

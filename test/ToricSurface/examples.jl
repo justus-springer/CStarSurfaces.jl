@@ -1,6 +1,6 @@
 # Loads in a list of 200 randomly chosen examples from the ldp-database
 filepath = joinpath(dirname(@__FILE__), "toricsurfaces.tsv")
-# EXAMPLES_FILE = "test/CStarSurface/cstarsurfaces.tsv"
+# filepath = "test/ToricSurface/toricsurfaces.tsv"
 
 df = CSV.read(filepath, DataFrame, delim='\t', types=TSV_COLUMN_TYPES)
 
@@ -46,7 +46,7 @@ end
 
 @testset "examples (toric) - maximal log canonicity" begin
     for i = 1 : length(Xs)
-        @test maximal_log_canonicity(Xs[i]) == df[i, "maximalLogCanonicity"]
+        @test log_canonicity(Xs[i]) == df[i, "maximalLogCanonicity"]
     end
 end
 

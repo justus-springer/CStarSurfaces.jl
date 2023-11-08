@@ -90,7 +90,7 @@ end
 
 @attr maximal_cones_indices(X :: ToricSurface) = [[i, _next_ray_index(X, i)] for i = 1 : nrays(X)]
 
-@attr canonical_toric_ambient(X :: ToricSurface) = normal_toric_variety(rays(X), maximal_cones_indices(X))
+@attr canonical_toric_ambient(X :: ToricSurface) = normal_toric_variety(rays(X), maximal_cones_indices(X); non_redundant = true)
 
 
 @doc raw"""

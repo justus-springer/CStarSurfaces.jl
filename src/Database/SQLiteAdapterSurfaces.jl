@@ -68,9 +68,9 @@ _db_gorenstein_index(X :: SurfaceWithTorusAction) = Int(gorenstein_index(X))
 
 _db_picard_index(X :: SurfaceWithTorusAction) = Int(picard_index(X))
 
-_db_maximal_log_canonicity_numerator(X :: SurfaceWithTorusAction) = Int(numerator(maximal_log_canonicity(X)))
+_db_maximal_log_canonicity_numerator(X :: SurfaceWithTorusAction) = Int(numerator(log_canonicity(X)))
 
-_db_maximal_log_canonicity_denominator(X :: SurfaceWithTorusAction) = Int(denominator(maximal_log_canonicity(X)))
+_db_maximal_log_canonicity_denominator(X :: SurfaceWithTorusAction) = Int(denominator(log_canonicity(X)))
 
 _db_anticanonical_self_intersection_numerator(X :: SurfaceWithTorusAction) = Int(numerator(anticanonical_self_intersection(X)))
 
