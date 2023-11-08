@@ -74,7 +74,7 @@ vectors `v1` and `v2`.
 """
 function hilbert_basis_2D(v1 :: Vector{T}, v2 :: Vector{T}) where {T <: IntegerUnion}
     hb = hilbert_basis_2D(matrix(ZZ, [v1[1] v2[1] ; v1[2] v2[2]]))
-    return [[v[1,1], v[2,1]] for v in hb]
+    return [[T(v[1,1]), T(v[2,1])] for v in hb]
 end
 
 function primitivize(v :: Vector) 
@@ -135,7 +135,7 @@ with primitive generator `w` into the cone spanned by the vectors `v1` and
 
 """
 discrepancy(v1 :: Vector, v2 :: Vector, w :: Vector) = 
-norm_ratio(w, intersect_lines_2D(v1, v2, [0, 0], w)) - 1
+Rational(norm_ratio(w, intersect_lines_2D(v1, v2, [0, 0], w)) - 1)
 
 
 @doc raw"""

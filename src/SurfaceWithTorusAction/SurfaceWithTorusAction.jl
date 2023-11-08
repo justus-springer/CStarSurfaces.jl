@@ -82,7 +82,7 @@ canonical_resolution_discrepancies(X :: SurfaceWithTorusAction) = canonical_reso
 
 
 @doc raw"""
-    maximal_log_canonicity(X :: SurfaceWithTorusAction)
+    log_canonicity(X :: SurfaceWithTorusAction)
 
 Given a surface with torus action $X$, return the maximal rational number
 $\varepsilon$ such that $X$ is $\varepsilon$-log canonical. By definition,
@@ -91,19 +91,12 @@ this is the minimal discrepancy in the resolution of singularities plus one.
 # Example
 
 ```jldoctest
-julia> maximal_log_canonicity(cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee))
+julia> log_canonicity(cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee))
 1//1
 ```
 
 """
-@attr function maximal_log_canonicity(X :: SurfaceWithTorusAction) 
-    # we add a superficial zero into the list of discrepancies to ensure a
-    # well-defined (and correct) result in case there are no exceptional rays
-    # (i.e. the surface is already smooth).
-    ds = vcat([0], [d for (_,d) in canonical_resolution_discrepancies(X)]...)
-    # the maximal log canonicity equals the minimal discrepancy plus one
-    return minimum(ds) + 1
-end
+@attr log_canonicity(X :: SurfaceWithTorusAction) = minimum(map(log_canonicity, fixed_points(X)))
 
 
 @doc raw"""
