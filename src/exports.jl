@@ -1,4 +1,6 @@
 export ToricSurfacePoint
+export singularities
+export number_of_singularities
 export ToricSurfaceFixedPoint
 export SurfaceWithTorusActionFixedPoint
 export SurfaceWithTorusActionPoint
