@@ -113,7 +113,7 @@ export map2
 export map_from_class_group_to_local_class_group
 export map_from_picard_group_to_class_group
 export maximal_cones_indices
-export maximal_log_canonicity
+export log_canonicity
 export minimal_resolution
 export minimal_resolution_discrepancies
 export minimal_resolution_exceptional_divisors

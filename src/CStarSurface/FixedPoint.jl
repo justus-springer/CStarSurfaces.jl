@@ -56,6 +56,37 @@ Return the elliptic fixed point $x^+$ of a $\mathbb{C}^*$-surface of type
 _almost_all_one(first.(_slope_ordered_l(parent(x))))
 
 
+@attr function canonical_resolution(x :: EllipticFixedPointPlus)
+    X = parent(x)
+    ns, r = _ns(X), _r(X) 
+    l, d = _slope_ordered_l(X), _slope_ordered_d(X)
+
+    new_l, new_d = deepcopy(X.l), deepcopy(X.d)
+    discrepancies = Rational{Int}[]
+    for i = 0 : r
+        v = [first(l[i]), first(d[i])]
+        new_rays, new_discrepancies = toric_affine_surface_resolution(v, [0, _d_plus(X)])
+        append!(new_l[i], map(first, new_rays))
+        append!(new_d[i], map(last, new_rays))
+        append!(discrepancies, new_discrepancies)
+    end
+
+    new_case = X.case == :ee ? :pe : :pp
+    Y = cstar_surface(new_l, new_d, new_case)
+
+    exceptional_divisors = CStarSurfaceDivisor[]
+    for i = 0 : r
+        append!(exceptional_divisors, [invariant_divisor(Y, i, j) for j = ns[i] + 1 : length(new_l[i])])
+    end
+
+    push!(exceptional_divisors, D_plus(Y))
+    push!(discrepancies, _l_plus(X) // m_plus(X) - 1)
+
+    return (Y, exceptional_divisors, discrepancies)
+
+end
+
+
 @doc raw"""
     EllipticFixedPointMinus{T <: Union{EE,PE}} <: EllipticFixedMinus{T}
 
@@ -89,6 +120,78 @@ Return the elliptic fixed point $x^-$ of a $\mathbb{C}^*$-surface of type
 
 @attr is_quasismooth(x :: EllipticFixedPointMinus) =
 _almost_all_one(last.(_slope_ordered_l(parent(x))))
+
+
+@attr function canonical_resolution(x :: EllipticFixedPointMinus)
+    X = parent(x)
+    ns, r = _ns(X), _r(X) 
+    l, d = _slope_ordered_l(X), _slope_ordered_d(X)
+
+    new_l, new_d = deepcopy(X.l), deepcopy(X.d)
+    discrepancies = Rational{Int}[]
+    for i = 0 : r
+        v = [last(l[i]), last(d[i])]
+        new_rays, new_discrepancies = toric_affine_surface_resolution(v, [0, -_d_minus(X)])
+        append!(new_l[i], map(first, new_rays))
+        append!(new_d[i], map(last, new_rays))
+        append!(discrepancies, new_discrepancies)
+    end
+
+    new_case = X.case == :ee ? :ep : :pp
+    Y = cstar_surface(new_l, new_d, new_case)
+
+    exceptional_divisors = CStarSurfaceDivisor[]
+    for i = 0 : r
+        append!(exceptional_divisors, [invariant_divisor(Y, i, j) for j = ns[i] + 1 : length(new_l[i])])
+    end
+
+    push!(exceptional_divisors, D_minus(Y))
+    push!(discrepancies, _l_minus(X) // m_minus(X) - 1)
+
+    return (Y, exceptional_divisors, discrepancies)
+
+end
+
+
+@attr function minimal_resolution(x :: EllipticFixedPoint)
+    (Y, divs, discrepancies) = deepcopy(canonical_resolution(x))
+
+    contractible_curves = [(k, divs[k]) 
+        for k = 1 : length(divs)
+        if divs[k] * divs[k] == -1]
+
+    while !isempty(contractible_curves)
+        k, d = first(contractible_curves)
+        Y = contract_prime_divisor(d)
+        deleteat!(divs, k)
+        deleteat!(discrepancies, k)
+
+        # adjust the coefficients of the remaining exceptional divisors
+        d_case, inds = is_prime_with_double_indices(d)
+        m = number_of_parabolic_fixed_point_curves(Y)
+        for l = 1 : length(divs)
+            if d_case == :D_ij
+                i, j = inds
+                new_coeffs = deleteat!(double_coefficients(divs[l]), i, j)
+                last_coeffs = coefficients(divs[l])[end-m+1 : end]
+                new_d = cstar_surface_divisor(Y, new_coeffs, last_coeffs...)
+            else
+                k = inds
+                new_coeffs = deleteat!(coefficients(divs[l]), k)
+                new_d = cstar_surface_divisor(Y, new_coeffs)
+            end
+            divs[l] = new_d
+        end
+
+        contractible_curves = [(k, divs[k]) 
+            for k = 1 : length(divs)
+            if divs[k] * divs[k] == -1]
+
+    end
+
+    return (Y, divs, discrepancies)
+
+end
 
 
 @doc raw"""
@@ -160,7 +263,32 @@ function hyperbolic_fixed_point(X :: CStarSurface, i :: Int, j :: Int)
     return hyperbolic_fixed_points(X)[i][j]
 end
 
+
 @attr is_quasismooth(x :: HyperbolicFixedPoint) = true
+
+
+@attr function canonical_resolution(x :: HyperbolicFixedPoint)
+    X, i, j = parent(x), x.i, x.j
+    ns, r = _ns(X), _r(X) 
+    l, d = _slope_ordered_l(X), _slope_ordered_d(X)
+    v1, v2 = [l[i][j], d[i][j]], [l[i][j+1], d[i][j+1]]
+    
+    new_l, new_d = deepcopy(X.l), deepcopy(X.d)
+    new_rays, discrepancies = toric_affine_surface_resolution(v1, v2)
+    append!(new_l[i], map(first, new_rays))
+    append!(new_d[i], map(last, new_rays))
+
+    Y = cstar_surface(new_l, new_d, X.case)
+
+    exceptional_divisors = [invariant_divisor(Y, i, j) for j = ns[i] + 1 : length(new_l[i])]
+
+    return (Y, exceptional_divisors, discrepancies)
+
+end
+
+
+@attr minimal_resolution(x :: HyperbolicFixedPoint) = canonical_resolution(x)
+
 
 #################################################
 # Parabolic fixed points
@@ -218,6 +346,7 @@ ZeroVector([ParabolicFixedPointPlus(X, i) for i = 0 : nblocks(X) - 1])
 Return the parabolic fixed point $x_i^+$ of a $\mathbb{C}^*$-surface, where $0
 ≤ i ≤ r$.
 
+
 """
 function parabolic_fixed_point_plus(X :: CStarSurface{<:Union{PE,PP}}, i :: Int)
     r = nblocks(X) - 1
@@ -225,6 +354,25 @@ function parabolic_fixed_point_plus(X :: CStarSurface{<:Union{PE,PP}}, i :: Int)
     return parabolic_fixed_points_plus(X)[i]
 end
 
+
+@attr function canonical_resolution(x :: ParabolicFixedPointPlus)
+    X, i = parent(x), x.i
+    ns, r = _ns(X), _r(X) 
+    l, d = _slope_ordered_l(X), _slope_ordered_d(X)
+
+    new_l, new_d = deepcopy(X.l), deepcopy(X.d)
+    v = [first(l[i]), first(d[i])]
+    new_rays, discrepancies = toric_affine_surface_resolution(v, [0, 1])
+    append!(new_l[i], map(first, new_rays))
+    append!(new_d[i], map(last, new_rays))
+
+    Y = cstar_surface(new_l, new_d, X.case)
+
+    exceptional_divisors = [invariant_divisor(Y, i, j) for j = ns[i] + 1 : length(new_l[i])]
+
+    return (Y, exceptional_divisors, discrepancies)
+
+end
 
 @doc raw"""
     ParabolicFixedPointMinus{T<:Union{EP,PP}} <: ParabolicFixedPoint{T}
@@ -274,6 +422,27 @@ function parabolic_fixed_point_minus(X :: CStarSurface{<:Union{EP,PP}}, i :: Int
     return parabolic_fixed_points_minus(X)[i]
 end
 
+
+@attr function canonical_resolution(x :: ParabolicFixedPointMinus)
+    X, i = parent(x), x.i
+    ns, r = _ns(X), _r(X) 
+    l, d = _slope_ordered_l(X), _slope_ordered_d(X)
+
+    new_l, new_d = deepcopy(X.l), deepcopy(X.d)
+    v = [last(l[i]), last(d[i])]
+    new_rays, discrepancies = toric_affine_surface_resolution(v, [0, -1])
+    append!(new_l[i], map(first, new_rays))
+    append!(new_d[i], map(last, new_rays))
+
+    Y = cstar_surface(new_l, new_d, X.case)
+
+    exceptional_divisors = [invariant_divisor(Y, i, j) for j = ns[i] + 1 : length(new_l[i])]
+
+    return (Y, exceptional_divisors, discrepancies)
+
+end
+
+@attr minimal_resolution(x :: ParabolicFixedPoint) = canonical_resolution(x)
 
 @doc raw"""
     parabolic_fixed_points(X :: CStarSurface)

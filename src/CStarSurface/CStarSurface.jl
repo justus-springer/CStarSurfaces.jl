@@ -695,8 +695,8 @@ julia> discr[x_plus(X)]
     ns, r = _ns(X), _r(X) 
     l, d = _slope_ordered_l(X), _slope_ordered_d(X)
 
-    discrepancies = Dict{Vector{Int}, Vector{Rational{Int}}}()
-    ex_div_indices = Dict{Vector{Int}, Vector{Tuple{Int, Int}}}()
+    discrepancies = Dict{CStarSurfaceFixedPoint, Vector{Rational{Int}}}()
+    ex_div_indices = Dict{CStarSurfaceFixedPoint, Vector{Tuple{Int, Int}}}()
 
     new_l, new_d = deepcopy(X.l), deepcopy(X.d)
 
@@ -764,7 +764,7 @@ julia> discr[x_plus(X)]
 
     Y = cstar_surface(new_l, new_d, :pp)
 
-    ex_div = Dict{Vector{Int}, Vector{CStarSurfaceDivisor}}([c => [invariant_divisor(Y, ij...) for ij in inds] for (c, inds) in ex_div_indices]) 
+    ex_div = Dict{CStarSurfaceFixedPoint, Vector{CStarSurfaceDivisor}}([c => [invariant_divisor(Y, ij...) for ij in inds] for (c, inds) in ex_div_indices]) 
 
     if has_x_plus(X)
         push!(ex_div[x_plus(X)], D_plus(Y))
