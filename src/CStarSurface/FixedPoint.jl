@@ -7,6 +7,9 @@ A fixed point on a $\mathbb{C}^*$-surface.
 """
 abstract type CStarSurfaceFixedPoint{T} <: CStarSurfacePoint{T} end
 
+cox_coordinates(x :: CStarSurfaceFixedPoint{T}) where {T <: CStarSurfaceCase} = 
+[i ∈ orbit_cone(x) ? 0 : 1 for i = 1 : nrays(parent(x))]
+
 
 #################################################
 # Elliptic fixed points
