@@ -63,3 +63,6 @@ is_complete_intersection(R :: MPolyRing) = true
 
 centroid(P :: Polyhedron{QQFieldElem}) = P.pm_polytope.CENTROID[begin+1 : end]
 
+
+# Checks whether at most two entries in a list are greater than one
+_almost_all_one(v :: AbstractVector) = length(filter(x -> x > 1, v)) <= 2

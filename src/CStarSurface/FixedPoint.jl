@@ -55,6 +55,9 @@ Return the elliptic fixed point $x^+$ of a $\mathbb{C}^*$-surface of type
 """
 @attr x_plus(X :: CStarSurface{<:Union{EE,EP}}) = EllipticFixedPointPlus(X)
 
+@attr is_quasismooth(x :: EllipticFixedPointPlus) =
+_almost_all_one(first.(_slope_ordered_l(parent(x))))
+
 
 @doc raw"""
     EllipticFixedPointMinus{T <: Union{EE,PE}} <: EllipticFixedMinus{T}
@@ -85,6 +88,10 @@ Return the elliptic fixed point $x^-$ of a $\mathbb{C}^*$-surface of type
 
 """
 @attr x_minus(X :: CStarSurface{<:Union{EE,PE}}) = EllipticFixedPointMinus(X)
+
+
+@attr is_quasismooth(x :: EllipticFixedPointMinus) =
+_almost_all_one(last.(_slope_ordered_l(parent(x))))
 
 
 @doc raw"""
@@ -156,6 +163,7 @@ function hyperbolic_fixed_point(X :: CStarSurface, i :: Int, j :: Int)
     return hyperbolic_fixed_points(X)[i][j]
 end
 
+@attr is_quasismooth(x :: HyperbolicFixedPoint) = true
 
 #################################################
 # Parabolic fixed points
@@ -170,6 +178,7 @@ A parabolic fixed point on a $\mathbb{C}^*$-surface.
 """
 abstract type ParabolicFixedPoint{T} <: CStarSurfaceFixedPoint{T} end
 
+@attr is_quasismooth(x :: ParabolicFixedPoint) = true
 
 @doc raw"""
     ParabolicFixedPointPlus{T<:Union{PE,PP}} <: ParabolicFixedPoint{T}

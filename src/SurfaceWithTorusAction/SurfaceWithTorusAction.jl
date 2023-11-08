@@ -20,7 +20,8 @@ This uses the formula from [Sp23](@cite) and is faster than the more general
 implementation.
 
 """
-picard_index(X :: SurfaceWithTorusAction) = prod(values(local_picard_indices(X))) / class_group_torsion_order(X)
+picard_index(X :: SurfaceWithTorusAction) = 
+prod([order(class_group(x)) for x in fixed_points(X)]) / class_group_torsion_order(X)
 
 
 @doc raw"""

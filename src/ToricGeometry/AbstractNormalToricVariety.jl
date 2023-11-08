@@ -56,67 +56,6 @@ function remove_torusfactor(X :: NormalToricVarietyType)
     normal_toric_variety(transpose(new_P), maximal_cones_indices(X); non_redundant=true)
 end
 
-#################################################
-# Local class groups
-#################################################
-
-@doc raw"""
-    local_class_groups(X :: NormalToricVarietyType)
-
-Compute the local class groups of a normal toric variety `X`. The result is 
-a dictionary indexed by the maximal cones of `X`.
-
-"""
-@attr local_class_groups(X :: NormalToricVarietyType) =
-Dict([(c, class_group(U)) for (c,U) in affine_toric_charts(X)])
-
-
-@doc raw"""
-    local_class_group(X :: NormalToricVarietyType, c :: Vector{Int64})
-
-Compute the local class group of a normal toric variety `X` at a maximal
-cone `c` given by a vector of indices.
-
-"""
-local_class_group(X :: NormalToricVarietyType, c :: Vector{Int64}) =
-local_class_groups(X)[c]
-
-
-@doc raw"""
-    maps_from_class_group_to_local_class_groups(X :: NormalToricVarietyType)
-
-Compute the canonical maps from the class group of a normal toric variety to 
-its local class groups. The result is a dictionary indexed by the maximal 
-cones of `X`.
-
-"""
-@attr function maps_from_class_group_to_local_class_groups(X :: NormalToricVarietyType)
-    K, f = cokernel(map_from_character_lattice_to_torusinvariant_weil_divisor_group(X))
-    maps = Dict{Vector{Int}, GrpAbFinGenMap}()
-    for c in maximal_cones_indices(X)
-        U = affine_toric_chart(X, c)
-        KU, fU = cokernel(map_from_character_lattice_to_torusinvariant_weil_divisor_group(U))
-        m = zero_matrix(ZZ, nrays(X), nrays(U))
-        for i in 1:length(c)
-            m[c[i],i] = 1
-        end
-        f = snf(K)[2] * hom(K, KU, m) * inv(snf(KU)[2])
-        maps[c] = hom(class_group(X), local_class_group(X,c), matrix(f))
-    end
-    return maps
-end
-
-
-@doc raw"""
-    map_from_class_group_to_local_class_group(X :: NormalToricVarietyType, c :: Vector{Int64})
-
-Compute the canonical map from the class group of a normal toric variety `X` to
-its local class group at a cone `c`, given by a vector of indices.
-
-"""
-map_from_class_group_to_local_class_group(X :: NormalToricVarietyType, c :: Vector{Int64}) =
-maps_from_class_group_to_local_class_groups(X)[c]
-
 
 #################################################
 # Cones in the rational class group

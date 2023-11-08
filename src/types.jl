@@ -9,7 +9,8 @@
 Julia type for Mori Dream Spaces.
 
 Subtypes of `MoriDreamSpace` should at least implement the following
-methods: [`canonical_toric_ambient`](@ref), [`cox_ring_relations`](@ref).
+methods: [`canonical_toric_ambient`](@ref), [`cox_ring_relations`](@ref),
+[`is_quasismooth`](@ref).
 
 """
 abstract type MoriDreamSpace end

@@ -35,6 +35,7 @@ import Oscar:
     interior_lattice_points,
     is_simplicial,
     is_smooth,
+    is_trivial,
     map_from_character_lattice_to_torusinvariant_weil_divisor_group,
     map_from_picard_group_to_class_group,
     MatElem,

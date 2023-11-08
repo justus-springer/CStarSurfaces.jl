@@ -302,7 +302,6 @@ has a single quadratic relation.
 nblocks(X) == 3 && all(ls -> sum(ls) == 2, X.l)
 
 
-_almost_all_one(v :: AbstractVector) = length(filter(x -> x > 1, v)) <= 2
 
 @doc raw"""
     is_quasismooth(X :: CStarSurface)
@@ -321,18 +320,7 @@ true
 ```
 
 """
-@attr is_quasismooth(X :: CStarSurface{EE}) =
-_almost_all_one(first.(_slope_ordered_l(X))) &&
-_almost_all_one(last.(_slope_ordered_l(X)))
-
-@attr is_quasismooth(X :: CStarSurface{PE}) =
-_almost_all_one(last.(_slope_ordered_l(X)))
-
-@attr is_quasismooth(X :: CStarSurface{EP}) =
-_almost_all_one(first.(_slope_ordered_l(X)))
-
-@attr is_quasismooth(X :: CStarSurface{PP}) = true
-
+@attr is_quasismooth(X :: CStarSurface) = all(is_quasismooth, fixed_points(X))
 
 #################################################
 # Construction of canonical toric ambient

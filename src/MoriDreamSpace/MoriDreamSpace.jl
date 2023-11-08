@@ -149,7 +149,7 @@ false
 
 
 @doc raw"""
-    is_smooth(X :: MoriDreamSpace
+    is_smooth(X :: MoriDreamSpace)
 
 Checks whether a Mori Dream Space is smooth, i.e. factorial and quasismooth.
 
@@ -311,61 +311,3 @@ julia> gorenstein_index(cstar_surface([[1, 1], [11], [5]], [[0, -2], [9], [3]], 
     order(f(c))
 end
 
-@doc raw"""
-    local_class_groups(X :: MoriDreamSpace)
-
-Compute the local class groups of a Mori Dream Space `X`. The result is 
-a dictionary indexed by the maximal cones of `X`.
-
-# Example
-
-```jldoctest
-julia> local_class_groups(cstar_surface([[2, 2], [2], [4]], [[3, -3], [1], [1]], :ee))
-Dict{Vector{Int64}, GrpAbFinGen} with 3 entries:
-  [1, 3, 4] => Abelian group with structure: Z/2 x Z/18
-  [2, 3, 4] => Abelian group with structure: Z/2 x Z/6
-  [1, 2]    => Abelian group with structure: Z/12
-```
-
-"""
-@attr local_class_groups(X :: MoriDreamSpace) = local_class_groups(canonical_toric_ambient(X))
-
-
-@doc raw"""
-    local_class_group(X :: MoriDreamSpace, c :: Vector{Int64})
-
-Compute the local class group of a Mori Dream Space `X` at a maximal
-cone `c` given by a vector of indices.
-
-# Example
-
-```jldoctest
-julia> local_class_group(cstar_surface([[2, 2], [2], [4]], [[3, -3], [1], [1]], :ee), [1, 2])
-GrpAb: Z/12
-```
-
-"""
-local_class_group(X :: MoriDreamSpace, c :: Vector{Int64}) = local_class_groups(X)[c]
-
-
-@doc raw"""
-    maps_from_class_group_to_local_class_groups(X :: MoriDreamSpace)
-
-Compute the canonical maps from the class group of a Mori Dream Space to 
-its local class groups. The result is a dictionary indexed by the maximal 
-cones of `X`.
-
-"""
-@attr maps_from_class_group_to_local_class_groups(X :: MoriDreamSpace) =
-maps_from_class_group_to_local_class_groups(canonical_toric_ambient(X))
-
-
-@doc raw"""
-    map_from_class_group_to_local_class_group(X :: MoriDreamSpace, c :: Vector{Int64})
-
-Compute the canonical map from the class group of a Mori Dream Space `X` to
-its local class group at a cone `c`, given by a vector of indices.
-
-"""
-map_from_class_group_to_local_class_group(X :: MoriDreamSpace, c :: Vector{Int64}) =
-maps_from_class_group_to_local_class_groups(X)[c]
