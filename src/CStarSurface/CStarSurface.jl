@@ -260,6 +260,14 @@ _m(X :: CStarSurface{EP}) = 1
 _m(X :: CStarSurface{PP}) = 2
 
 
+@doc raw"""
+    number_of_parabolic_fixed_point_curves(X :: CStarSurface)
+
+Returns the number of parabolic fixed point curves of a $\mathbb{C}^*$-surface.
+
+"""
+@attr number_of_parabolic_fixed_point_curves(X :: CStarSurface) = _m(X)
+
 
 @doc raw"""
     slopes(X :: CStarSurface)
@@ -418,87 +426,6 @@ julia> rays(Z)
     return Z
 end
 
-
-@doc raw"""
-    D_plus(X :: CStarSurface{<:Union{PE,PP}})    
-
-Return the parabolic fixed point curve $D^+$ of a $\mathbb{C}^*$-surface of
-type (p-e) or (p-p).
-
-"""
-@attr D_plus(X :: CStarSurface{PE}) = 
-cstar_surface_divisor(X, [repeat([0], n) for n in _ns(X)], 1)
-@attr D_plus(X :: CStarSurface{PP}) = 
-cstar_surface_divisor(X, [repeat([0], n) for n in _ns(X)], 1, 0)
-
-
-@doc raw"""
-    D_minus(X :: CStarSurface{<:Union{EP,PP}})    
-
-Return the parabolic fixed point curve $D^-$ of a $\mathbb{C}^*$-surface of
-type (e-p) or (p-p).
-
-"""
-@attr D_minus(X :: CStarSurface{EP}) = 
-cstar_surface_divisor(X, [repeat([0], n) for n in _ns(X)], 1)
-@attr D_minus(X :: CStarSurface{PP}) = 
-cstar_surface_divisor(X, [repeat([0], n) for n in _ns(X)], 0, 1)
-
-
-@doc raw"""
-    parabolic_fixed_point_curves(X :: CStarSurface)   
-
-Return the parabolic fixed point curves of a $\mathbb{C}^*$-surface.
-
-"""
-@attr parabolic_fixed_point_curves(X :: CStarSurface{EE}) = CStarSurfaceDivisor{EE}[]
-@attr parabolic_fixed_point_curves(X :: CStarSurface{PE}) = [D_plus(X)]
-@attr parabolic_fixed_point_curves(X :: CStarSurface{EP}) = [D_minus(X)]
-@attr parabolic_fixed_point_curves(X :: CStarSurface{PP}) = [D_plus(X), D_minus(X)]
-
-
-@doc raw"""
-    number_of_parabolic_fixed_point_curves(X :: CStarSurface)
-
-Returns the number of parabolic fixed point curves of a $\mathbb{C}^*$-surface.
-
-"""
-@attr number_of_parabolic_fixed_point_curves(X :: CStarSurface) = _m(X)
-
-
-@doc raw"""
-    invariant_divisor(X :: CStarSurface, i :: Int, j :: Int)
-
-Return the $(i,j)$-th invariant divisor $D^{ij}_X$.
-
-"""
-function invariant_divisor(X :: CStarSurface, i :: Int, j :: Int)
-    r, ns, m = _r(X), _ns(X), _m(X)
-    @req 0 ≤ i ≤ r "must have 0 ≤ i ≤ r"
-    @req 1 ≤ j ≤ ns[i] "must have 1 ≤ j ≤ ns[i]"
-    coeffs = [repeat([0], n) for n in ns]
-    coeffs[i][j] = 1
-    m == 0 && return cstar_surface_divisor(X, coeffs)
-    m == 1 && return cstar_surface_divisor(X, coeffs, 0)
-    return cstar_surface_divisor(X, coeffs, 0, 0)
-end
-
-_invariant_divisors_core(X :: CStarSurface) = 
-DoubleVector([[invariant_divisor(X, i, j) for j = 1 : _ns(X)[i]] for i = 0 : _r(X)])
-
-
-@doc raw"""
-    invariant_divisors(X :: CStarSurface)
-
-Return all invariant divisors $D^{ij}_X, D^{\pm}_X$. The result is given as a
-pair with first entry the divisors of the form $D^{ij}$ and second entry the 
-divisors of the form $D^{\pm}$.
-
-"""
-@attr invariant_divisors(X :: CStarSurface{EE}) = (_invariant_divisors_core(X), CStarSurfaceDivisor{EE}[])
-@attr invariant_divisors(X :: CStarSurface{PE}) = (_invariant_divisors_core(X), [D_plus(X)])
-@attr invariant_divisors(X :: CStarSurface{EP}) = (_invariant_divisors_core(X), [D_minus(X)])
-@attr invariant_divisors(X :: CStarSurface{PP}) = (_invariant_divisors_core(X), [D_plus(X), D_minus(X)])
 
 #################################################
 # Cox Ring
