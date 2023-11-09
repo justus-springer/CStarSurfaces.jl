@@ -28,16 +28,20 @@ julia> gen_matrix(X)
 ```
 
 """
-function cstar_surface(ls :: DoubleVector{Int64}, ds :: DoubleVector{Int64}, case :: Symbol)
+function cstar_surface(ls :: DoubleVector{Int64}, ds :: DoubleVector{Int64}, case :: Type{<:CStarSurfaceCase})
     @req length(ls) == length(ds) "ls and ds must be of the same length"
     r = length(ls)
     @req all(i -> length(ls[i]) == length(ds[i]), axes(ls,1)) "ls[i] and ds[i] must be of the same length for all i"
     @req all2((l,d) -> gcd(l,d) == 1, ls, ds) "ls[i][j] and ds[i][j] must be coprime for all i and j"
 
-    return CStarSurface{_case_sym_to_type(case)}(ls, ds, case)
+    return CStarSurface{case}(ls, ds, _case_type_to_sym(case))
 
 end
 
+cstar_surface(ls :: DoubleVector{Int64}, ds :: DoubleVector{Int64}, case :: Symbol) = cstar_surface(ls, ds, _case_sym_to_type(case))
+
+cstar_surface(ls :: Vector{Vector{Int64}}, ds :: Vector{Vector{Int64}}, case :: Type{<:CStarSurfaceCase}) = 
+cstar_surface(DoubleVector(ls), DoubleVector(ds), case)
 
 @doc raw"""
     cstar_surface(ls :: Vector{Vector{Int64}}, ds :: Vector{Vector{Int64}}, case :: Symbol)
@@ -64,7 +68,8 @@ julia> gen_matrix(X)
 ```
 
 """
-cstar_surface(ls :: Vector{Vector{Int64}}, ds :: Vector{Vector{Int64}}, case :: Symbol) = cstar_surface(DoubleVector(ls), DoubleVector(ds), case)
+cstar_surface(ls :: Vector{Vector{Int64}}, ds :: Vector{Vector{Int64}}, case :: Symbol) = 
+cstar_surface(DoubleVector(ls), DoubleVector(ds), _case_sym_to_type(case))
 
 function _is_cstar_column(v :: Vector{T}) where {T <: IntegerUnion}
     r = length(v) - 1
@@ -644,16 +649,59 @@ _d_minus(X :: CStarSurface{PE}) = m_minus(X) // _l_minus(X)
 _d_minus(X :: CStarSurface{PP}) = 1
 
 
+function _minimal_or_canonical_resolution(X :: CStarSurface, is_minimal :: Bool)
+
+    r, ns = nblocks(X) - 1, block_sizes(X)
+
+    resolution_function = is_minimal ? minimal_resolution : canonical_resolution
+
+    resolutions = map(resolution_function, fixed_points(X))
+    Ys = first.(resolutions)
+
+    new_l, new_d = deepcopy(X.l), deepcopy(X.d)
+
+    for Y in Ys, i = 0 : r
+        append!(new_l[i], Y.l[i][ns[i] + 1 : end])
+        append!(new_d[i], Y.d[i][ns[i] + 1 : end])
+    end
+
+    new_case = sum([_case_sym_to_type(Y.case) for Y in Ys])
+    Y0 = cstar_surface(new_l, new_d, new_case)
+    m = number_of_parabolic_fixed_point_curves(Y0)
+
+    exceptional_divisors = CStarSurfaceDivisor{new_case}[]
+    discrepancies = Rational{Int}[]
+    for (Y, divs, discr) in resolutions
+        append!(discrepancies, discr)
+        for div in divs
+            div_case, inds = is_prime_with_double_indices(div)
+            if div_case == :D_ij
+                i, j = inds
+                l, d = Y.l[i][j], Y.d[i][j]
+                new_j = first(filter(j_ -> Y0.l[i][j_] == l && Y0.d[i][j_] == d, 1 : length(new_l[i])))
+                new_d = invariant_divisor(Y0, i, new_j)
+            elseif div_case == :D_plus
+                new_d = D_plus(Y0)
+            elseif div_case == :D_minus
+                new_d = D_minus(Y0)
+            end
+            push!(exceptional_divisors, new_d)
+        end
+    end
+
+    return (Y0, exceptional_divisors, discrepancies)
+
+end
+
+
 @doc raw"""
     canonical_resolution(X :: CStarSurface)
 
-Return the canonical resolution of singularities of a C-star surface surface
+Return the canonical resolution of singularities of a C-star surface 
 `X`. The result is a triple `(Y, ex_div, discr)` where `Y` is the smooth C-star
 surface in the resolution of singularities of `X`, `ex_div` contains the
 exceptional divisors in the resolution and `discrepancies` contains their
-discrepancies. `ex_rays` and `discr` are both dictionaries indexed by the fixed
-points of `X`, i.e. `ex_div[x]` contains those exceptional divisors lying over
-the fixed point `x`.
+discrepancies.
 
 # Example
 
@@ -670,115 +718,34 @@ julia> gen_matrix(Y)
 [-3   -1   -2   -1   0   0   0   0   2   1   1   0    0]
 [-2   -1   -1    0   1   1   1   0   1   1   0   1   -1]
 
-julia> map(E -> E * E, ex_div[x_plus(X)])
-6-element Vector{QQFieldElem}:
+julia> map(E -> E * E, ex_div)
+9-element Vector{Nemo.QQFieldElem}:
  -2
  -2
  -2
  -2
  -2
  -2
+ -3
+ -2
+ -1
 
-julia> discr[x_plus(X)]
-6-element Vector{Rational{Int64}}:
+julia> discr
+9-element Vector{Rational{Int64}}:
  0//1
  0//1
  0//1
  0//1
  0//1
  0//1
+ 1//1
+ 2//1
+ 4//1
 
 ```
 
 """
-@attr function canonical_resolution(X :: CStarSurface)
-    ns, r = _ns(X), _r(X) 
-    l, d = _slope_ordered_l(X), _slope_ordered_d(X)
-
-    discrepancies = Dict{CStarSurfaceFixedPoint, Vector{Rational{Int}}}()
-    ex_div_indices = Dict{CStarSurfaceFixedPoint, Vector{Tuple{Int, Int}}}()
-
-    new_l, new_d = deepcopy(X.l), deepcopy(X.d)
-
-    # Resolve hyperbolic fixed points $x_{ij}$
-    for i = 0 : r, j = 1 : ns[i] - 1
-        x = hyperbolic_fixed_point(X, i, j)
-
-        v1, v2 = [l[i][j], d[i][j]], [l[i][j+1], d[i][j+1]]
-        new_rays, discrepancies[x] = toric_affine_surface_resolution(v1, v2)
-        ex_div_indices[x] = [(i, length(new_l[i]) + j) for j = 1 : length(new_rays)]
-
-        append!(new_l[i], map(first, new_rays))
-        append!(new_d[i], map(last, new_rays))
-    end
-
-    if has_x_plus(X)
-        # Resolve elliptic fixed point $x^+$
-        x = x_plus(X)
-        discrepancies[x], ex_div_indices[x] = [], []
-        for i = 0 : r
-            v = [first(l[i]), first(d[i])]
-            new_rays, new_discr = toric_affine_surface_resolution(v, [0, _d_plus(X)])
-            append!(discrepancies[x], new_discr)
-            append!(ex_div_indices[x], [(i, length(new_l[i]) + j) for j = 1 : length(new_rays)])
-            append!(new_l[i], map(first, new_rays))
-            append!(new_d[i], map(last, new_rays))
-        end
-    else
-        # Resolve parabolic fixed points $x^+_i$
-        for i = 0 : r
-            x = parabolic_fixed_point_plus(X, i)
-            v = [first(l[i]), first(d[i])]
-            new_rays, discrepancies[x] = toric_affine_surface_resolution(v, [0, _d_plus(X)])
-            ex_div_indices[x] = [(i, length(new_l[i]) + j) for j = 1 : length(new_rays)]
-
-            append!(new_l[i], map(first, new_rays))
-            append!(new_d[i], map(last, new_rays))
-        end
-    end
-
-    if has_x_minus(X)
-        # Resolve elliptic fixed point $x^-$
-        x = x_minus(X)
-        discrepancies[x], ex_div_indices[x] = [], []
-        for i = 0 : r
-            v = [last(l[i]), last(d[i])]
-            new_rays, new_discr = toric_affine_surface_resolution(v, [0, -_d_minus(X)])
-            append!(discrepancies[x], new_discr)
-            append!(ex_div_indices[x], [(i, length(new_l[i]) + j) for j = 1 : length(new_rays)])
-            append!(new_l[i], map(first, new_rays))
-            append!(new_d[i], map(last, new_rays))
-        end
-    else
-        # Resolve parabolic fixed points $x^+_i$
-        for i = 0 : r
-            x = parabolic_fixed_point_minus(X, i)
-            v = [last(l[i]), last(d[i])]
-            new_rays, discrepancies[x] = toric_affine_surface_resolution(v, [0, -d_minus(X)])
-            ex_div_indices[x] = [(i, length(new_l[i]) + j) for j = 1 : length(new_rays)]
-
-            append!(new_l[i], map(first, new_rays))
-            append!(new_d[i], map(last, new_rays))
-        end
-    end
-
-    Y = cstar_surface(new_l, new_d, :pp)
-
-    ex_div = Dict{CStarSurfaceFixedPoint, Vector{CStarSurfaceDivisor}}([c => [invariant_divisor(Y, ij...) for ij in inds] for (c, inds) in ex_div_indices]) 
-
-    if has_x_plus(X)
-        push!(ex_div[x_plus(X)], D_plus(Y))
-        push!(discrepancies[x_plus(X)], _l_plus(X) // m_plus(X) - 1)
-    end
-
-    if has_x_minus(X)
-        push!(ex_div[x_minus(X)], D_minus(Y))
-        push!(discrepancies[x_minus(X)], _l_minus(X) // m_minus(X) - 1)
-    end
-    
-    return (Y, ex_div, discrepancies)
-
-end
+@attr canonical_resolution(X :: CStarSurface) = _minimal_or_canonical_resolution(X, false)
 
 
 @doc raw"""
@@ -789,9 +756,7 @@ The minimal resolution is obtained by contracting all (-1)-curves of the
 canonical resolution. The result is a triple `(Y, ex_div, discr)` where `Y` is
 the smooth C-star surface in the resolution of singularities of `X`, `ex_div`
 contains the exceptional divisors in the resolution and `discrepancies`
-contains their discrepancies. `ex_rays` and `discr` are both dictionaries
-indexed by the fixed points of `X`, i.e. `ex_div[x]` contains those exceptional
-divisors lying over the fixed point `x`.
+contains their discrepancies.
 
 # Example
 
@@ -811,48 +776,7 @@ julia> gen_matrix(Y)
 ```
 
 """
-@attr function minimal_resolution(X :: CStarSurface)
-    (Y, ex_div, discrepancies) = deepcopy(canonical_resolution(X))
-
-    contractible_curves = [(x, k, divs[k]) 
-        for (x, divs) in ex_div for k = 1 : length(divs) 
-        if divs[k] * divs[k] == -1]
-
-    while !isempty(contractible_curves)
-        x, k, d = first(contractible_curves)
-        Y = contract_prime_divisor(d)
-        deleteat!(ex_div[x], k)
-        deleteat!(discrepancies[x], k)
-
-        # adjust the coefficients of the remaining exceptional divisors
-        d_case, inds = is_prime_with_double_indices(d)
-        m = number_of_parabolic_fixed_point_curves(Y)
-        for (y, divs) in ex_div, l = 1 : length(divs)
-            if d_case == :D_ij
-                i, j = inds
-                new_coeffs = deleteat!(double_coefficients(divs[l]), i, j)
-                last_coeffs = coefficients(divs[l])[end-m+1 : end]
-                new_d = cstar_surface_divisor(Y, new_coeffs, last_coeffs...)
-            else
-                k = inds
-                new_coeffs = deleteat!(coefficients(divs[l]), k)
-                new_d = cstar_surface_divisor(Y, new_coeffs)
-            end
-            ex_div[y][l] = new_d
-        end
-
-        # compute the new contractible curves
-        contractible_curves = [(x, k, divs[k]) 
-            for (x, divs) in ex_div for k = 1 : length(divs) 
-            if divs[k] * divs[k] == -1]
-    end
-
-    return (Y, ex_div, discrepancies)
-
-end
-
-
-
+@attr minimal_resolution(X :: CStarSurface) = _minimal_or_canonical_resolution(X, true)
 
 
 #################################################

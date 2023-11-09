@@ -64,7 +64,6 @@ sink, commonly denoted $D^-$.
 """
 has_D_minus(c::Type{T}) where {T <: CStarSurfaceCase} = !has_x_minus(c)
 
-
 function _case_sym_to_type(c :: Symbol)
     c == :ee && return EE
     c == :pe && return PE 
@@ -73,3 +72,25 @@ function _case_sym_to_type(c :: Symbol)
     throw(DomainError(c, "symbol must be one of :ee, :pe, :ep and :pp"))
 end
 
+_case_type_to_sym(::Type{EE}) = :ee
+_case_type_to_sym(::Type{PE}) = :pe
+_case_type_to_sym(::Type{EP}) = :ep
+_case_type_to_sym(::Type{PP}) = :pp
+
+
+Base.:+(::Type{EE}, ::Type{EE}) = EE
+Base.:+(::Type{EE}, ::Type{PE}) = PE
+Base.:+(::Type{EE}, ::Type{EP}) = EP
+Base.:+(::Type{EE}, ::Type{PP}) = PP
+Base.:+(::Type{PE}, ::Type{EE}) = PE
+Base.:+(::Type{PE}, ::Type{PE}) = PE
+Base.:+(::Type{PE}, ::Type{EP}) = PP
+Base.:+(::Type{PE}, ::Type{PP}) = PP
+Base.:+(::Type{EP}, ::Type{EE}) = EP
+Base.:+(::Type{EP}, ::Type{PE}) = PP
+Base.:+(::Type{EP}, ::Type{EP}) = EP
+Base.:+(::Type{EP}, ::Type{PP}) = PP
+Base.:+(::Type{PP}, ::Type{EE}) = PP
+Base.:+(::Type{PP}, ::Type{PE}) = PP
+Base.:+(::Type{PP}, ::Type{EP}) = PP
+Base.:+(::Type{PP}, ::Type{PP}) = PP
