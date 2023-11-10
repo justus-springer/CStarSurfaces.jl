@@ -1,4 +1,6 @@
 export ToricSurfacePoint
+export is_prime
+export IntegerUnion
 export singularities
 export number_of_singularities
 export ToricSurfaceFixedPoint

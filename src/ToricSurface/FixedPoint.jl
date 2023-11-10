@@ -15,7 +15,6 @@ A toric fixed points on a toric surface.
     end
 end
 
-Base.parent(x :: ToricSurfaceFixedPoint) = x.parent
 
 @attr orbit_cone(x :: ToricSurfaceFixedPoint) = [x.i, _next_ray_index(parent(x), x.i)]
 

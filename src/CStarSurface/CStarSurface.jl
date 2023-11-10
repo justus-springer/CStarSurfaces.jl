@@ -386,29 +386,6 @@ _coordinate_names(X :: CStarSurface{PE}) = push!(_coordinate_names_core(X), "S[1
 _coordinate_names(X :: CStarSurface{EP}) = push!(_coordinate_names_core(X), "S[1]")
 _coordinate_names(X :: CStarSurface{PP}) = push!(_coordinate_names_core(X), "S[1]", "S[2]")
 
-@doc raw"""
-    canonical_toric_ambient(X :: CStarSurface) 
-
-Construct the canonical toric ambient of a C-star surface, as an Oscar type.
-
-# Example
-
-```jldoctest
-julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
-C-star surface of type (e-e)
-
-julia> Z = canonical_toric_ambient(X)
-Normal toric variety
-
-julia> rays(Z)
-4-element SubObjectIterator{RayVector{QQFieldElem}}:
- [-1, -1, -2//3]
- [-1, -1, -1]
- [1, 0, 1//3]
- [0, 1, 1//2]
-```
-
-"""
 @attr function canonical_toric_ambient(X :: CStarSurface) 
     # passing non_redundant=true does two important things here:
     # 1. It skips time-consuming checks on the input rays,
@@ -442,7 +419,7 @@ C-star surface of type (p-e)
 julia> (Ts, Ss) = cox_ring_vars(X);
 
 julia> Ts
-3-element DoubleVector{MPolyDecRingElem} with indices ZeroRange(3):
+3-element OffsetArray(::Vector{Vector{MPolyDecRingElem}}, 0:2) with eltype Vector{MPolyDecRingElem} with indices 0:2:
  [T[0][1], T[0][2]]
  [T[1][1]]
  [T[2][1]]
@@ -541,26 +518,6 @@ end
 @attr _mcals(X :: CStarSurface) = ZeroVector([[_mcal(X, i, j) for j = 0 : _ns(X)[i]] for i = 0 : _r(X)])
 
 
-@doc raw"""
-    intersection_matrix(X :: CStarSurface)
-
-Return the matrix of intersection numbers of all restrictions of toric prime
-divisors of a C-star surface `X` with each other. The result is a rational `n` x
-`n` matrix, where `n = nrays(X)` and the `(i,j)`-th entry is the intersection
-number of the toric prime divisors associated to the `i`-th and `j`-th ray
-respectively.
-
-# Example
-
-```jldoctest
-julia> intersection_matrix(cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee))
-[1//3   1   2//3   1]
-[   1   3      2   3]
-[2//3   2   4//3   2]
-[   1   3      2   3]
-```
-
-"""
 @attr function intersection_matrix(X :: CStarSurface)
     r, n, m, ns = _r(X), _n(X), _m(X), _ns(X)
 
@@ -623,17 +580,6 @@ julia> intersection_matrix(cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]
 
 end
 
-
-#################################################
-# Resolution of singularities
-#
-# The resolution of singularities for C-star surfaces
-# is obtained in two steps: In the tropical step,
-# we add the rays [0,...,0,1] and [0,...,0,-1] to 
-# the fan, if not already present. The second step
-# is toric: We perform regular subdivision all cones
-# in the fan, which are now all two-dimensional
-#################################################
 
 # See Section 9 of "Classifying log del Pezzo surfaces with 
 # torus action" (arxiv:2302.03095) for the definition of 
@@ -719,7 +665,7 @@ julia> gen_matrix(Y)
 [-2   -1   -1    0   1   1   1   0   1   1   0   1   -1]
 
 julia> map(E -> E * E, ex_div)
-9-element Vector{Nemo.QQFieldElem}:
+9-element Vector{QQFieldElem}:
  -2
  -2
  -2
@@ -905,11 +851,10 @@ julia> X = cstar_surface([[2,1],[1,1],[2]], [[3,-1],[0,-1],[1]], :ee)
 C-star surface of type (e-e)
 
 julia> map(vertices, moment_polytopes(X))
-3-element ZeroVector{SubObjectIterator{PointVector{QQFieldElem}}} with indices ZeroRange(3):
+3-element OffsetArray(::Vector{SubObjectIterator{PointVector{QQFieldElem}}}, 0:2) with eltype SubObjectIterator{PointVector{QQFieldElem}} with indices 0:2:
  [[1, 0], [0, -1//2], [-1//2, -1//4], [1//5, 4//5]]
  [[1, 0], [0, 1], [-1//2, 1], [1//5, -2//5]]
  [[1//5, -3//5], [1, 1], [-1//2, 1//4], [0, -1//2]]
-
 ```
 
 """
@@ -943,20 +888,6 @@ julia> map(vertices, moment_polytopes(X))
 
 end
 
-@doc raw"""
-    admits_kaehler_einstein_metric(X :: CStarSurface)
-
-Checks whether a C-star surface admits a Kaehler-Einstein metric.
-
-# Example
-
-```jldoctest
-julia> admits_kaehler_einstein_metric(cstar_surface([[1,1], [4], [4]], [[-1,-2], [3], [3]], :ee))
-true
-
-```
-
-"""
 @attr admits_kaehler_einstein_metric(X :: CStarSurface) =
 all(v -> v[1] == 0, map(i -> centroid(moment_polytope(X,i)), 0 : _r(X))) &&
 all(v -> v[2] > 0, map(i -> centroid(moment_polytope(X,i)), special_indices(X)))

@@ -8,6 +8,35 @@ A fixed point on a $\mathbb{C}^*$-surface.
 abstract type CStarSurfaceFixedPoint{T} <: CStarSurfacePoint{T} end
 
 
+@doc raw"""
+    minimal_resolution(x :: CStarSurfaceFixedPoint)
+    
+Return the minimal resolution of singularities of a $\mathbb{C}^*$-surface
+surface `X`. The minimal resolution is obtained by contracting all (-1)-curves
+of the canonical resolution. The result is a triple `(Y, ex_div, discr)` where
+`Y` is the resulting $\mathbb{C}^*$-surface after the resolution step, `ex_div`
+contains the exceptional divisors in the resolution and `discrepancies`
+contains their discrepancies.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> (Y, ex_div, discr) = minimal_resolution(x_plus(X));
+
+julia> gen_matrix(Y)
+[-3   -1   -2   -1   3   2   1   0   0   0]
+[-3   -1   -2   -1   0   0   0   2   1   0]
+[-2   -1   -1    0   1   1   1   1   1   1]
+
+```
+
+"""
+function minimal_resolution end
+
+
 #################################################
 # Elliptic fixed points
 #################################################
@@ -25,7 +54,7 @@ abstract type EllipticFixedPoint{T} <: CStarSurfaceFixedPoint{T} end
 @doc raw"""
     EllipticFixedPointPlus{T <: Union{EE,EP}} <: EllipticFixedPoint{T}
 
-An elliptic fixed point $x^+$ on a $\mathbb{C}$-surface of type (e-e) or (e-p).
+An elliptic fixed point $x^+$ on a $\mathbb{C}^*$-surface of type (e-e) or (e-p).
 There should only ever be one instance of this type for any given
 `CStarSurface`, which is accessible via [`x_plus`](@ref).
 
@@ -35,8 +64,6 @@ There should only ever be one instance of this type for any given
     
     EllipticFixedPointPlus(X :: CStarSurface{T}) where {T <: Union{EE,EP}} = new{T}(X)
 end
-
-Base.parent(x :: EllipticFixedPointPlus) = x.parent
 
 Base.show(io :: IO, x :: EllipticFixedPointPlus) = print(io, "elliptic fixed point x^+")
 
@@ -48,6 +75,16 @@ Base.show(io :: IO, x :: EllipticFixedPointPlus) = print(io, "elliptic fixed poi
 
 Return the elliptic fixed point $x^+$ of a $\mathbb{C}^*$-surface of type
 (e-e) or (e-p).
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> x_plus(X)
+elliptic fixed point x^+
+```
 
 """
 @attr x_plus(X :: CStarSurface{<:Union{EE,EP}}) = EllipticFixedPointPlus(X)
@@ -90,7 +127,7 @@ end
 @doc raw"""
     EllipticFixedPointMinus{T <: Union{EE,PE}} <: EllipticFixedMinus{T}
 
-An elliptic fixed point $x^-$ on a $\mathbb{C}$-surface of type (e-e) or (p-e).
+An elliptic fixed point $x^-$ on a $\mathbb{C}^*$-surface of type (e-e) or (p-e).
 There should only ever be one instance of this type for any given
 `CStarSurface`, which is accessible via [`x_minus`](@ref).
 
@@ -100,8 +137,6 @@ There should only ever be one instance of this type for any given
 
     EllipticFixedPointMinus(X :: CStarSurface{T}) where {T <: Union{EE,PE}} = new{T}(X)
 end
-
-Base.parent(x :: EllipticFixedPointMinus) = x.parent
 
 Base.show(io :: IO, x :: EllipticFixedPointMinus) = print(io, "elliptic fixed point x^-")
 
@@ -113,6 +148,16 @@ Base.show(io :: IO, x :: EllipticFixedPointMinus) = print(io, "elliptic fixed po
 
 Return the elliptic fixed point $x^-$ of a $\mathbb{C}^*$-surface of type
 (e-e) or (p-e).
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> x_minus(X)
+elliptic fixed point x^-
+```
 
 """
 @attr x_minus(X :: CStarSurface{<:Union{EE,PE}}) = EllipticFixedPointMinus(X)
@@ -199,6 +244,18 @@ end
 
 Return the elliptic fixed points of a $\mathbb{C}^*$-surface.
 
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> elliptic_fixed_points(X)
+2-element Vector{EllipticFixedPoint{EE}}:
+ elliptic fixed point x^+
+ elliptic fixed point x^-
+```
+
 """
 @attr elliptic_fixed_points(X :: CStarSurface{EE}) = [x_plus(X), x_minus(X)]
 @attr elliptic_fixed_points(X :: CStarSurface{PE}) = [x_minus(X)]
@@ -214,7 +271,7 @@ Return the elliptic fixed points of a $\mathbb{C}^*$-surface.
 @doc raw"""
     HyperbolicFixedPoint{T <: CStarSurfaceCase} <: CStarSurfaceFixedPoint{T}
 
-A hyperbolic fixed point on a $\mathbb{C}$^*-surface.
+A hyperbolic fixed point on a $\mathbb{C}^*$-surface.
 
 """
 @attributes mutable struct HyperbolicFixedPoint{T} <: CStarSurfaceFixedPoint{T}
@@ -231,8 +288,6 @@ A hyperbolic fixed point on a $\mathbb{C}$^*-surface.
 
 end
 
-Base.parent(x :: HyperbolicFixedPoint) = x.parent
-
 Base.show(io :: IO, x :: HyperbolicFixedPoint) = print(io, "hyperbolic fixed point x($(x.i), $(x.j))")
 
 @attr orbit_cone(x :: HyperbolicFixedPoint) = _tau(parent(x), x.i, x.j)
@@ -244,6 +299,19 @@ Base.show(io :: IO, x :: HyperbolicFixedPoint) = print(io, "hyperbolic fixed poi
 Return the hyperbolic fixed points of a $\mathbb{C}^*$-surface as a
 `DoubleVector`.
 
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[1,2,1], [1,1], [1,1]], [[3,3,0], [0,-1], [0,-2]], :ee)
+C-star surface of type (e-e)
+
+julia> hyperbolic_fixed_points(X)
+3-element OffsetArray(::Vector{Vector{HyperbolicFixedPoint{EE}}}, 0:2) with eltype Vector{HyperbolicFixedPoint{EE}} with indices 0:2:
+ [hyperbolic fixed point x(0, 1), hyperbolic fixed point x(0, 2)]
+ [hyperbolic fixed point x(1, 1)]
+ [hyperbolic fixed point x(2, 1)]
+```
+
 """
 @attr hyperbolic_fixed_points(X :: CStarSurface) = 
 DoubleVector([[HyperbolicFixedPoint(X, i, j) for j = 1 : _ns(X)[i] - 1] for i = 0 : _r(X)])
@@ -254,6 +322,16 @@ DoubleVector([[HyperbolicFixedPoint(X, i, j) for j = 1 : _ns(X)[i] - 1] for i = 
 
 Return the hyperbolic fixed point $x_{ij}$ of a $\mathbb{C}^*$-surface, where
 $0 ≤ i ≤ r$ and $1 ≤ j ≤ n_i - 1$.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> hyperbolic_fixed_point(X, 0, 1)
+hyperbolic fixed point x(0, 1)
+```
 
 """
 function hyperbolic_fixed_point(X :: CStarSurface, i :: Int, j :: Int)
@@ -323,8 +401,6 @@ A parabolic fixed point $x^+_i$ on a $\mathbb{C}^*$-surface of type (p-e) or
     end
 end
 
-Base.parent(x :: ParabolicFixedPointPlus) = x.parent
-
 Base.show(io :: IO, x :: ParabolicFixedPointPlus) = print(io, "parabolic fixed point x^+($(x.i))")
 
 @attr orbit_cone(x :: ParabolicFixedPointPlus) = _tau_plus(parent(x), x.i)
@@ -334,6 +410,19 @@ Base.show(io :: IO, x :: ParabolicFixedPointPlus) = print(io, "parabolic fixed p
     parabolic_fixed_points_plus(X :: CStarSurface{T}) where {T <: Union{PE,PP}}
 
 Return the parabolic fixed points $x_i^+$ of a $\mathbb{C}^*$-surface.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :pe)
+C-star surface of type (p-e)
+
+julia> parabolic_fixed_points_plus(X)
+3-element OffsetArray(::Vector{ParabolicFixedPointPlus{PE}}, 0:2) with eltype ParabolicFixedPointPlus{PE} with indices 0:2:
+ parabolic fixed point x^+(0)
+ parabolic fixed point x^+(1)
+ parabolic fixed point x^+(2)
+```
 
 """
 @attr parabolic_fixed_points_plus(X :: CStarSurface{T}) where {T <: Union{PE,PP}} =
@@ -346,6 +435,15 @@ ZeroVector([ParabolicFixedPointPlus(X, i) for i = 0 : nblocks(X) - 1])
 Return the parabolic fixed point $x_i^+$ of a $\mathbb{C}^*$-surface, where $0
 ≤ i ≤ r$.
 
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :pe)
+C-star surface of type (p-e)
+
+julia> parabolic_fixed_point_plus(X, 0)
+parabolic fixed point x^+(0)
+```
 
 """
 function parabolic_fixed_point_plus(X :: CStarSurface{<:Union{PE,PP}}, i :: Int)
@@ -392,8 +490,6 @@ A parabolic fixed point $x^-_i$ on a $\mathbb{C}^*$-surface of type (e-p) or
     end
 end
 
-Base.parent(x :: ParabolicFixedPointMinus) = x.parent
-
 Base.show(io :: IO, x :: ParabolicFixedPointMinus) = print(io, "parabolic fixed point x^-($(x.i))")
 
 @attr orbit_cone(x :: ParabolicFixedPointMinus) = _tau_minus(parent(x), x.i)
@@ -403,6 +499,19 @@ Base.show(io :: IO, x :: ParabolicFixedPointMinus) = print(io, "parabolic fixed 
     parabolic_fixed_points_minus(X :: CStarSurface{T}) where {T <: Union{EP,PP}}
 
 Return the parabolic fixed points $x_i^-$ of a $\mathbb{C}^*$-surface.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ep)
+C-star surface of type (e-p)
+
+julia> parabolic_fixed_points_minus(X)
+3-element OffsetArray(::Vector{ParabolicFixedPointMinus{EP}}, 0:2) with eltype ParabolicFixedPointMinus{EP} with indices 0:2:
+ parabolic fixed point x^-(0)
+ parabolic fixed point x^-(1)
+ parabolic fixed point x^-(2)
+```
 
 """
 @attr parabolic_fixed_points_minus(X :: CStarSurface{T}) where {T <: Union{EP,PP}} =
@@ -414,6 +523,16 @@ ZeroVector([ParabolicFixedPointMinus(X, i) for i = 0 : nblocks(X) - 1])
 
 Return the parabolic fixed point $x_i^-$ of a $\mathbb{C}^*$-surface, where $0
 ≤ i ≤ r$.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ep)
+C-star surface of type (e-p)
+
+julia> parabolic_fixed_point_minus(X, 0)
+parabolic fixed point x^-(0)
+```
 
 """
 function parabolic_fixed_point_minus(X :: CStarSurface{<:Union{EP,PP}}, i :: Int)
@@ -449,6 +568,22 @@ end
 
 Return the parabolic fixed points of a $\mathbb{C}^*$-surface.
 
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :pp)
+C-star surface of type (p-p)
+
+julia> parabolic_fixed_points(X)
+6-element Vector{ParabolicFixedPoint{PP}}:
+ parabolic fixed point x^+(0)
+ parabolic fixed point x^+(1)
+ parabolic fixed point x^+(2)
+ parabolic fixed point x^-(0)
+ parabolic fixed point x^-(1)
+ parabolic fixed point x^-(2)
+```
+
 """
 @attr parabolic_fixed_points(X :: CStarSurface{EE}) = ParabolicFixedPoint{EE}[] 
 @attr parabolic_fixed_points(X :: CStarSurface{PE}) = Vector(parabolic_fixed_points_plus(X))
@@ -462,6 +597,21 @@ Return the parabolic fixed points of a $\mathbb{C}^*$-surface.
 Return all fixed points of a $\mathbb{C}^*$-action. This is the union of
 [`elliptic_fixed_points`](@ref), [`hyperbolic_fixed_points`](@ref) and
 [`parabolic_fixed_points`](@ref).
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ep)
+C-star surface of type (e-p)
+
+julia> fixed_points(X)
+5-element Vector{CStarSurfaceFixedPoint{EP}}:
+ elliptic fixed point x^+
+ hyperbolic fixed point x(0, 1)
+ parabolic fixed point x^-(0)
+ parabolic fixed point x^-(1)
+ parabolic fixed point x^-(2)
+```
 
 """
 @attr fixed_points(X :: CStarSurface{T}) where {T <: CStarSurfaceCase} = 

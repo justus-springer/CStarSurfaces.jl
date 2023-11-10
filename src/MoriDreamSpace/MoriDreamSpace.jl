@@ -2,9 +2,25 @@
 @doc raw"""
     canonical_toric_ambient(X :: MoriDreamSpace)
 
-Construct the canonical toric ambient variety of a Mori Dream Space.
+Return the canonical toric ambient variety of a Mori Dream Space as an
+OSCAR `NormalToricVariety`.
 
-This function should be implemented by all subtypes of `MoriDreamSpace`
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> Z = canonical_toric_ambient(X)
+Normal toric variety
+
+julia> rays(Z)
+4-element SubObjectIterator{RayVector{QQFieldElem}}:
+ [-1, -1, -2//3]
+ [-1, -1, -1]
+ [1, 0, 1//3]
+ [0, 1, 1//2]
+```
 
 """
 function canonical_toric_ambient end
@@ -17,8 +33,6 @@ Return the list of relations in the Cox Ring of a Mori Dream Space.
 Here, a relation is a `RingElem` whose parent is the Cox Ring of
 the canonical toric ambient variety.
 
-This function should be implemented by all subtypes of `MoriDreamSpace`.
-
 """
 function cox_ring_relations end
 
@@ -29,11 +43,10 @@ function cox_ring_relations end
 Checks whether the Mori Dream Space $X$ is quasismooth, i.e. its characteristic
 space $\hat X$ is smooth.
 
-This function should be implemented by all subtypes of `MoriDreamSpace`
-(A generic implementation is possible, but not yet available).
-
 """
-function is_quasismooth end
+function is_quasismooth(X :: MoriDreamSpace)
+    error("not yet implemented")
+end
 
 
 @doc raw"""
@@ -170,7 +183,30 @@ singularities, i.e. its canonical toric ambient variety is simplicial.
 @doc raw"""
     cox_ring(X :: MoriDreamSpace)
 
-Compute the Cox Ring of a Mori Dream Space.
+Return the Cox Ring of a Mori Dream Space.
+
+# Examples
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> cox_ring(X)
+Quotient
+  of graded multivariate polynomial ring in 4 variables over QQ
+  by ideal(T[0][1]^3*T[0][2] + T[1][1]^3 + T[2][1]^2)
+```
+
+```jldoctest
+julia> X = toric_surface([[1,0], [1,5], [-2,-5]])
+Normal toric surface
+
+julia> cox_ring(X)
+Multivariate polynomial ring in 3 variables over QQ graded by 
+  x1 -> [0 1]
+  x2 -> [2 1]
+  x3 -> [1 1]
+```
 
 """
 @attr cox_ring(X :: MoriDreamSpace) = 
@@ -200,10 +236,10 @@ julia> X = cstar_surface([[1, 1], [2], [2]], [[0, -2], [1], [1]], :ee)
 C-star surface of type (e-e)
 
 julia> coefficients(canonical_divisor(X))
-4-element Vector{ZZRingElem}:
+4-element Vector{Int64}:
+  0
+  0
  -1
- -1
- 1
  -1
 ```
 
@@ -231,10 +267,10 @@ julia> X = cstar_surface([[1, 1], [2], [2]], [[0, -2], [1], [1]], :ee)
 C-star surface of type (e-e)
 
 julia> coefficients(anticanonical_divisor(X))
-4-element Vector{ZZRingElem}:
+4-element Vector{Int64}:
+ 0
+ 0
  1
- 1
- -1
  1
 ```
 

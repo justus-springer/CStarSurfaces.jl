@@ -1,6 +1,6 @@
 
 @doc raw"""
-    toric_surface(vs :: Vector{Vector{T}})
+    toric_surface(vs :: Vector{Vector{T}}) where {T <: IntegerUnion}
 
 Construct a toric surface from a list of integral vectors in two-dimensional
 space.
@@ -45,20 +45,7 @@ rays(X :: ToricSurface) = X.vs
 
 @attr fano_polytope(X :: ToricSurface) = convex_hull(rays(X), non_redundant = true)
 
-@doc raw"""
-    admits_kaehler_einstein_metric(X :: ToricSurface)
 
-Checks whether a toric surface admits a Kaehler-Einstein metric.
-
-# Example
-
-```jldoctest
-julia> admits_kaehler_einstein_metric(toric_surface([[1,0], [1,5], [-2,-5]]))
-true
-
-```
-
-"""
 @attr admits_kaehler_einstein_metric(X :: ToricSurface) =
 centroid(polarize(fano_polytope(X))) == [0, 0]
 
@@ -93,47 +80,6 @@ end
 @attr canonical_toric_ambient(X :: ToricSurface) = normal_toric_variety(rays(X), maximal_cones_indices(X); non_redundant = true)
 
 
-@doc raw"""
-    invariant_divisor(X :: ToricSurface, i :: Int)
-
-Return the $i$-th toric divisor $D^i_X$.
-
-"""
-function invariant_divisor(X :: ToricSurface, i :: Int)
-    @req 1 ≤ i ≤ nrays(X) "must have 1 ≤ i ≤ nrays(X)"
-    coeffs = repeat([0], nrays(X))
-    coeffs[i] = 1
-    return toric_surface_divisor(X, coeffs)
-end
-
-@doc raw"""
-    invariant_divisors(X :: ToricSurface)
-
-Return all toric divisors $D^i_X$.
-
-"""
-@attr invariant_divisors(X :: ToricSurface) = [invariant_divisor(X, i) for i = 1 : nrays(X)]
-
-
-@doc raw"""
-    intersection_matrix(X :: ToricSurface)
-
-Return the matrix of intersection numbers of all toric prime divisors of a toric
-surface `X` with each other. The result is a rational `n` x `n` matrix, where `n
-= nrays(X)` and the `(i,j)`-th entry is the intersection number of the toric
-prime divisors associated to the `i`-th and `j`-th ray respectively.
-
-# Example
-
-```jldoctest
-julia> intersection_matrix(toric_surface(ZZ[1 0 -1 0 ; 0 1 -17 -1]))
-[0    1   0     1]
-[1   17   1     0]
-[0    1   0     1]
-[1    0   1   -17]
-```
-
-"""
 @attr function intersection_matrix(X :: ToricSurface)
     vs, r = rays(X), nrays(X)
     inds = _ordered_ray_indices(X)
@@ -176,48 +122,54 @@ their discrepancies.
 julia> X = toric_surface(ZZ[1 1 -3 ; 0 4 -7])
 Normal toric surface
 
-julia> (Y, ex, discr) = canonical_resolution(X);
+julia> (Y, ex_div, discr) = canonical_resolution(X);
 
 julia> gen_matrix(Y)
 [1   1   -3   1   1   1   0   -1   -2   -1    0]
 [0   4   -7   1   2   3   1   -2   -5   -3   -1]
 
-julia> ex
-3-element Vector{Vector{Vector{Int64}}}:
- [[1, 1], [1, 2], [1, 3]]
- [[0, 1], [-1, -2]]
- [[-2, -5], [-1, -3], [0, -1]]
+julia> map(E -> E*E, ex_div)
+8-element Vector{QQFieldElem}:
+ -2
+ -2
+ -2
+ -2
+ -3
+ -2
+ -2
+ -3
 
 julia> discr
-3-element Vector{Vector{Rational{Int64}}}:
- [0//1, 0//1, 0//1]
- [-1//5, -2//5]
- [-1//7, -2//7, -3//7]
+8-element Vector{Rational{Int64}}:
+  0//1
+  0//1
+  0//1
+ -1//5
+ -2//5
+ -1//7
+ -2//7
+ -3//7
 ```
 
 """
 @attr function canonical_resolution(X :: ToricSurface)
-    vs = rays(X)
-    r = length(vs)
-    inds = _ordered_ray_indices(X)
 
-    new_vs = deepcopy(vs)
+    r = nrays(X)
 
-    discrepancies = Dict{Vector{Int}, Vector{Rational{Int}}}()
-    ex_div_indices = Dict{Vector{Int}, Vector{Int}}()
-    for i = 1 : r
-        x = [inds[i], inds[mod(i+1, 1:r)]]
-        v1, v2 = vs[x[1]], vs[x[2]]
-        new_rays, discrepancies[x] = toric_affine_surface_resolution(v1, v2) 
-        ex_div_indices[x] = [length(new_vs) + j for j = 1 : length(new_rays)]
-        append!(new_vs, new_rays)
+    resolutions = map(canonical_resolution, fixed_points(X))
+
+    new_vs = deepcopy(rays(X))
+    discrepancies = Rational{Int}[]
+    for (Y, ex_div, discr) in resolutions
+        append!(new_vs, rays(Y)[r + 1 : end])
+        append!(discrepancies, discr)
     end
 
     Y = toric_surface(new_vs)
 
-    ex_div = Dict([c => [invariant_divisor(Y, i) for i in inds] for (c, inds) in ex_div_indices]) 
+    exceptional_divisors = [invariant_divisor(Y, i) for i = r + 1 : nrays(Y)]
 
-    return (Y, ex_div, discrepancies)
+    return (Y, exceptional_divisors, discrepancies)
 
 end
 

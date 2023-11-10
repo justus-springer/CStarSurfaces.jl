@@ -16,10 +16,12 @@ The two main Julia types in this packages are [`CStarSurface`](@ref) and
 ## Julia types
 
 ```@docs
+MoriDreamSpace
 CStarSurfaceCase
 CStarSurface
 ToricSurface
 SurfaceWithTorusAction
+MoriDreamSpaceUnion
 ```
 
 ## Constructors 
@@ -27,103 +29,72 @@ SurfaceWithTorusAction
 ```@docs
 cstar_surface(ls :: Vector{Vector{Int64}}, ds :: Vector{Vector{Int64}}, case :: Symbol)
 cstar_surface(P :: ZZMatrix)
-toric_surface
-gen_matrix
+toric_surface(vs :: Vector{Vector{T}}) where {T <: IntegerUnion}
+toric_surface(P :: ZZMatrix)
+```
+
+## Basic attributes
+
+```@docs
+gen_matrix(X :: MoriDreamSpaceUnion)
+canonical_toric_ambient
+cox_ring_relations
+cox_ring(X :: MoriDreamSpace)
 ```
 
 ## Class group and Picard group
 
 ```@docs
 class_group(X :: MoriDreamSpace)
-class_group_rank
-class_group_torsion
-class_group_torsion_order
-local_class_groups(X :: MoriDreamSpace)
-local_class_group(X :: MoriDreamSpace, c :: Vector{Int64})
-maps_from_class_group_to_local_class_groups(X :: MoriDreamSpace)
-map_from_class_group_to_local_class_group(X :: MoriDreamSpace, c :: Vector{Int64})
+class_group_rank(X :: MoriDreamSpace)
+class_group_torsion(X :: MoriDreamSpace)
+class_group_torsion_order(X :: MoriDreamSpace)
 picard_group(X :: MoriDreamSpace)
-degree_matrix
-degree_matrix_free_part
-degree_matrix_torsion_part
+degree_matrix(X :: MoriDreamSpaceUnion)
+degree_matrix_free_part(X :: MoriDreamSpaceUnion)
+degree_matrix_torsion_part(X :: MoriDreamSpaceUnion)
 gorenstein_index(X :: MoriDreamSpace)
-local_gorenstein_indices
-local_gorenstein_index
 picard_index(X :: MoriDreamSpace)
-local_picard_indices
-local_picard_index
-is_factorial
 ```
 
-## Divisors
+## Singularities and Resolutions
 
 ```@docs
-CStarSurfaceDivisor
-cstar_surface_divisor
-ToricSurfaceDivisor
-toric_surface_divisor
-SurfaceWithTorusActionDivisor
-canonical_divisor(X :: MoriDreamSpace)
-anticanonical_divisor(X :: MoriDreamSpace)
-canonical_divisor_class(X :: MoriDreamSpace)
-anticanonical_divisor_class(X :: MoriDreamSpace)
-Base.:*(d1 :: SurfaceWithTorusActionDivisor, d2 :: SurfaceWithTorusActionDivisor)
-contract_prime_divisor
+is_quasismooth(X :: MoriDreamSpace)
+is_factorial(X :: MoriDreamSpace)
+is_smooth(X :: MoriDreamSpace)
+singularities(X :: SurfaceWithTorusAction)
+number_of_singularities(X :: SurfaceWithTorusAction)
+canonical_resolution(X :: CStarSurface)
+canonical_resolution(X :: ToricSurface)
+minimal_resolution(X :: CStarSurface)
+log_canonicity(X :: SurfaceWithTorusAction)
 ```
 
 ## Intersection numbers
 
 ```@docs
 intersection_matrix
-anticanonical_self_intersection
-```
-
-## Singularities and resolutions
-
-```@docs
-is_quasismooth
-canonical_resolution
-canonical_resolution_exceptional_divisors
-canonical_resolution_discrepancies
-maximal_log_canonicity
-minimal_resolution
-minimal_resolution_exceptional_divisors
-minimal_resolution_discrepancies
-resolution_graphs
-resolution_graph
+anticanonical_self_intersection(X :: SurfaceWithTorusAction)
 ```
 
 ## Kaehler Einstein metrics
 
 ```@docs
 admits_kaehler_einstein_metric
-special_indices
-moment_polytopes
+special_indices(X :: CStarSurface)
+moment_polytopes(X :: CStarSurface)
 ```
 
 ## Attributes of $\mathbb{C}^*$-surfaces
 
 ```@docs
-canonical_toric_ambient(X :: CStarSurface)
-cox_ring_vars(X :: CStarSurface)
-cox_ring_relations(X :: CStarSurface)
+nblocks
+block_sizes
+slopes
 has_x_plus(X :: CStarSurface)
 has_x_minus(X :: CStarSurface)
 has_D_plus(X :: CStarSurface)
 has_D_minus(X :: CStarSurface)
-x_plus
-x_minus
-elliptic_fixed_points
-hyperbolic_fixed_points
-parabolic_fixed_points
-D_plus
-D_minus
-parabolic_fixed_point_curves
-number_of_parabolic_fixed_point_curves
-invariant_divisor
-invariant_divisors
-nblocks
-block_sizes
-slopes
 is_intrinsic_quadric
 ```

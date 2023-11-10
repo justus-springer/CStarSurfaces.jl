@@ -5,11 +5,33 @@
 A point on a Mori dream space. 
 
 Subtypes of `MoriDreamSpacePoint` should at least implement the following
-methods: `parent`, [`orbit_cone`](@ref), [`cox_coordinates`](@ref),
+methods: [`orbit_cone`](@ref), [`cox_coordinates`](@ref),
 [`is_quasismooth`](@ref).
 
 """
 abstract type MoriDreamSpacePoint end
+
+
+@doc raw"""
+    parent(x :: MoriDreamSpacePoint)
+
+Return the Mori dream space where `x` lives in.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> x = x_plus(X)
+elliptic fixed point x^+
+
+julia> parent(x) === X
+true
+```
+
+"""
+Base.parent(x :: MoriDreamSpacePoint) = x.parent
 
 
 @doc raw"""
@@ -19,8 +41,18 @@ Given a point $x \in X$ on a Mori dream space, return the index vector of the
 cone $\sigma$ of the canonical toric ambient variety such that $x$ is contained
 in the toric orbit associated to $\sigma$.
 
-This function should be implemented by all subtypes of
-[`MoriDreamSpacePoint`](@ref).
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> orbit_cone(x_plus(X))
+3-element Vector{Int64}:
+ 1
+ 3
+ 4
+```
 
 """
 function orbit_cone end
@@ -31,8 +63,19 @@ function orbit_cone end
 
 Return the Cox coordinates of a point on a Mori dream space.
 
-This function should be implemented by all subtypes of
-[`MoriDreamSpacePoint`](@ref).
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> cox_coordinates(x_plus(X))
+4-element Vector{Int64}:
+ 0
+ 1
+ 0
+ 0
+```
 
 """
 function cox_coordinates end
@@ -43,8 +86,15 @@ function cox_coordinates end
 
 Checks whether a point on a Mori dream space is quasismooth.
 
-This function should be implemented by all subtypes of
-[`MoriDreamSpacePoint`](@ref).
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> is_quasismooth(x_plus(X))
+false
+```
 
 """
 function is_quasismooth end
@@ -208,6 +258,16 @@ false
 
 Check whether a point on a Mori dream space is smooth, i.e. factorial and
 quasismooth.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> is_smooth(x_plus(X))
+false
+```
 
 """
 @attr is_smooth(x :: MoriDreamSpacePoint) = is_factorial(x) && is_quasismooth(x)

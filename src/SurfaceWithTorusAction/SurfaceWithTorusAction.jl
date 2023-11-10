@@ -2,12 +2,41 @@
 @doc raw"""
     SurfaceWithTorusAction = Union{CStarSurface, ToricSurface}
 
-Julia type for surfaces with a non-trivial torus action.
+The `Union` of [`CStarSurface`](@ref) and [`ToricSurface`](@ref).
 
 """
 const SurfaceWithTorusAction = Union{CStarSurface, ToricSurface}
 
-dim(::SurfaceWithTorusAction) = 2
+
+@doc raw"""
+    intersection_matrix(X :: SurfaceWithTorusAction)
+
+Return the matrix of intersection numbers of all torus invariant prime divisors
+associated of a surface with torus action with each other. The result is a
+rational `n` x `n` matrix, where `n = nrays(X)` and the `(i,j)`-th entry is the
+intersection number of the prime divisors associated to the `i`-th and `j`-th
+ray respectively.
+
+# Examples
+
+```jldoctest
+julia> intersection_matrix(cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee))
+[1//3   1   2//3   1]
+[   1   3      2   3]
+[2//3   2   4//3   2]
+[   1   3      2   3]
+```
+
+```jldoctest
+julia> intersection_matrix(toric_surface(ZZ[1 0 -1 0 ; 0 1 -17 -1]))
+[0    1   0     1]
+[1   17   1     0]
+[0    1   0     1]
+[1    0   1   -17]
+```
+
+"""
+function intersection_matrix end
 
 
 @doc raw"""
@@ -42,43 +71,46 @@ anticanonical_self_intersection(X :: SurfaceWithTorusAction) = anticanonical_div
 
 
 @doc raw"""
-    minimal_resolution_exceptional_divisors(X :: SurfaceWithTorusAction)   
+    singularities(X :: SurfaceWithTorusAction)
 
-Return the exceptional divisors in the minimal resolution of singularities of a surface
-with torus action.
+Return the list of singular points of a given surface with torus action.
+
+# Example
+
+The $E_6$ singular cubic surface.
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> singularities(X)
+1-element Vector{CStarSurfaceFixedPoint{EE}}:
+ elliptic fixed point x^+
+```
 
 """
-minimal_resolution_exceptional_divisors(X :: SurfaceWithTorusAction) = minimal_resolution(X)[2]
+@attr singularities(X :: SurfaceWithTorusAction) = filter(!is_smooth, fixed_points(X))
 
 
 @doc raw"""
-    minimal_resolution_discrepancies(X :: SurfaceWithTorusAction)
+    number_of_singularities(X :: SurfaceWithTorusAction)
 
-Return the discrepancies associated to the exceptional divisors in the
-minimal resolution of singularities of a surface with torus action.
+Return the number of singularities of a given surface with torus action.
 
-"""
-minimal_resolution_discrepancies(X :: SurfaceWithTorusAction) = minimal_resolution(X)[3]
+# Example
 
+The $E_6$ singular cubic surface.
 
-@doc raw"""
-    canonical_resolution_exceptional_divisors(X :: SurfaceWithTorusAction)   
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
 
-Return the exceptional divisors in the canonical resolution of singularities of a surface
-with torus action.
-
-"""
-canonical_resolution_exceptional_divisors(X :: SurfaceWithTorusAction) = canonical_resolution(X)[2]
-
-
-@doc raw"""
-    canonical_resolution_discrepancies(X :: SurfaceWithTorusAction)
-
-Return the discrepancies associated to the exceptional divisors in the
-canonical resolution of singularities of a surface with torus action.
+julia> number_of_singularities(X)
+1
+```
 
 """
-canonical_resolution_discrepancies(X :: SurfaceWithTorusAction) = canonical_resolution(X)[3]
+@attr number_of_singularities(X :: SurfaceWithTorusAction) = length(singularities(X))
 
 
 @doc raw"""
@@ -100,80 +132,21 @@ julia> log_canonicity(cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :e
 
 
 @doc raw"""
-    resolution_graphs(X :: SurfaceWithTorusAction)
+    admits_kaehler_einstein_metric(X :: SurfaceWithTorusAction)
 
-Return the resolution graphs of the minimal resolution of a surface with
-torus action. The result is a dictionary indexed by the fixed points of $X$,
-where each value is a pair with first entry a `Graphs.SimpleGraph` and second
-entry the list of self intersection numbers of the exceptional divisors,
-which serve as node labels of the graph.
+Checks whether a surface with torus action admits a Kaehler-Einstein metric.
 
-# Example
-
-Drawing the resolution graph of the $E_6$ singular cubic surface using 
-`GraphPlot.jl`.
+# Examples
 
 ```jldoctest
-julia> import Graphs, GraphPlot
+julia> admits_kaehler_einstein_metric(cstar_surface([[1,1], [4], [4]], [[-1,-2], [3], [3]], :ee))
+true
+```
 
-julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
-C-star surface of type (e-e)
-
-julia> res_graphs = resolution_graphs(X);
-
-julia> (graph, nodelabel) = res_graphs[x_plus(X)];
-
-julia> Graphs.nv(graph)
-6
-
-julia> GraphPlot.gplothtml(graph; nodelabel = nodelabel); # Opens a browser window displaying the graph
-
+```jldoctest
+julia> admits_kaehler_einstein_metric(toric_surface([[1,0], [1,5], [-2,-5]]))
+true
 ```
 
 """
-@attr function resolution_graphs(X :: SurfaceWithTorusAction)
-    (Y, ex_div, _) = minimal_resolution(X)
-    M = Matrix(intersection_matrix(Y))
-    res_graphs = Dict{Vector{Int}, Tuple{Graphs.SimpleGraph, Vector}}()
-    for (x, divs) in ex_div
-        inds = map(is_prime_with_index, divs)
-        adj_matrix = M[inds, inds]
-        nodelabel = [adj_matrix[k, k] for k = 1 : length(divs)]
-        res_graphs[x] = (Graphs.SimpleGraph(adj_matrix), nodelabel)
-    end
-    return res_graphs
-end
-
-
-@doc raw"""
-    resolution_graph(X :: SurfaceWithTorusAction, x :: Vector{Int})   
-
-Return the resolution graph of the minimal resolution of singularities at a
-given point of a surface with torus action. The point must be given as an index
-vector of the corresponding maximal cone. The result is a pair with first entry
-a `Graphs.SimpleGraph` and second entry the list of self intersection numbers
-of the exceptional divisors, which serve as node labels of the graph.
-
-
-# Example
-
-Drawing the resolution graph of the $E_6$ singular cubic surface using 
-`GraphPlot.jl`.
-
-```jldoctest
-julia> import Graphs, GraphPlot
-
-julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
-C-star surface of type (e-e)
-
-julia> (graph, nodelabel) = resolution_graph(X, x_plus(X))
-
-julia> Graphs.nv(graph)
-6
-
-julia> GraphPlot.gplothtml(graph; nodelabel = nodelabel); # Opens a browser window displaying the graph
-
-```
-
-"""
-resolution_graph(X :: SurfaceWithTorusAction, x :: Vector{Int}) = resolution_graphs(X)[x]
+function admits_kaehler_einstein_metric end

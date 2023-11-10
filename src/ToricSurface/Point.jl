@@ -1,6 +1,6 @@
 
 @doc raw"""
-    ToricSurfacePoint <: MoriDreamSpacePoint end
+    ToricSurfacePoint <: MoriDreamSpacePoint
 
 A point on a toric surface.
 

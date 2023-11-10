@@ -6,6 +6,23 @@ Construct a divisor on a Mori Dream Space as a linear combination of the
 (restrictions of) the torus invariant prime divisors of the canonical 
 toric ambient variety.
 
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[2, 1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> D = cstar_surface_divisor(X, [0, 1, -1, 3])
+CStarSurfaceDivisor{EE}(C-star surface of type (e-e), [0, 1, -1, 3], #undef)
+
+julia> coefficients(D)
+4-element Vector{Int64}:
+  0
+  1
+ -1
+  3
+```
+
 """
 function mori_dream_space_divisor(X :: T, coeffs :: Vector{S}) where {T <: MoriDreamSpace, S <: IntegerUnion}
     MoriDreamSpaceDivisor(X, coeffs)
@@ -72,6 +89,22 @@ mori_dream_space_divisor(d.variety, [ZZRingElem(c)*x for x in coefficients(d)])
 # Basic properties
 #################################################
 
+@doc raw"""
+    is_prime(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace}
+
+Check whether a given divisor is a prime divisor.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> is_prime(invariant_divisor(X, 0, 1))
+true
+```
+
+"""
 @attr is_prime(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace} = 
 sum(coefficients(d)) == 1 && all(c -> c ∈ [0,1], coefficients(d))
 

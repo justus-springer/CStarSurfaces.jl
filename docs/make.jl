@@ -16,8 +16,9 @@ makedocs(
     pages = [
         "Home" => "index.md",
         "Surfaces with torus action" => "surfaces_with_torus_action.md",
+        "Divisors" => "divisors.md",
+        "Points" => "points.md",
         "Normal forms" => "admissible_operations.md",
-        "Mori Dream Spaces" => "mori_dream_spaces.md",
         "Database functionality" => "database_functionality.md",
         "Index" => "docs_index.md"
     ]

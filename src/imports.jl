@@ -8,6 +8,7 @@ import Base:
 
 import Oscar:
     anticanonical_divisor,
+    vertices,
     anticanonical_divisor_class,
     @attr,
     @attributes,
@@ -19,6 +20,7 @@ import Oscar:
     coefficients,
     cokernel,
     convex_hull,
+    is_prime,
     cox_ring,
     degree,
     det,

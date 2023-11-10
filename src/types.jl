@@ -19,7 +19,7 @@ abstract type MoriDreamSpace end
 @doc raw"""
     MoriDreamSpaceUnion
 
-The union of `MoriDreamSpace` and Oscar's `NormalToricVarietyType`.
+The Union of `MoriDreamSpace` and Oscar's `NormalToricVarietyType`.
 
 """
 const MoriDreamSpaceUnion = Union{MoriDreamSpace, NormalToricVarietyType}
@@ -73,7 +73,7 @@ const DoubleVector{T, S} = ZeroVector{Vector{T}, S}
 
 
 @doc raw"""
-    CStarSurface{T<:CStarSurfaceCase}
+    CStarSurface{T<:CStarSurfaceCase} <: MoriDreamSpace
 
 A $\mathbb{C}^*$-surface of case `T <: CStarSurfaceCase`. As a Julia type, it
 gets modeled by a stuct with fields `l`, `d` and `case`, where `l` and `d` are
@@ -92,7 +92,7 @@ Base.:(==)(X :: CStarSurface, Y :: CStarSurface) = X.l == Y.l && X.d == Y.d && X
 
 
 @doc raw"""
-    ToricSurface
+    ToricSurface <: MoriDreamSpace
 
 A toric surface. As a Julia type, it gets modeled by a struct with a single
 field `vs` that stores the primitive generator of the rays of the
@@ -115,10 +115,6 @@ Base.:(==)(X :: ToricSurface, Y :: ToricSurface) = X.vs == Y.vs
 
 A Weil divisor on a Mori Dream Space of type `T`.
 
-Since there is a 1-to-1 correspondence between (classes of) divisors
-on a Mori Dream Space and (classes of) divisors on its canonical 
-toric ambient variety, this type is modeled as a wrapper around
-the `ToricDivisor` from Oscar.
 """
 @attributes mutable struct MoriDreamSpaceDivisor{T <: MoriDreamSpace}
     variety :: T
@@ -131,7 +127,7 @@ d1.variety === d2.variety && d1.coeffs == d2.coeffs
 
 
 @doc raw"""
-    CStarSurfaceDivisor{T} 
+    CStarSurfaceDivisor{T} = MoriDreamSpaceDivisor{CStarSurface{T}}
 
 A Weil divisor on a $\mathbb{C}^*$-surface of type `T <: CStarSurfaceCase`.
 """
@@ -139,7 +135,7 @@ const CStarSurfaceDivisor{T} = MoriDreamSpaceDivisor{CStarSurface{T}}
 
 
 @doc raw"""
-    ToricSurfaceDivisor 
+    ToricSurfaceDivisor = MoriDreamSpaceDivisor{ToricSurface} 
 
 A Weil divisor on a toric surface.
 """

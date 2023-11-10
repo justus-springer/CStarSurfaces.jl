@@ -23,11 +23,20 @@ reference, we mention [ArDeHaLa15](@cite).
 The following invariants can be computed for $\mathbb{C}^*$-surfaces and toric
 surfaces:
 
-- [divisor class group](@ref class_group(X :: MoriDreamSpace)), [local class groups](@ref local_class_groups), [(anti)canonical divisor class](@ref canonical_divisor),
-- [Cox Ring](@ref cox_ring), [Gorenstein index](@ref gorenstein_index), [Picard index](@ref picard_index),
-- [intersection numbers](@ref Base.:*(d1 :: SurfaceWithTorusActionDivisor, d2 :: SurfaceWithTorusActionDivisor)), [anticanonical self intersection](@ref anticanonical_self_intersection),
-- [resolution of singularities](@ref canonical_resolution), [exceptional divisors](@ref canonical_resolution_exceptional_divisors), [discrepancies](@ref canonical_resolution_discrepancies), [log canonicity](@ref maximal_log_canonicity),
-- [normal form of defining data](@ref normal_form(X :: CStarSurface)), [admissible operations](@ref AdmissibleOperation), [isomorphy test](@ref are_isomorphic(X :: CStarSurface, Y :: CStarSurface)).
+- [divisor class group](@ref class_group(X :: MoriDreamSpace)), 
+  [local class groups](@ref class_group(x :: MoriDreamSpacePoint)),
+  [(anti)canonical divisor class](@ref canonical_divisor),
+- [Cox Ring](@ref cox_ring), 
+  [Gorenstein index](@ref gorenstein_index), 
+  [Picard index](@ref picard_index),
+- [intersection numbers](@ref Base.:*(d1 :: SurfaceWithTorusActionDivisor, d2 :: SurfaceWithTorusActionDivisor)), 
+  [anticanonical self intersection](@ref anticanonical_self_intersection),
+- [resolution of singularities](@ref canonical_resolution), 
+  [log canonicity](@ref log_canonicity),
+  [resolution graphs](@ref resolution_graph),
+- [normal form of defining data](@ref normal_form(X :: CStarSurface)), 
+  [admissible operations](@ref AdmissibleOperation), 
+  [isomorphy test](@ref are_isomorphic(X :: CStarSurface, Y :: CStarSurface)).
 
 Furthermore, some functionality to save and retrieve $\mathbb{C}^*$-surfaces
 from a database is [provided](@ref "Database functionality"), see also the
@@ -83,9 +92,9 @@ gorenstein_index(X)
 picard_index(X)
 K = anticanonical_divisor(X)
 K * K # the anticanonical self intersection
-(Xreg, exceptional_divisors, discrepancies) = canonical_resolution(X)
-gen_matrix(Xreg)
-maximal_log_canonicity(X)
+(Y, exceptional_divisors, discrepancies) = canonical_resolution(X);
+gen_matrix(Y)
+log_canonicity(X)
 ```
 
 ## References

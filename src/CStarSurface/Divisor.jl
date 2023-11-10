@@ -1,41 +1,53 @@
 
-@doc raw"""
-    cstar_surface_divisor(X :: CStarSurface, coeffs :: Vector{<:IntegerUnion})
-
-Construct a divisor on a C-star surface as a linear combination
-of the the torus invariant prime divisors. 
-
-# Example
-
-```jldoctest
-julia> X = cstar_surface([[3, 1], [3], [2]], [[2, 1], [1], [1]], :ee)
-C-star surface of type (e-e)
-
-julia> D = cstar_surface_divisor(X, [0, 1, -1, 3])
-CStarSurfaceDivisor{EE}(C-star surface of type (e-e), Torus-invariant, non-prime divisor on a normal toric variety)
-
-julia> coefficients(D)
-4-element Vector{ZZRingElem}:
- 0
- 1
- -1
- 3
-```
-
-"""
 cstar_surface_divisor(X :: CStarSurface, coeffs :: Vector{<:IntegerUnion}) = mori_dream_space_divisor(X, coeffs)
 
+@doc raw"""
+    cstar_surface_divisor(X :: CStarSurface{EE}, coeffs :: DoubleVector{<:IntegerUnion})
+
+Construct a divisor on a $\mathbb{C}^*$-surface of type (e-e) as a linear
+combination of the invariant prime divisors $D^{ij}_X$. The coefficients are
+given in double index notation.
+
+"""
 cstar_surface_divisor(X :: CStarSurface{EE}, coeffs :: DoubleVector{<:IntegerUnion}) = 
 cstar_surface_divisor(X, vcat(coeffs...))
 
+
+@doc raw"""
+    cstar_surface_divisor(X :: CStarSurface{PE}, coeffs :: DoubleVector{T}, coeff_plus :: T) where {T <: IntegerUnion}
+
+Construct a divisor on a $\mathbb{C}^*$-surface of type (p-e) as a linear
+combination of the invariant prime divisors $D^{ij}_X$ and $D^+_X$. The
+coefficients are given in double index notation.
+
+"""
 cstar_surface_divisor(X :: CStarSurface{PE}, coeffs :: DoubleVector{T}, coeff_plus :: T) where {T <: IntegerUnion} = 
 cstar_surface_divisor(X, vcat(coeffs..., [coeff_plus]))
 
+
+@doc raw"""
+    cstar_surface_divisor(X :: CStarSurface{EP}, coeffs :: DoubleVector{T}, coeff_minus :: T) where {T <: IntegerUnion}
+
+Construct a divisor on a $\mathbb{C}^*$-surface of type (e-p) as a linear
+combination of the invariant prime divisors $D^{ij}_X$ and $D^-_X$. The
+coefficients are given in double index notation.
+
+"""
 cstar_surface_divisor(X :: CStarSurface{EP}, coeffs :: DoubleVector{T}, coeff_minus :: T) where {T <: IntegerUnion} = 
 cstar_surface_divisor(X, vcat(coeffs..., [coeff_minus]))
 
+
+@doc raw"""
+    cstar_surface_divisor(X :: CStarSurface{PP}, coeffs :: DoubleVector{T}, coeff_plus :: T, coeff_minus :: T) where {T <: IntegerUnion}
+
+Construct a divisor on a $\mathbb{C}^*$-surface of type (p-p) as a linear
+combination of the invariant prime divisors $D^{ij}_X$ and $D^+_X, D^-_X$. The
+coefficients are given in double index notation.
+
+"""
 cstar_surface_divisor(X :: CStarSurface{PP}, coeffs :: DoubleVector{T}, coeff_plus :: T, coeff_minus :: T) where {T <: IntegerUnion} = 
 cstar_surface_divisor(X, vcat(coeffs..., [coeff_plus, coeff_minus]))
+
 
 cstar_surface_divisor(X :: CStarSurface, coeffs :: Vector{Vector{T}}, coeffs_plus_minus...) where {T <: IntegerUnion} = 
 cstar_surface_divisor(X, DoubleVector(coeffs), coeffs_plus_minus...)
@@ -44,7 +56,6 @@ cstar_surface_divisor(X, DoubleVector(coeffs), coeffs_plus_minus...)
 @doc raw"""
     double_coefficients(d :: CStarSurfaceDivisor)
 
-    @req is_prime(d) "The given divisor is n
 Return the coefficients of a divisor on a $\mathbb{C}^*$-surface, in
 double index notation.
 
@@ -85,7 +96,7 @@ end
 
 
 @doc raw"""
-    D_plus(X :: CStarSurface{T<:Union{PE,PP}})    
+    D_plus(X :: CStarSurface{<:Union{PE,PP}})    
 
 Return the parabolic fixed point curve $D^+$ of a $\mathbb{C}^*$-surface of
 type (p-e) or (p-p).
@@ -98,7 +109,7 @@ cstar_surface_divisor(X, [repeat([0], n) for n in _ns(X)], 1, 0)
 
 
 @doc raw"""
-    D_minus(X :: CStarSurface{T<:Union{EP,PP}})    
+    D_minus(X :: CStarSurface{<:Union{EP,PP}})    
 
 Return the parabolic fixed point curve $D^-$ of a $\mathbb{C}^*$-surface of
 type (e-p) or (p-p).
@@ -162,6 +173,16 @@ divisors of the form $D^{\pm}$.
 Contract the given prime divisor and return the resulting
 $\mathbb{C}^*$-surface. This amounts to deleting the associated ray from the
 generator matrix.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ep)
+C-star surface of type (e-p)
+
+julia> contract_prime_divisor(D_minus(X))
+C-star surface of type (e-e)
+```
 
 """
 function contract_prime_divisor(d :: CStarSurfaceDivisor{T}) where {T <: CStarSurfaceCase}

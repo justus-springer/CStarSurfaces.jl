@@ -24,7 +24,7 @@ julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
 C-star surface of type (e-e)
 
 julia> D = cstar_surface_divisor(X, [1, 0, 2, -1])
-CStarSurfaceDivisor{EE}(C-star surface of type (e-e), Torus-invariant, non-prime divisor on a normal toric variety)
+CStarSurfaceDivisor{EE}(C-star surface of type (e-e), [1, 0, 2, -1], #undef)
 
 julia> D * D
 4//3
