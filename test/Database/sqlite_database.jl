@@ -37,8 +37,8 @@ PRIMARY_KEY = "surface_id"
         @test row[:canonical_divisor_class] == "[-13]"
         @test row[:gorenstein_index] == 693
         @test row[:picard_index] == 693
-        @test row[:maximal_log_canonicity_numerator] == 1
-        @test row[:maximal_log_canonicity_denominator] == 3
+        @test row[:log_canonicity_numerator] == 1
+        @test row[:log_canonicity_denominator] == 3
         @test row[:anticanonical_self_intersection_numerator] == 169
         @test row[:anticanonical_self_intersection_denominator] == 693
         @test row[:admits_kaehler_einstein_metric] == 0
@@ -79,8 +79,8 @@ PRIMARY_KEY = "surface_id"
         @test row[:canonical_divisor_class] == "[0, -6]"
         @test row[:gorenstein_index] == 2
         @test row[:picard_index] == 36
-        @test row[:maximal_log_canonicity_numerator] == 1
-        @test row[:maximal_log_canonicity_denominator] == 2
+        @test row[:log_canonicity_numerator] == 1
+        @test row[:log_canonicity_denominator] == 2
         @test row[:anticanonical_self_intersection_numerator] == 3
         @test row[:anticanonical_self_intersection_denominator] == 1
         @test row[:admits_kaehler_einstein_metric] == 0

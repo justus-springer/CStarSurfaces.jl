@@ -68,9 +68,9 @@ _db_gorenstein_index(X :: SurfaceWithTorusAction) = Int(gorenstein_index(X))
 
 _db_picard_index(X :: SurfaceWithTorusAction) = Int(picard_index(X))
 
-_db_maximal_log_canonicity_numerator(X :: SurfaceWithTorusAction) = Int(numerator(log_canonicity(X)))
+_db_log_canonicity_numerator(X :: SurfaceWithTorusAction) = Int(numerator(log_canonicity(X)))
 
-_db_maximal_log_canonicity_denominator(X :: SurfaceWithTorusAction) = Int(denominator(log_canonicity(X)))
+_db_log_canonicity_denominator(X :: SurfaceWithTorusAction) = Int(denominator(log_canonicity(X)))
 
 _db_anticanonical_self_intersection_numerator(X :: SurfaceWithTorusAction) = Int(numerator(anticanonical_self_intersection(X)))
 
@@ -121,8 +121,8 @@ default_column_functions(::Type{<:SurfaceWithTorusAction}) = Dict([
 :canonical_divisor_class => _db_canonical_divisor_class,
 :gorenstein_index => _db_gorenstein_index,
 :picard_index => _db_picard_index,
-:maximal_log_canonicity_numerator => _db_maximal_log_canonicity_numerator,
-:maximal_log_canonicity_denominator => _db_maximal_log_canonicity_denominator,
+:log_canonicity_numerator => _db_log_canonicity_numerator,
+:log_canonicity_denominator => _db_log_canonicity_denominator,
 :anticanonical_self_intersection_numerator => _db_anticanonical_self_intersection_numerator,
 :anticanonical_self_intersection_denominator => _db_anticanonical_self_intersection_denominator,
 :admits_kaehler_einstein_metric => _db_admits_kaehler_einstein_metric,
