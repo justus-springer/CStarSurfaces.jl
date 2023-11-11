@@ -88,6 +88,10 @@ is_factorial(X) ? 1 : 0
 _db_is_smooth(X :: SurfaceWithTorusAction) = 
 is_smooth(X) ? 1 : 0
 
+_db_number_of_singularities(X :: SurfaceWithTorusAction) = 
+number_of_singularities(X)
+
+
 @doc raw"""
     default_column_functions(::Type{<:SurfaceWithTorusAction})   
 
@@ -128,7 +132,8 @@ default_column_functions(::Type{<:SurfaceWithTorusAction}) = Dict([
 :admits_kaehler_einstein_metric => _db_admits_kaehler_einstein_metric,
 :is_quasismooth => _db_is_quasismooth,
 :is_factorial => _db_is_factorial,
-:is_smooth => _db_is_smooth
+:is_smooth => _db_is_smooth,
+:number_of_singularities => _db_number_of_singularities
 ])
 
 
