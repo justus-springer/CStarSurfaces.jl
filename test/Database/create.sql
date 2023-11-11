@@ -116,7 +116,9 @@ CREATE TABLE IF NOT EXISTS surfaces (
     is_factorial INTEGER,
 
     -- whether the surface is smooth
-    is_smooth INTEGER
+    is_smooth INTEGER,
+
+    number_of_singularities INTEGER
 
 )
 
