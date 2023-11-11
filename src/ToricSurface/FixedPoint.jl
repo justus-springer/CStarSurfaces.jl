@@ -54,3 +54,7 @@ end
 end
 
 @attr minimal_resolution(x :: ToricSurfaceFixedPoint) = canonical_resolution(x)
+
+@attr is_log_terminal(x :: ToricSurfaceFixedPoint) = true
+
+@attr singularity_type(x :: ToricSurfaceFixedPoint) = SingularityTypeA(length(minimal_resolution(x)[2]))

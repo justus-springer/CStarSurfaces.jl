@@ -114,6 +114,18 @@ julia> number_of_singularities(X)
 
 
 @doc raw"""
+    singularity_types(X :: SurfaceWithTorusAction)
+
+Return the singularity types of a surface with torus action.
+
+"""
+@attr singularity_types(X :: SurfaceWithTorusAction) = map(singularity_type, singularities(X))
+
+
+@attr is_log_terminal(X :: SurfaceWithTorusAction) = all(is_log_terminal, fixed_points(X))
+
+
+@doc raw"""
     log_canonicity(X :: SurfaceWithTorusAction)
 
 Given a surface with torus action $X$, return the maximal rational number

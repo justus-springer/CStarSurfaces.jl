@@ -1,3 +1,14 @@
+export SingularityType
+export SingularityTypeADE
+export SingularityTypeA
+export SingularityTypeD
+export SingularityTypeE6
+export SingularityTypeE7
+export SingularityTypeE8
+export singularity_type
+export singularity_types
+export is_log_terminal
+export SingularityTypeNonLogTerminal
 export ToricSurfacePoint
 export is_prime
 export IntegerUnion

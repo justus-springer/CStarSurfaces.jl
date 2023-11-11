@@ -140,3 +140,5 @@ const CStarSurfaceDivisor{T} = MoriDreamSpaceDivisor{CStarSurface{T}}
 A Weil divisor on a toric surface.
 """
 const ToricSurfaceDivisor = MoriDreamSpaceDivisor{ToricSurface}
+
+
