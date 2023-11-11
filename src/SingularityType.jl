@@ -28,4 +28,4 @@ Base.show(io :: IO, st :: SingularityTypeE8) = print(io, "E8")
 
 struct SingularityTypeNonLogTerminal <: SingularityType end
 
-Base.show(io :: IO, st :: SingularityTypeNonLogTerminal) = print(io, "non log terminal singularity")
+Base.show(io :: IO, st :: SingularityTypeNonLogTerminal) = print(io, "Non log terminal singularity")

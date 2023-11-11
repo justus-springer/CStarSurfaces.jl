@@ -128,9 +128,10 @@ _is_platonic_tuple(Vector(first.(_slope_ordered_l(parent(x)))))
 
 function _singularity_type_elliptic(x :: EllipticFixedPoint; is_plus :: Bool)
     l = _slope_ordered_l(parent(x))
-    q = is_plus ? first.(l) : last.(l)
+    q = is_plus ? Vector(first.(l)) : Vector(last.(l))
+    !_is_platonic_tuple(q) && return SingularityTypeNonLogTerminal()
+
     ty = _platonicity_type(Vector(q))
-    
     ty == :E6 && return SingularityTypeE6()
     ty == :E7 && return SingularityTypeE7()
     ty == :E8 && return SingularityTypeE8()
