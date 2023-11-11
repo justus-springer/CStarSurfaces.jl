@@ -60,6 +60,7 @@ gorenstein_index(x :: MoriDreamSpacePoint)
 is_quasismooth
 is_factorial(x :: MoriDreamSpacePoint)
 is_smooth(x :: MoriDreamSpacePoint)
+is_log_terminal
 ```
 
 ## Resolution of singularities
@@ -69,4 +70,18 @@ canonical_resolution
 minimal_resolution
 log_canonicity(X :: SurfaceWithTorusActionFixedPoint)
 resolution_graph(X :: SurfaceWithTorusActionFixedPoint)
+```
+
+## Singularity types
+
+```@docs
+singularity_type
+SingularityType
+SingularityTypeADE
+SingularityTypeA
+SingularityTypeD
+SingularityTypeE6
+SingularityTypeE7
+SingularityTypeE8
+SingularityTypeNonLogTerminal
 ```
