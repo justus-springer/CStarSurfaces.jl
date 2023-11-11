@@ -66,3 +66,22 @@ centroid(P :: Polyhedron{QQFieldElem}) = P.pm_polytope.CENTROID[begin+1 : end]
 
 # Checks whether at most two entries in a list are greater than one
 _almost_all_one(v :: AbstractVector) = length(filter(x -> x > 1, v)) <= 2
+
+# Checks if a list of positive integers is a platonic tuple
+_is_platonic_tuple(v :: AbstractVector) = sum([1 // v[i] for i = 1 : length(v)]) > length(v) - 2
+
+function _platonicity_type(v :: AbstractVector)
+    @req _is_platonic_tuple(v) "Not a platonic tuple"
+    !_is_platonic_tuple(v) && th
+    q = sort(v, rev=true)
+    q0, q1, q2 = sort(v, rev=true)[1 : 3]
+    q2 == 1 && return :A
+    (q1, q2) == (2,2) && return :D
+    (q0, q1, q2) == (3,3,2) && return :E6
+    (q0, q1, q2) == (4,3,2) && return :E7
+    (q0, q1, q2) == (5,3,2) && return :E8
+end
+
+
+
+

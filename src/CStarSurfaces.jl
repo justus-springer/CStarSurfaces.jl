@@ -6,6 +6,7 @@ include("Tools.jl")
 
 include("types.jl")
 
+include("SingularityType.jl")
 
 include("MoriDreamSpace/MoriDreamSpace.jl")
 include("MoriDreamSpace/MoriDreamSpaceUnion.jl")

@@ -34,6 +34,7 @@ surfaces:
 - [resolution of singularities](@ref canonical_resolution), 
   [log canonicity](@ref log_canonicity),
   [resolution graphs](@ref resolution_graph),
+  [ADE singularities](@ref singularity_type),
 - [normal form of defining data](@ref normal_form(X :: CStarSurface)), 
   [admissible operations](@ref AdmissibleOperation), 
   [isomorphy test](@ref are_isomorphic(X :: CStarSurface, Y :: CStarSurface)).

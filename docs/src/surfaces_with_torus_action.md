@@ -63,12 +63,14 @@ picard_index(X :: MoriDreamSpace)
 is_quasismooth(X :: MoriDreamSpace)
 is_factorial(X :: MoriDreamSpace)
 is_smooth(X :: MoriDreamSpace)
+is_log_terminal(X :: SurfaceWithTorusAction)
+log_canonicity(X :: SurfaceWithTorusAction)
 singularities(X :: SurfaceWithTorusAction)
 number_of_singularities(X :: SurfaceWithTorusAction)
+singularity_types(X :: SurfaceWithTorusAction)
 canonical_resolution(X :: CStarSurface)
 canonical_resolution(X :: ToricSurface)
 minimal_resolution(X :: CStarSurface)
-log_canonicity(X :: SurfaceWithTorusAction)
 ```
 
 ## Intersection numbers

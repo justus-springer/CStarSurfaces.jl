@@ -114,6 +114,75 @@ julia> number_of_singularities(X)
 
 
 @doc raw"""
+    singularity_types(X :: SurfaceWithTorusAction)
+
+Return the list of singularity types of all singularities of a surface with
+torus action.
+
+# Examples
+
+A $\mathbb{C}^*$-surface with two Gorenstein singularities.
+
+```jldoctest
+julia> X = cstar_surface([[1, 2], [3], [3]], [[-1, -3], [2], [2]], :ee)
+C-star surface of type (e-e)
+
+julia> singularity_types(X)
+2-element Vector{SingularityTypeADE}:
+ A2
+ E6
+```
+
+A non-log terminal $\mathbb{C}*$-surface.
+
+```jldoctest
+julia> X = cstar_surface([[5, 7],[3],[2]], [[-1, 2], [1], [-1]], :ee)
+C-star surface of type (e-e)
+
+julia> singularity_types(X)
+3-element Vector{SingularityType}:
+ Non log terminal singularity
+ E8
+ A2
+```
+
+"""
+@attr singularity_types(X :: SurfaceWithTorusAction) = map(singularity_type, singularities(X))
+
+
+@doc raw"""
+    is_log_terminal(X :: SurfaceWithTorusAction)
+
+Check whether a surface with torus action has at most log terminal
+singularities.
+
+# Example
+
+The $E_6$ singular cubic.
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> is_log_terminal(X)
+true
+```
+
+A non-log terminal $\mathbb{C}^*$-surface.
+
+```jldoctest
+julia> X = cstar_surface([[5, 7], [3], [2]], [[-1, 2], [1], [-1]], :ee)
+C-star surface of type (e-e)
+
+julia> is_log_terminal(X)
+false
+```
+
+"""
+@attr is_log_terminal(X :: SurfaceWithTorusAction) = all(is_log_terminal, fixed_points(X))
+
+
+@doc raw"""
     log_canonicity(X :: SurfaceWithTorusAction)
 
 Given a surface with torus action $X$, return the maximal rational number

@@ -56,6 +56,70 @@ julia> discr
 function canonical_resolution end
 
 
+@doc raw"""
+    singularity_type(x :: SurfaceWithTorusActionFixedPoint)
+
+Return the singularity type of a fixed point on a surface with torus action.
+
+# Examples
+
+The $E_6$ singular cubic.
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> singularity_type(x_plus(X))
+E6
+```
+
+A non-log terminal singularity.
+
+```jldoctest
+julia> X = cstar_surface([[5, 7],[3],[2]], [[-1, 2], [1], [-1]], :ee)
+C-star surface of type (e-e)
+
+julia> singularity_type(x_plus(X))
+Non log terminal singularity
+```
+
+
+"""
+function singularity_type end
+
+
+@doc raw"""
+    is_log_terminal(x :: SurfaceWithTorusActionFixedPoint)
+
+Check whether a point on a surface with torus action is at most a log terminal
+singularity.
+
+# Example
+
+The $E_6$ singular cubic.
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> is_log_terminal(x_plus(X))
+true
+```
+
+A non-log terminal singularity.
+
+```jldoctest
+julia> X = cstar_surface([[5, 7],[3],[2]], [[-1, 2], [1], [-1]], :ee)
+C-star surface of type (e-e)
+
+julia> is_log_terminal(x_plus(X))
+false
+```
+
+"""
+function is_log_terminal end
+
+
 @attr cox_coordinates(x :: SurfaceWithTorusActionFixedPoint) = 
 [i ∈ orbit_cone(x) ? 0 : 1 for i = 1 : nrays(parent(x))]
 
