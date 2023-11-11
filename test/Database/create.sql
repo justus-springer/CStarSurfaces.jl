@@ -81,15 +81,15 @@ CREATE TABLE IF NOT EXISTS surfaces (
     picard_index INTEGER,
 
     -- the numerator of the macimal log canonicity.
-    maximal_log_canonicity_numerator INTEGER,
+    log_canonicity_numerator INTEGER,
 
     -- the denominator of the macimal log canonicity.
-    maximal_log_canonicity_denominator INTEGER,
+    log_canonicity_denominator INTEGER,
 
     -- The maximal rational number $\epsilon$ such that the surface is
     -- $\epsilon$-log terminal, represented by a floating point number.
     -- This column is automatically calculated from numerator and denominator.
-    maximal_log_canonicity REAL AS (CAST(maximal_log_canonicity_numerator AS FLOAT) / CAST(maximal_log_canonicity_denominator AS FLOAT)),
+    log_canonicity REAL AS (CAST(log_canonicity_numerator AS FLOAT) / CAST(log_canonicity_denominator AS FLOAT)),
 
     -- the numerator of the anticanonical self intersection.
     anticanonical_self_intersection_numerator INTEGER,
