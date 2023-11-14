@@ -8,6 +8,120 @@ An adapter to an SQLite database holding objects of type
 """
 const SQLiteAdapterSurfaces = SQLiteAdapter{SurfaceWithTorusAction}
 
+
+
+# The list of column names together with their SQLite definition. The last
+# entry in each tuple says if the column is explicitly exported. It is false
+# for columns that are automatically computed from other columns, such as
+# `log_canonicity`.
+const _db_column_defs = [
+    (:is_toric, "INTEGER NOT NULL", true),
+    (:gen_matrix, "TEXT NOT NULL", true),
+    (:rays, "TEXT", true),
+    (:nrays, "INTEGER", true),
+    (:lss, "TEXT", true),
+    (:dss, "TEXT", true),
+    (:case_, "TEXT", true),
+    (:block_sizes, "TEXT", true),
+    (:nblocks, "INTEGER", true),
+    (:number_of_parabolic_fixed_point_curves, "INTEGER", true),
+    (:orientation, "INTEGER", true),
+    (:is_intrinsic_quadric, "INTEGER", true),
+    (:class_group_rank, "INTEGER", true),
+    (:class_group_torsion, "TEXT", true),
+    (:class_group_torsion_order, "INTEGER", true),
+    (:degree_matrix, "TEXT", true),
+    (:canonical_divisor_class, "TEXT", true),
+    (:gorenstein_index, "INTEGER", true),
+    (:picard_index, "INTEGER", true),
+    (:log_canonicity_numerator, "INTEGER", true),
+    (:log_canonicity_denominator, "INTEGER", true),
+    (:log_canonicity, "REAL AS (CAST(log_canonicity_numerator AS FLOAT) / CAST(log_canonicity_denominator AS FLOAT))", false),
+    (:anticanonical_self_intersection_numerator, "INTEGER", true),
+    (:anticanonical_self_intersection_denominator, "INTEGER", true),
+    (:anticanonical_self_intersection, "REAL AS (CAST(anticanonical_self_intersection_numerator AS FLOAT) / CAST(anticanonical_self_intersection_denominator AS FLOAT))", false),
+    (:admits_kaehler_ricci_soliton, "INTEGER", false),
+    (:admits_kaehler_einstein_metric, "INTEGER", true),
+    (:admits_sasaki_einstein_metric, "INTEGER", false),
+    (:is_quasismooth, "INTEGER", true),
+    (:is_factorial, "INTEGER", true),
+    (:is_smooth, "INTEGER", true),
+    (:number_of_singularities, "INTEGER", true),
+]
+
+@doc raw"""
+    create_table(db :: SQLiteAdapterSurfaces; temp = false, ifnotexists = true)
+
+Create a new SQLite table with default column definitions holding
+`SurfaceWithTorusAction`s.
+
+# Example
+
+Create a new SQLite database for holding `SurfaceWithTorusAction`s. The
+resulting table can be inspected with
+[`SQLite.jl`](https://juliadatabases.org/SQLite.jl/stable/):
+
+```jldoctest
+julia> db = SQLiteAdapterSurfaces("my_database.db", "surfaces", "surface_id")
+SQLiteAdapterSurfaces(SQLite.DB("my_database.db"), "my_database.db", "surfaces", "surface_id")
+
+julia> create_table(db);
+
+julia> using SQLite
+
+julia> SQLite.tables(db.db)
+1-element Vector{SQLite.DBTable}:
+ SQLite.DBTable("surfaces", Tables.Schema:
+ :surface_id                                   Union{Missing, Int64}
+ :is_toric                                     Union{Missing, Int64}
+ :gen_matrix                                   Union{Missing, String}
+ :rays                                         Union{Missing, String}
+ :nrays                                        Union{Missing, Int64}
+ :lss                                          Union{Missing, String}
+ :dss                                          Union{Missing, String}
+ :case_                                        Union{Missing, String}
+ :block_sizes                                  Union{Missing, String}
+ :nblocks                                      Union{Missing, Int64}
+ :number_of_parabolic_fixed_point_curves       Union{Missing, Int64}
+ :orientation                                  Union{Missing, Int64}
+ :is_intrinsic_quadric                         Union{Missing, Int64}
+ :class_group_rank                             Union{Missing, Int64}
+ :class_group_torsion                          Union{Missing, String}
+ :class_group_torsion_order                    Union{Missing, Int64}
+ :degree_matrix                                Union{Missing, String}
+ :canonical_divisor_class                      Union{Missing, String}
+ :gorenstein_index                             Union{Missing, Int64}
+ :picard_index                                 Union{Missing, Int64}
+ :log_canonicity_numerator                     Union{Missing, Int64}
+ :log_canonicity_denominator                   Union{Missing, Int64}
+ :log_canonicity                               Union{Missing, Float64}
+ :anticanonical_self_intersection_numerator    Union{Missing, Int64}
+ :anticanonical_self_intersection_denominator  Union{Missing, Int64}
+ :anticanonical_self_intersection              Union{Missing, Float64}
+ :admits_kaehler_ricci_soliton                 Union{Missing, Int64}
+ :admits_kaehler_einstein_metric               Union{Missing, Int64}
+ :admits_sasaki_einstein_metric                Union{Missing, Int64}
+ :is_quasismooth                               Union{Missing, Int64}
+ :is_factorial                                 Union{Missing, Int64}
+ :is_smooth                                    Union{Missing, Int64}
+ :number_of_singularities                      Union{Missing, Int64})
+
+```
+
+"""
+function create_table(db :: SQLiteAdapterSurfaces; temp = false, ifnotexists = true)
+    temp = temp ? "TEMP" : ""
+    ifnotexists = ifnotexists ? "IF NOT EXISTS" : ""
+    columns = [string(db.primary_key, ' ', "INTEGER PRIMARY KEY ASC")]
+    for (column_name, column_def, _) in _db_column_defs
+        push!(columns, string(column_name, ' ', column_def))
+    end
+    sql = "CREATE $temp TABLE $ifnotexists $(db.table_name) ($(join(columns, ',')))"
+    DBInterface.execute(db.db, sql)
+end
+
+
+
 ##################################################
 # Default functions to compute the columns in the 
 # SQLite database
@@ -105,36 +219,9 @@ result as a language-agnostic string for database storage instead of a Julia
 type.
 
 """
-default_column_functions(::Type{<:SurfaceWithTorusAction}) = Dict([
-:is_toric => _db_is_toric,
-:gen_matrix => _db_gen_matrix,
-:rays => _db_rays,
-:nrays => _db_nrays,
-:lss => _db_lss,
-:dss => _db_dss,
-:case_ => _db_case_,
-:block_sizes => _db_block_sizes,
-:nblocks => _db_nblocks,
-:number_of_parabolic_fixed_point_curves => _db_number_of_parabolic_fixed_point_curves,
-:orientation => _db_orientation,
-:is_intrinsic_quadric => _db_is_intrinsic_quadric,
-:class_group_rank => _db_class_group_rank,
-:class_group_torsion => _db_class_group_torsion,
-:class_group_torsion_order => _db_class_group_torsion_order,
-:degree_matrix => _db_degree_matrix,
-:canonical_divisor_class => _db_canonical_divisor_class,
-:gorenstein_index => _db_gorenstein_index,
-:picard_index => _db_picard_index,
-:log_canonicity_numerator => _db_log_canonicity_numerator,
-:log_canonicity_denominator => _db_log_canonicity_denominator,
-:anticanonical_self_intersection_numerator => _db_anticanonical_self_intersection_numerator,
-:anticanonical_self_intersection_denominator => _db_anticanonical_self_intersection_denominator,
-:admits_kaehler_einstein_metric => _db_admits_kaehler_einstein_metric,
-:is_quasismooth => _db_is_quasismooth,
-:is_factorial => _db_is_factorial,
-:is_smooth => _db_is_smooth,
-:number_of_singularities => _db_number_of_singularities
-])
+default_column_functions(::Type{<:SurfaceWithTorusAction}) = 
+Dict([column_name => eval(Symbol(:_db_, column_name)) 
+      for (column_name, _, exported) in _db_column_defs if exported])
 
 
 @doc raw"""

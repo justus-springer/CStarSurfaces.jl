@@ -2,10 +2,9 @@
     SQLiteAdapter{T} <: DatabaseAdapter{T}
 
 An adapter to an SQLite database holding objects of type `T` where `T <:
-MoriDreamSpace`. The type `T` should at least implement the following methods
-(see their docstrings for more information):
-
-`default_column_functions`, `find_in_database`, `sqlite_import_row`.
+MoriDreamSpace`. The type `T` should at least implement the following methods:
+[`create_table`](@ref), [`default_column_functions`](@ref),
+[`find_in_database`](@ref), [`sqlite_import_row`](@ref).
 
 """
 struct SQLiteAdapter{T} <: DatabaseAdapter{T}
@@ -21,10 +20,10 @@ end
 @doc raw"""
     default_column_functions(::Type{T}) where {T <: MoriDreamSpace}
 
-Returns a `Dict{Symbol, Function}` that serves as a default for the 
-names of the columns to export and how to export them for a given 
-subtype of `MoriDreamSpace`. Should be implemented by all subtypes
-of `MoriDreamSpace` where database functionality is desired.
+Returns a `Dict{Symbol, Function}` that serves as a default for the names of
+the columns to export and how to export them for a given subtype of
+`MoriDreamSpace`. This should be implemented by all subtypes of
+`MoriDreamSpace` where database functionality is desired.
 
 The fallback definition for a general `T` returns an empty dictionary.
 
@@ -165,6 +164,7 @@ import_from_database(db :: SQLiteAdapter{T}, id :: Int) where {T <: MoriDreamSpa
 
 _argsym_to_arg(T :: Type{<:MoriDreamSpace}, row :: Union{SQLite.Row, NamedTuple}, argsym :: Symbol) = 
 argsym == :variety ? sqlite_import_row(T, row) : row[argsym]
+
 
 @doc raw"""
     update_in_database(db :: SQLiteAdapter{T}, column_functions :: Dict{Symbol, <:Function}; sql :: String, column_function_args :: AbstractVector{Symbol}) where {T <: MoriDreamSpace}

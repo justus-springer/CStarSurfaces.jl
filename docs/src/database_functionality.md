@@ -9,10 +9,12 @@ A connection to the online
 [ldp-database](https://www.math.uni-tuebingen.de/forschung/algebra/ldp-database/)
 is planned.
 
+
 ```@docs
 DatabaseAdapter
 SQLiteAdapter
 SQLiteAdapterSurfaces
+create_table
 import_from_database
 find_in_database
 default_column_functions

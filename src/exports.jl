@@ -1,3 +1,4 @@
+export create_table
 export AdmissibleOperation
 export AdmissibleRowOperation
 export admits_kaehler_einstein_metric
