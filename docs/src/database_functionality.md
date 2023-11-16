@@ -19,6 +19,7 @@ import_from_database
 find_in_database
 default_column_functions
 default_insert_predicate
+sqlite_import_row
 export_to_database
 update_in_database
 execute_on_database
