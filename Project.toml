@@ -1,7 +1,7 @@
 name = "CStarSurfaces"
 uuid = "42ef8a1c-faf6-41db-96e1-562c4470a736"
 authors = ["Justus Springer <justusspringer@gmx.de>"]
-version = "0.2.0"
+version = "0.3.0"
 
 [deps]
 Combinatorics = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
