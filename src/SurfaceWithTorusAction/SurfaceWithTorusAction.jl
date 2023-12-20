@@ -49,7 +49,7 @@ This uses the formula from [Sp23](@cite) and is faster than the more general
 implementation.
 
 """
-picard_index(X :: SurfaceWithTorusAction) = 
+@attr picard_index(X :: SurfaceWithTorusAction) = 
 prod([order(class_group(x)) for x in fixed_points(X)]) / class_group_torsion_order(X)
 
 
@@ -67,7 +67,7 @@ julia> anticanonical_self_intersection(cstar_surface([[3, 1], [3], [2]], [[-2, -
 ```
 
 """
-anticanonical_self_intersection(X :: SurfaceWithTorusAction) = anticanonical_divisor(X) * anticanonical_divisor(X)
+@attr anticanonical_self_intersection(X :: SurfaceWithTorusAction) = anticanonical_divisor(X) * anticanonical_divisor(X)
 
 
 @doc raw"""

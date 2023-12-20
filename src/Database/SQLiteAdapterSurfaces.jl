@@ -10,43 +10,50 @@ const SQLiteAdapterSurfaces = SQLiteAdapter{SurfaceWithTorusAction}
 
 
 
-# The list of column names together with their SQLite definition. The last
+# The list of column names together with their SQLite definition. The third
 # entry in each tuple says if the column is explicitly exported. It is false
 # for columns that are automatically computed from other columns, such as
-# `log_canonicity`.
+# `log_canonicity`. The fourth entry says whether the column is used to
+# cache attributes when imported.
+#
+# If the third entry is `true`, there should be a function named 
+# `_db_<column_name>` specifying how the column is exported (see below).
+#
+# If the fourth entry is `true`, there should be a function named
+# `_import_db_<column_name>` specifying how to import the column (see below).
 const _db_column_defs = [
-    (:is_toric, "INTEGER NOT NULL", true),
-    (:gen_matrix, "TEXT NOT NULL", true),
-    (:rays, "TEXT", true),
-    (:nrays, "INTEGER", true),
-    (:lss, "TEXT", true),
-    (:dss, "TEXT", true),
-    (:case_, "TEXT", true),
-    (:block_sizes, "TEXT", true),
-    (:nblocks, "INTEGER", true),
-    (:number_of_parabolic_fixed_point_curves, "INTEGER", true),
-    (:orientation, "INTEGER", true),
-    (:is_intrinsic_quadric, "INTEGER", true),
-    (:class_group_rank, "INTEGER", true),
-    (:class_group_torsion, "TEXT", true),
-    (:class_group_torsion_order, "INTEGER", true),
-    (:degree_matrix, "TEXT", true),
-    (:canonical_divisor_class, "TEXT", true),
-    (:gorenstein_index, "INTEGER", true),
-    (:picard_index, "INTEGER", true),
-    (:log_canonicity_numerator, "INTEGER", true),
-    (:log_canonicity_denominator, "INTEGER", true),
-    (:log_canonicity, "REAL AS (CAST(log_canonicity_numerator AS FLOAT) / CAST(log_canonicity_denominator AS FLOAT))", false),
-    (:anticanonical_self_intersection_numerator, "INTEGER", true),
-    (:anticanonical_self_intersection_denominator, "INTEGER", true),
-    (:anticanonical_self_intersection, "REAL AS (CAST(anticanonical_self_intersection_numerator AS FLOAT) / CAST(anticanonical_self_intersection_denominator AS FLOAT))", false),
-    (:admits_kaehler_ricci_soliton, "INTEGER", false),
-    (:admits_kaehler_einstein_metric, "INTEGER", true),
-    (:admits_sasaki_einstein_metric, "INTEGER", false),
-    (:is_quasismooth, "INTEGER", true),
-    (:is_factorial, "INTEGER", true),
-    (:is_smooth, "INTEGER", true),
-    (:number_of_singularities, "INTEGER", true),
+    (:is_toric, "INTEGER NOT NULL", true, false),
+    (:gen_matrix, "TEXT NOT NULL", true, false),
+    (:rays, "TEXT", true, false),
+    (:nrays, "INTEGER", true, false),
+    (:lss, "TEXT", true, false),
+    (:dss, "TEXT", true, false),
+    (:case_, "TEXT", true, false),
+    (:block_sizes, "TEXT", true, false),
+    (:nblocks, "INTEGER", true, false),
+    (:number_of_parabolic_fixed_point_curves, "INTEGER", true, false),
+    (:orientation, "INTEGER", true, false),
+    (:is_intrinsic_quadric, "INTEGER", true, false),
+    (:class_group_rank, "INTEGER", true, true),
+    (:class_group_torsion, "TEXT", true, true),
+    (:class_group_torsion_order, "INTEGER", true, true),
+    (:degree_matrix, "TEXT", true, false),
+    (:canonical_divisor_class, "TEXT", true, false),
+    (:gorenstein_index, "INTEGER", true, true),
+    (:picard_index, "INTEGER", true, true),
+    (:log_canonicity_numerator, "INTEGER", true, false),
+    (:log_canonicity_denominator, "INTEGER", true, false),
+    (:log_canonicity, "REAL AS (CAST(log_canonicity_numerator AS FLOAT) / CAST(log_canonicity_denominator AS FLOAT))", false, true),
+    (:anticanonical_self_intersection_numerator, "INTEGER", true, false),
+    (:anticanonical_self_intersection_denominator, "INTEGER", true, false),
+    (:anticanonical_self_intersection, "REAL AS (CAST(anticanonical_self_intersection_numerator AS FLOAT) / CAST(anticanonical_self_intersection_denominator AS FLOAT))", false, true),
+    (:admits_kaehler_ricci_soliton, "INTEGER", false, false),
+    (:admits_kaehler_einstein_metric, "INTEGER", true, true),
+    (:admits_sasaki_einstein_metric, "INTEGER", false, false),
+    (:is_quasismooth, "INTEGER", true, true),
+    (:is_factorial, "INTEGER", true, true),
+    (:is_smooth, "INTEGER", true, true),
+    (:number_of_singularities, "INTEGER", true, true),
 ]
 
 @doc raw"""
@@ -113,7 +120,7 @@ function create_table(db :: SQLiteAdapterSurfaces; temp = false, ifnotexists = t
     temp = temp ? "TEMP" : ""
     ifnotexists = ifnotexists ? "IF NOT EXISTS" : ""
     columns = [string(db.primary_key, ' ', "INTEGER PRIMARY KEY ASC")]
-    for (column_name, column_def, _) in _db_column_defs
+    for (column_name, column_def, _, _) in _db_column_defs
         push!(columns, string(column_name, ' ', column_def))
     end
     sql = "CREATE $temp TABLE $ifnotexists $(db.table_name) ($(join(columns, ',')))"
@@ -221,7 +228,7 @@ type.
 """
 default_column_functions(::Type{<:SurfaceWithTorusAction}) = 
 Dict([column_name => eval(Symbol(:_db_, column_name)) 
-      for (column_name, _, exported) in _db_column_defs if exported])
+      for (column_name, _, exported, _) in _db_column_defs if exported])
 
 
 @doc raw"""
@@ -242,6 +249,47 @@ function find_in_database(db :: SQLiteAdapterSurfaces, X :: SurfaceWithTorusActi
 end
 
 
+##################################################
+# Importer functions for attribute caching
+##################################################
+
+_import_db_class_group_rank(row :: Union{SQLite.Row, NamedTuple}) =
+row[:class_group_rank]
+
+_import_db_class_group_torsion(row :: Union{SQLite.Row, NamedTuple}) =
+eval(Meta.parse(row[:class_group_torsion]))
+
+_import_db_class_group_torsion_order(row :: Union{SQLite.Row, NamedTuple}) =
+row[:class_group_torsion_order]
+
+_import_db_gorenstein_index(row :: Union{SQLite.Row, NamedTuple}) =
+row[:gorenstein_index]
+
+_import_db_picard_index(row :: Union{SQLite.Row, NamedTuple}) =
+row[:picard_index]
+
+_import_db_log_canonicity(row :: Union{SQLite.Row, NamedTuple}) =
+row[:log_canonicity_numerator] // row[:log_canonicity_denominator]
+
+_import_db_anticanonical_self_intersection(row :: Union{SQLite.Row, NamedTuple}) =
+row[:anticanonical_self_intersection_numerator] // row[:anticanonical_self_intersection_denominator]
+
+_import_db_admits_kaehler_einstein_metric(row :: Union{SQLite.Row, NamedTuple}) =
+row[:admits_kaehler_einstein_metric] == 1
+
+_import_db_is_quasismooth(row :: Union{SQLite.Row, NamedTuple}) =
+row[:is_quasismooth] == 1
+
+_import_db_is_factorial(row :: Union{SQLite.Row, NamedTuple}) =
+row[:is_factorial] == 1
+
+_import_db_is_smooth(row :: Union{SQLite.Row, NamedTuple}) =
+row[:is_smooth] == 1
+
+_import_db_number_of_singularities(row :: Union{SQLite.Row, NamedTuple}) =
+row[:number_of_singularities]
+
+
 @doc raw"""
     sqlite_import_row(::Type{SurfaceWithTorusAction}, row :: Union{SQLite.Row, NamedTuple})
 
@@ -249,15 +297,17 @@ Imports a single row from an `SQLiteAdapterSurfaces` into a
 `SurfaceWithTorusAction`.
 
 """
-function sqlite_import_row(::Type{SurfaceWithTorusAction}, row :: Union{SQLite.Row, NamedTuple})
+function sqlite_import_row(::Type{SurfaceWithTorusAction}, row :: Union{SQLite.Row, NamedTuple}; import_attributes = false)
     P = matrix(ZZ, eval(Meta.parse(row[:gen_matrix])))
-    return row[:is_toric] == 1 ? toric_surface(P) : cstar_surface(P)
+    X = row[:is_toric] == 1 ? toric_surface(P) : cstar_surface(P)
+
+    if import_attributes
+        attribute_names = [attr for (attr, _, _, imported) in _db_column_defs if imported]
+        for attr_name in attribute_names
+            f = eval(Symbol(:_import_db_, attr_name))
+            set_attribute!(X, attr_name, f(row))
+        end
+    end
+
+    return X
 end
-
-
-
-
-
-
-
-

@@ -115,14 +115,14 @@ end
 
 
 @doc raw"""
-    import_from_database(db :: SQLiteAdapter{T}, sql :: String = "TRUE") where {T <: MoriDreamSpace}
+    import_from_database(db :: SQLiteAdapter{T}; sql :: String = "TRUE", import_attributes = false) where {T <: MoriDreamSpace}
 
 Return a list of objects of type `T` that match a given sql query. The string
 `sql` is used after the WHERE in a SELECT statement, hence can contain
 restrictions on the columns as well as an ORDER BY and a LIMIT clause.
 
 """
-function import_from_database(db :: SQLiteAdapter{T}, sql :: String = "TRUE") where {T <: MoriDreamSpace}
+function import_from_database(db :: SQLiteAdapter{T}; sql :: String = "TRUE", import_attributes = false) where {T <: MoriDreamSpace}
 
     @info "Importing from SQLite database file $(db.file_path)..."
 
@@ -136,30 +136,30 @@ function import_from_database(db :: SQLiteAdapter{T}, sql :: String = "TRUE") wh
 
     Xs = T[]
     @progress for i = 1 : count
-        push!(Xs, sqlite_import_row(T, rows[i]))
+        push!(Xs, sqlite_import_row(T, rows[i]; import_attributes))
     end
     return Xs
 end
 
 
 @doc raw"""
-    import_from_database(db :: SQLiteAdapter{T}, ids :: AbstractVector{Int}) where {T <: MoriDreamSpace}   
+    import_from_database(db :: SQLiteAdapter{T}, ids :: AbstractVector{Int}; import_attributes = false) where {T <: MoriDreamSpace}
 
 Return the list of objects of type `T` from an SQLite database with the given
 `ids`.
 
 """
-import_from_database(db :: SQLiteAdapter{T}, ids :: AbstractVector{Int}) where {T <: MoriDreamSpace} = 
-import_from_database(db, "$(db.primary_key) IN ($(join(ids, ", ")))")
+import_from_database(db :: SQLiteAdapter{T}, ids :: AbstractVector{Int}; import_attributes = false) where {T <: MoriDreamSpace} = 
+import_from_database(db; sql="$(db.primary_key) IN ($(join(ids, ", ")))", import_attributes)
 
 
 @doc raw"""
-    import_from_database(db :: SQLiteAdapter{T}, id :: Int) where {T <: MoriDreamSpace}
+    import_from_database(db :: SQLiteAdapter{T}, id :: Int; import_attributes = false) 
 
 Return the object of type `T` from an SQLite database with the given `id`.
 
 """
-import_from_database(db :: SQLiteAdapter{T}, id :: Int) where {T <: MoriDreamSpace} = first(import_from_database(db, [id]))
+import_from_database(db :: SQLiteAdapter{T}, id :: Int; import_attributes = false) where {T <: MoriDreamSpace} = first(import_from_database(db, [id]; import_attributes))
 
 
 _argsym_to_arg(T :: Type{<:MoriDreamSpace}, row :: Union{SQLite.Row, NamedTuple}, argsym :: Symbol) = 
