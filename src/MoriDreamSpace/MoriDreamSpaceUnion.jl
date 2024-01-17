@@ -167,3 +167,49 @@ julia> degree_matrix_free_part(cstar_surface([[2, 2], [2], [4]], [[3, -3], [1], 
     Q[end - rank(class_group(X)) + 1 : end, :]
 end
 
+
+
+#################################################
+# Cones in the rational class group
+#################################################
+
+
+@doc raw"""
+    effective_cone(X :: MoriDreamSpaceUnion)
+
+Return the cone of effective divisor classes in the rational vector space
+associated to the divisor class group of a Mori dream space.
+
+"""
+@attr effective_cone(X :: MoriDreamSpaceUnion) =
+positive_hull(transpose(degree_matrix_free_part(X)))
+
+
+@doc raw"""
+    moving_cone(X :: MoriDreamSpaceUnion)
+
+Return the cone of movable divisor classes in the rational vector space
+associated to the divisor class group of a Mori dream space.
+
+"""
+@attr function moving_cone(X :: MoriDreamSpaceUnion)
+    Q0 = degree_matrix_free_part(X)
+    n = nrays(X)
+    intersect([positive_hull(transpose(Q0[:,c])) for c in powerset(1:n, n-1, n-1)])
+end
+
+
+@doc raw"""
+    semiample_cone(X :: MoriDreamSpaceUnion)
+
+Return the cone of semi-ample divisor classes in the rational vector space
+associated to the divisor class group of a Mori dream space.
+
+"""
+@attr function semiample_cone(X :: MoriDreamSpaceUnion)
+    Q0 = degree_matrix_free_part(X)
+    intersect([positive_hull(transpose(Q0[:,c])) for c in covering_collection(X)])
+end
+
+    
+

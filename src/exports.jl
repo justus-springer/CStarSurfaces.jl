@@ -1,4 +1,3 @@
-export create_table
 export AdmissibleOperation
 export AdmissibleRowOperation
 export admits_kaehler_einstein_metric
@@ -34,6 +33,7 @@ export cox_ring_relation_degrees
 export cox_ring_relations
 export cox_ring_vars
 export cox_ring_weights
+export create_table
 export cstar_surface
 export CStarSurface
 export CStarSurfaceCase
@@ -49,6 +49,7 @@ export degree_matrix
 export degree_matrix_free_part
 export degree_matrix_torsion_part
 export discrepancy
+export divisor_class
 export D_minus
 export double_coefficients
 export DoubleVector
@@ -110,6 +111,7 @@ export map
 export map2
 export map_from_class_group_to_local_class_group
 export map_from_picard_group_to_class_group
+export map_from_torusinvariant_weil_divisor_group_to_class_group
 export maximal_cones_indices
 export minimal_resolution
 export minimal_resolution_discrepancies

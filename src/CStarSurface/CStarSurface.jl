@@ -769,7 +769,7 @@ function is_special_index(X :: CStarSurface, k :: Int)
     Js = map(J -> [k for k in 1 : n + m if k ∉ J], Js) 
     cones = map(J -> positive_hull(transpose(Q0[:,J])), Js)
 
-    α = QQ.(free_part(anticanonical_divisor_class(X)))
+    α = [QQ(free_part(anticanonical_divisor_class(X)).coeff[1,i]) for i = 1 : class_group_rank(X)]
     return all(c -> !Polymake.polytope.contains_in_interior(pm_object(c), α), cones)
 end
 

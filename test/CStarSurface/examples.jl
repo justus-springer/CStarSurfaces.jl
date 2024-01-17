@@ -15,11 +15,11 @@ Xs = map(df_row -> cstar_surface(df_row.P), eachrow(df))
     end
 end
 
-#@testset "examples (C-star) - is fano" begin
-    #for i = 1 : length(Xs)
-        #@test is_fano(Xs[i])
-    #end
-#end
+@testset "examples (C-star) - is fano" begin
+    for i = 1 : length(Xs)
+        @test is_fano(Xs[i])
+    end
+end
 
 @testset "examples (C-star) - gorenstein index" begin
     for i = 1 : length(Xs)

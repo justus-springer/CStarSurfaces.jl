@@ -16,8 +16,6 @@ include("MoriDreamSpace/ToricVarietyMDS.jl")
 include("MoriDreamSpace/Point.jl")
 
 include("ToricGeometry/AbstractNormalToricVariety.jl")
-include("ToricGeometry/ToricDivisor.jl")
-include("ToricGeometry/ToricDivisorClass.jl")
 
 include("ToricSurface/Resolution.jl")
 include("ToricSurface/ToricSurface.jl")

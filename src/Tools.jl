@@ -82,6 +82,17 @@ function _platonicity_type(v :: AbstractVector)
     (q0, q1, q2) == (5,3,2) && return :E8
 end
 
+#################################################
+# Methods for Hecke abelian groups
+#################################################
+
+free_part(A :: GrpAbFinGen) = free_abelian_group(rank(A))
+
+free_part(x :: GrpAbFinGenElem, A :: GrpAbFinGen) = A(x.coeff[1,end - rank(A) + 1:end])
+
+free_part(x :: GrpAbFinGenElem) = free_part(x, free_part(x.parent))
+
+
 
 
 

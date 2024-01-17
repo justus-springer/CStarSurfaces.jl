@@ -181,7 +181,7 @@ function _db_degree_matrix(X :: SurfaceWithTorusAction)
 end
 
 function _db_canonical_divisor_class(X :: SurfaceWithTorusAction)
-  c = divisor_class(canonical_divisor_class(X)).coeff
+  c = canonical_divisor_class(X).coeff
   return string([Int(c[1,i]) for i = 1 : ncols(c)])
 end
 

@@ -101,6 +101,16 @@ GrpAb: Z/4 x Z
 """
 @attr class_group(X :: MoriDreamSpace) = class_group(canonical_toric_ambient(X))
 
+@doc raw"""
+    map_from_torusinvariant_weil_divisor_group_to_class_group(X :: MoriDreamSpace)
+
+Return the map from the group of weil divisors to the class group of a Mori
+dream space.
+
+
+"""
+@attr map_from_torusinvariant_weil_divisor_group_to_class_group(X :: MoriDreamSpace) = map_from_torusinvariant_weil_divisor_group_to_class_group(canonical_toric_ambient(X))
+
 
 @doc raw"""
     picard_group(X :: MoriDreamSpace)
@@ -296,7 +306,7 @@ with components [0 -2]
 ```
 
 """
-@attr canonical_divisor_class(X :: MoriDreamSpace) = toric_divisor_class(toric_divisor(canonical_divisor(X)))
+@attr canonical_divisor_class(X :: MoriDreamSpace) = divisor_class(canonical_divisor(X))
 
 
 @doc raw"""
@@ -326,7 +336,7 @@ with components [0 2]
 Check if a Mori Dream Space if fano.
 
 """
-@attr is_fano(X :: MoriDreamSpace) = is_ample(anticanonical_divisor_class(X))
+@attr is_fano(X :: MoriDreamSpace) = is_ample(anticanonical_divisor(X))
 
 @doc raw"""
     gorenstein_index(X :: MoriDreamSpace)
@@ -342,7 +352,7 @@ julia> gorenstein_index(cstar_surface([[1, 1], [11], [5]], [[0, -2], [9], [3]], 
 
 """
 @attr function gorenstein_index(X :: MoriDreamSpace)
-    c = divisor_class(canonical_divisor_class(X))
+    c = divisor_class(canonical_divisor(X))
     f = cokernel(map_from_picard_group_to_class_group(X))[2]
     order(f(c))
 end

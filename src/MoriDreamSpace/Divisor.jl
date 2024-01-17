@@ -63,6 +63,19 @@ Return the coefficients of a divisor on a Mori Dream Space.
 coefficients(d :: MoriDreamSpaceDivisor) = d.coeffs
 
 
+@doc raw"""
+    divisor_class(d :: MoriDreamSpaceDivisor)
+
+Return the divisor class of a divisor on a Mori Dream Space `X`, i.e. the
+associated element in `class_group(X)`.
+
+"""
+function divisor_class(d :: MoriDreamSpaceDivisor)
+    f = map_from_torusinvariant_weil_divisor_group_to_class_group(d.variety)
+    weil_divisor_group = domain(f)
+    return f(weil_divisor_group(coefficients(d)))
+end
+
 #################################################
 # Addition, subtraction, scalar multiplication
 #################################################
@@ -117,8 +130,74 @@ function is_prime_with_index(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDrea
     return nothing
 end
 
+@doc raw"""
+    is_movable(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace}
+
+Check whether a given divisor is movable.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> is_movable(anticanonical_divisor(X))
+true
+```
+
+"""
+function is_movable(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace}
+    X = d.variety
+    dc = free_part(divisor_class(d))
+    cs = [dc.coeff[1,i] for i = 1 : ncols(dc.coeff)]
+    return cs ∈ moving_cone(X)
+end
 
 
+@doc raw"""
+    is_semiample(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace}
+
+Check whether a given divisor is semiample.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> is_semiample(anticanonical_divisor(X))
+true
+```
+
+"""
+function is_semiample(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace}
+    X = d.variety
+    dc = free_part(divisor_class(d))
+    cs = [dc.coeff[1,i] for i = 1 : ncols(dc.coeff)]
+    return cs ∈ semiample_cone(X)
+end
 
 
+@doc raw"""
+    is_ample(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace}
+
+Check whether a given divisor is ample.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> is_ample(anticanonical_divisor(X))
+true
+```
+
+"""
+function is_ample(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace}
+    X = d.variety
+    dc = free_part(divisor_class(d))
+    cs = [dc.coeff[1,i] for i = 1 : ncols(dc.coeff)]
+    Polymake.polytope.contains_in_interior(pm_object(semiample_cone(X)), cs)
+end
 
