@@ -142,3 +142,45 @@ A Weil divisor on a toric surface.
 const ToricSurfaceDivisor = MoriDreamSpaceDivisor{ToricSurface}
 
 
+#################################################
+# Types of points
+#################################################
+
+@doc raw"""
+    MoriDreamSpacePoint
+
+A point on a Mori dream space. 
+
+Subtypes of `MoriDreamSpacePoint` should at least implement the following
+methods: [`orbit_cone`](@ref), [`cox_coordinates`](@ref),
+[`is_quasismooth`](@ref).
+
+"""
+abstract type MoriDreamSpacePoint end
+
+
+@doc raw"""
+    ToricSurfacePoint <: MoriDreamSpacePoint
+
+A point on a toric surface.
+
+"""
+abstract type ToricSurfacePoint <: MoriDreamSpacePoint end
+
+
+@doc raw"""
+    CStarSurfacePoint{T <: CStarSurfaceCase} <: MoriDreamSpacePoint
+
+A point on a $\mathbb{C}^*$-surface.
+
+"""
+abstract type CStarSurfacePoint{T <: CStarSurfaceCase} <: MoriDreamSpacePoint end
+
+
+@doc raw"""
+    SurfaceWithTorusActionPoint 
+
+The `Union` of [`CStarSurfacePoint`](@ref) and [`ToricSurfacePoint`](@ref).
+
+"""
+const SurfaceWithTorusActionPoint = Union{CStarSurfacePoint, ToricSurfacePoint}

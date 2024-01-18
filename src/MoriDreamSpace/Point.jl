@@ -1,17 +1,3 @@
-
-@doc raw"""
-    MoriDreamSpacePoint
-
-A point on a Mori dream space. 
-
-Subtypes of `MoriDreamSpacePoint` should at least implement the following
-methods: [`orbit_cone`](@ref), [`cox_coordinates`](@ref),
-[`is_quasismooth`](@ref).
-
-"""
-abstract type MoriDreamSpacePoint end
-
-
 @doc raw"""
     parent(x :: MoriDreamSpacePoint)
 
@@ -227,11 +213,8 @@ julia> gorenstein_index(x_plus(X))
 ```
 
 """
-@attr function gorenstein_index(x :: MoriDreamSpacePoint)
-    K = divisor_class(canonical_divisor_class(parent(x)))
-    f = map_from_class_group_to_local_class_group(x)
-    return order(f(K))
-end
+@attr gorenstein_index(x :: MoriDreamSpacePoint) = cartier_index(canonical_divisor(parent(x)), x)
+
 
 @doc raw"""
     is_factorial(x :: MoriDreamSpacePoint)

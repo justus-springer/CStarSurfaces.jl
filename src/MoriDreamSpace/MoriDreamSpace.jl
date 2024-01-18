@@ -351,9 +351,5 @@ julia> gorenstein_index(cstar_surface([[1, 1], [11], [5]], [[0, -2], [9], [3]], 
 ```
 
 """
-@attr function gorenstein_index(X :: MoriDreamSpace)
-    c = divisor_class(canonical_divisor(X))
-    f = cokernel(map_from_picard_group_to_class_group(X))[2]
-    order(f(c))
-end
+@attr gorenstein_index(X :: MoriDreamSpace) = cartier_index(canonical_divisor(X))
 

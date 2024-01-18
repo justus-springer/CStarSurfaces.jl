@@ -1,3 +1,6 @@
+export is_principal
+export cartier_index
+export is_cartier
 export AdmissibleOperation
 export AdmissibleRowOperation
 export admits_kaehler_einstein_metric

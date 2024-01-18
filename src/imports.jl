@@ -7,6 +7,8 @@ import Base:
     parent
 
 import Oscar:
+    is_cartier,
+    is_principal,
     anticanonical_divisor,
     anticanonical_divisor_class,
     @attr,

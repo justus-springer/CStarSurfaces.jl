@@ -146,7 +146,7 @@ true
 ```
 
 """
-function is_movable(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace}
+@attr function is_movable(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace}
     X = d.variety
     dc = free_part(divisor_class(d))
     cs = [dc.coeff[1,i] for i = 1 : ncols(dc.coeff)]
@@ -170,7 +170,7 @@ true
 ```
 
 """
-function is_semiample(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace}
+@attr function is_semiample(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace}
     X = d.variety
     dc = free_part(divisor_class(d))
     cs = [dc.coeff[1,i] for i = 1 : ncols(dc.coeff)]
@@ -194,10 +194,95 @@ true
 ```
 
 """
-function is_ample(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace}
+@attr function is_ample(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace}
     X = d.variety
     dc = free_part(divisor_class(d))
     cs = [dc.coeff[1,i] for i = 1 : ncols(dc.coeff)]
     Polymake.polytope.contains_in_interior(pm_object(semiample_cone(X)), cs)
 end
+
+@doc raw"""
+    is_principal(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace}
+
+Checks whether a given divisor is principal.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> D = 3*invariant_divisor(X,1,1) - 2*invariant_divisor(X,2,1)
+CStarSurfaceDivisor{EE}(C-star surface of type (e-e), ZZRingElem[0, 0, 3, -2], #undef)
+
+julia> is_principal(D)
+true
+```
+
+"""
+@attr is_principal(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace} =
+iszero(divisor_class(d))
+
+
+@doc raw"""
+    cartier_index(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace}
+
+Return the smallest integer `ι` such that `ι*d` is Cartier.
+
+"""
+@attr function cartier_index(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace}
+    X = d.variety
+    c = divisor_class(d)
+    f = cokernel(map_from_picard_group_to_class_group(X))[2]
+    return order(f(c))
+end
+
+
+@doc raw"""
+    cartier_index(d :: MoriDreamSpaceDivisor{T}, x :: MoriDreamSpacePoint) where {T <: MoriDreamSpace}
+
+Return the smallest integer `ι` such that `ι*d` is Cartier (i.e. principal)
+near `x`.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[2, 2], [2], [4]], [[3, -3], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> d = invariant_divisor(X,0,1)
+CStarSurfaceDivisor{EE}(C-star surface of type (e-e), [1, 0, 0, 0], #undef)
+
+julia> cartier_index(d, x_plus(X))
+18
+```
+
+"""
+function cartier_index(d :: MoriDreamSpaceDivisor{T}, x :: MoriDreamSpacePoint) where {T <: MoriDreamSpace}
+    @req d.variety == parent(x) "The divisor and the points must be defined on the same variety"
+    c = divisor_class(d)
+    f = map_from_class_group_to_local_class_group(x)
+    return order(f(c))
+end
+
+
+@doc raw"""
+    is_cartier(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace} =
+
+Check whether a given divisor is Cartier.
+
+"""
+@attr is_cartier(d :: MoriDreamSpaceDivisor{T}) where {T <: MoriDreamSpace} =
+cartier_index(d) == 1
+
+
+@doc raw"""
+    is_principal(d :: MoriDreamSpaceDivisor{T}, x :: MoriDreamSpacePoint) where {T <: MoriDreamSpace} =
+
+Check whether a given divisor is principal near a given point.
+
+"""
+is_principal(d :: MoriDreamSpaceDivisor{T}, x :: MoriDreamSpacePoint) where {T <: MoriDreamSpace} =
+cartier_index(d,x) == 1
+
 
