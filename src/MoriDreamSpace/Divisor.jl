@@ -315,3 +315,24 @@ function cartier_coefficients(d :: MoriDreamSpaceDivisor{T}, x :: MoriDreamSpace
     cs = solve(M, transpose(dc.coeff))
     return [cs[i,1] for i = 1 : nrows(cs)]
 end
+
+
+@doc raw"""
+    cartier_form(d :: MoriDreamSpaceDivisor{T}, x :: MoriDreamSpacePoint) where {T <: MoriDreamSpace}
+
+Given a divisor `d` and a point `x` on a Mori dream space, return a rational
+linear form `u` such that `u` evaluates to `a_i` on `v_i` for all `i ∈
+orbit_cone(x)`, where `a_i` is the `i`-th coefficient of `d`.
+
+Note that the Cartier index of `d` at `x` is the smallest integer `ι` such that
+`ι*u` is integral.
+
+"""
+function cartier_form(d :: MoriDreamSpaceDivisor{T}, x :: MoriDreamSpacePoint) where {T <: MoriDreamSpace}
+    @req d.variety == parent(x) "The divisor and the points must be defined on the same variety"
+    X = parent(x)
+    B = QQMatrix(transpose(gen_matrix(X)[:,orbit_cone(x)]))
+    cs = coefficients(d)[orbit_cone(x)]
+    a = transpose(matrix(QQ, [cs]))
+    return solve(B,a)
+end

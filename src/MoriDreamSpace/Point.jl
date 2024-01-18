@@ -229,6 +229,20 @@ cartier_coefficients(gorenstein_index(parent(x)) * anticanonical_divisor(parent(
 
 
 @doc raw"""
+    gorenstein_form(x :: MoriDreamSpacePoint)
+
+Return a rational linear form `u` such that `u` evaluates to `a_i` on `v_i` for
+all `i ∈ orbit_cone(x)`, where `a_i` is the `i`-th coefficient of the
+anticanonical divisor on `parent(x)`.
+
+Note that the gorenstein index at `x` is the smallest integer `ι` such that
+`ι*u` is integral.
+
+"""
+@attr gorenstein_form(x :: MoriDreamSpacePoint) = cartier_form(anticanonical_divisor(parent(x)), x)
+
+
+@doc raw"""
     is_factorial(x :: MoriDreamSpacePoint)
 
 Check whether a point on a Mori dream space is factorial, i.e. its local class

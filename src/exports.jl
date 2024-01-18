@@ -18,6 +18,7 @@ export canonical_resolution_discrepancies
 export canonical_resolution_exceptional_divisors
 export canonical_toric_ambient
 export cartier_coefficients
+export cartier_form
 export cartier_index
 export centroid
 export class_group
@@ -71,6 +72,7 @@ export fixed_points
 export free_part
 export gen_matrix
 export gorenstein_coefficients
+export gorenstein_form
 export gorenstein_index
 export has_torusfactor
 export has_x_minus
