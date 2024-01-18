@@ -1,6 +1,3 @@
-export is_principal
-export cartier_index
-export is_cartier
 export AdmissibleOperation
 export AdmissibleRowOperation
 export admits_kaehler_einstein_metric
@@ -20,6 +17,8 @@ export canonical_resolution
 export canonical_resolution_discrepancies
 export canonical_resolution_exceptional_divisors
 export canonical_toric_ambient
+export cartier_coefficients
+export cartier_index
 export centroid
 export class_group
 export class_group_rank
@@ -71,6 +70,7 @@ export find_in_database
 export fixed_points
 export free_part
 export gen_matrix
+export gorenstein_coefficients
 export gorenstein_index
 export has_torusfactor
 export has_x_minus
@@ -88,6 +88,7 @@ export invariant_divisor
 export invariant_divisors
 export InvertLastRow
 export is_ample
+export is_cartier
 export is_complete_intersection
 export is_factorial
 export is_fano
@@ -99,6 +100,7 @@ export is_normal_form
 export is_prime
 export is_prime_with_double_indices
 export is_prime_with_index
+export is_principal
 export is_principal
 export is_principal_on_stratum
 export is_q_factorial

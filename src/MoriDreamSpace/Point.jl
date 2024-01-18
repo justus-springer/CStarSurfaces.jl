@@ -217,6 +217,18 @@ julia> gorenstein_index(x_plus(X))
 
 
 @doc raw"""
+    gorenstein_coefficients(x :: MoriDreamSpacePoint)
+
+Return the coefficients in the integral linear combination expressing ι*(-K_X)
+as a linear combination over the invariant divisor classes w_i with i ∉
+orbit_cone(x).
+
+"""
+@attr gorenstein_coefficients(x :: MoriDreamSpacePoint) =
+cartier_coefficients(gorenstein_index(parent(x)) * anticanonical_divisor(parent(x)), x)
+
+
+@doc raw"""
     is_factorial(x :: MoriDreamSpacePoint)
 
 Check whether a point on a Mori dream space is factorial, i.e. its local class

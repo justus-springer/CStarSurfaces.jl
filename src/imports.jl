@@ -7,8 +7,6 @@ import Base:
     parent
 
 import Oscar:
-    is_cartier,
-    is_principal,
     anticanonical_divisor,
     anticanonical_divisor_class,
     @attr,
@@ -41,8 +39,10 @@ import Oscar:
     IntegerUnion,
     interior_lattice_points,
     is_ample,
+    is_cartier,
     is_fano,
     is_prime,
+    is_principal,
     is_simplicial,
     is_smooth,
     is_trivial,
@@ -91,6 +91,7 @@ import Oscar:
     set_attribute!,
     set_coordinate_names,
     snf,
+    solve,
     solve_rational,
     toric_divisor,
     ToricDivisor,

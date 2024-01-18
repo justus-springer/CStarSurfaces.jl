@@ -277,12 +277,41 @@ cartier_index(d) == 1
 
 
 @doc raw"""
+    is_cartier(d :: MoriDreamSpaceDivisor{T}, x :: MoriDreamSpacePoint) where {T <: MoriDreamSpace} =
+
+Check whether a given divisor is cartier near a given point.
+
+"""
+is_cartier(d :: MoriDreamSpaceDivisor{T}, x :: MoriDreamSpacePoint) where {T <: MoriDreamSpace} =
+cartier_index(d,x) == 1
+
+
+@doc raw"""
     is_principal(d :: MoriDreamSpaceDivisor{T}, x :: MoriDreamSpacePoint) where {T <: MoriDreamSpace} =
 
 Check whether a given divisor is principal near a given point.
 
 """
 is_principal(d :: MoriDreamSpaceDivisor{T}, x :: MoriDreamSpacePoint) where {T <: MoriDreamSpace} =
-cartier_index(d,x) == 1
+is_cartier(d,x)
 
 
+@doc raw"""
+    cartier_coefficients(d :: MoriDreamSpaceDivisor{T}, x :: MoriDreamSpacePoint) where {T <: MoriDreamSpace}
+
+Given a divisor `d` that is cartier (hence principal) near a point `x`, the
+divisor class of `d` can be expressed as an integer combination of invariant
+divisor classes w_i, where i ∉ orbit_cone(x). This function returns some
+(non-unique) coefficients of this expression.
+
+"""
+function cartier_coefficients(d :: MoriDreamSpaceDivisor{T}, x :: MoriDreamSpacePoint) where {T <: MoriDreamSpace}
+    @req d.variety == parent(x) "The divisor and the points must be defined on the same variety"
+    @req is_cartier(d,x) "The divisor is not Cartier at the point"
+    X = parent(x)
+    Q = degree_matrix_free_part(X)
+    M = Q[:,[i for i = 1 : nrays(X) if i ∉ orbit_cone(x)]]
+    dc = free_part(divisor_class(d))
+    cs = solve(M, transpose(dc.coeff))
+    return [cs[i,1] for i = 1 : nrows(cs)]
+end
