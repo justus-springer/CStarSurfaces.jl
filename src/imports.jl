@@ -7,6 +7,7 @@ import Base:
     parent
 
 import Oscar:
+    lineality_dim,
     anticanonical_divisor,
     anticanonical_divisor_class,
     @attr,

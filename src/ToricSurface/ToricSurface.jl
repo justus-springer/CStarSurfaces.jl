@@ -1,9 +1,13 @@
 
 @doc raw"""
-    toric_surface(vs :: Vector{Vector{T}}) where {T <: IntegerUnion}
+    toric_surface(vs :: Vector{Vector{T}}; check_lineality = false) where {T <: IntegerUnion}
 
 Construct a toric surface from a list of integral vectors in two-dimensional
 space.
+
+If the keyword argument `check_lineality = true` is given, an error is thrown
+when the given vectors do not generate $\mathbb{Q}^2$ as a convex cone. By
+default, this is disabled for performance.
 
 # Example
 
@@ -15,16 +19,23 @@ Normal toric surface
 ```
 
 """
-function toric_surface(vs :: Vector{Vector{T}}) where {T <: IntegerUnion} 
+function toric_surface(vs :: Vector{Vector{T}}; check_lineality = false) where {T <: IntegerUnion} 
     @req all(v -> length(v) == 2, vs) "rays must all be two-dimensional"
+    if check_lineality
+        @req lineality_dim(positive_hull(vs)) == 2  "The rays must generate QQ^2 as a convex cone"
+    end
     return ToricSurface(vs)
 end
 
 @doc raw"""
-    toric_surface(P :: ZZMatrix)
+    toric_surface(P :: ZZMatrix; check_lineality = false)
     
 Construct a toric surface from an integral matrix, where the columns of
 the matrix are the rays of the describing fan.
+
+If the keyword argument `check_lineality = true` is given, an error is thrown
+when the given vectors do not generate $\mathbb{Q}^2$ as a convex cone. By
+default, this is disabled for performance.
 
 # Example
 
@@ -36,9 +47,9 @@ Normal toric surface
 ```
 
 """
-function toric_surface(P :: ZZMatrix)
+function toric_surface(P :: ZZMatrix; check_lineality = false)
     cols = [[P[j,i] for j = 1 : nrows(P)] for i = 1 : ncols(P)]
-    return toric_surface(cols)
+    return toric_surface(cols; check_lineality)
 end
 
 rays(X :: ToricSurface) = X.vs

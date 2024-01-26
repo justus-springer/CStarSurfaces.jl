@@ -4,7 +4,7 @@
 #################################################
 
 @doc raw"""
-    cstar_surface(ls :: DoubleVector{Int64}, ds :: DoubleVector{Int64}, case :: Symbol)
+    cstar_surface(ls :: DoubleVector{Int64}, ds :: DoubleVector{Int64}, case :: Symbol; check_lineality = false)
 
 Construct a C-star surface from the integral vectors $l_i=(l_{i1}, ...,
 l_{in_i})$ and $d_i=(d_{i1}, ..., d_{in_i})$ and a given C-star surface case.
@@ -12,6 +12,10 @@ The parameters `ls` and `ds` are given both given as a `DoubleVector`, which is
 a zero-indexed vector of one-indexed vectors. They must be of the same length
 and satisfy `gcd(ls[i][j], ds[i][j]) == 1` for all `i` and `j`. The parameter
 `case` can be one of the four symbols `:ee, :pe, :ep, :pp`.
+
+If the keyword argument `check_lineality = true` is given, an error is thrown
+when the given vectors do not generate $\mathbb{Q}^2$ as a convex cone. By
+default, this is disabled for performance.
 
 # Example
 
@@ -28,23 +32,34 @@ julia> gen_matrix(X)
 ```
 
 """
-function cstar_surface(ls :: DoubleVector{Int64}, ds :: DoubleVector{Int64}, case :: Type{<:CStarSurfaceCase})
+function cstar_surface(
+     ls :: DoubleVector{Int64}, 
+     ds :: DoubleVector{Int64}, 
+     case :: Type{<:CStarSurfaceCase};
+     check_lineality = false)
+
     @req length(ls) == length(ds) "ls and ds must be of the same length"
     r = length(ls)
     @req all(i -> length(ls[i]) == length(ds[i]), axes(ls,1)) "ls[i] and ds[i] must be of the same length for all i"
     @req all2((l,d) -> gcd(l,d) == 1, ls, ds) "ls[i][j] and ds[i][j] must be coprime for all i and j"
 
-    return CStarSurface{case}(ls, ds, _case_type_to_sym(case))
+    X = CStarSurface{case}(ls, ds, _case_type_to_sym(case))
+    if check_lineality
+        @req lineality_dim(positive_hull(rays(X))) == nblocks(X) "The rays must generate QQ^(r+1) as a convex cone"
+    end
+
+    return X
 
 end
 
-cstar_surface(ls :: DoubleVector{Int64}, ds :: DoubleVector{Int64}, case :: Symbol) = cstar_surface(ls, ds, _case_sym_to_type(case))
+cstar_surface(ls :: DoubleVector{Int64}, ds :: DoubleVector{Int64}, case :: Symbol; check_lineality = false) =
+cstar_surface(ls, ds, _case_sym_to_type(case); check_lineality)
 
-cstar_surface(ls :: Vector{Vector{Int64}}, ds :: Vector{Vector{Int64}}, case :: Type{<:CStarSurfaceCase}) = 
-cstar_surface(DoubleVector(ls), DoubleVector(ds), case)
+cstar_surface(ls :: Vector{Vector{Int64}}, ds :: Vector{Vector{Int64}}, case :: Type{<:CStarSurfaceCase}; check_lineality = false) = 
+cstar_surface(DoubleVector(ls), DoubleVector(ds), case; check_lineality)
 
 @doc raw"""
-    cstar_surface(ls :: Vector{Vector{Int64}}, ds :: Vector{Vector{Int64}}, case :: Symbol)
+    cstar_surface(ls :: Vector{Vector{Int64}}, ds :: Vector{Vector{Int64}}, case :: Symbol; check_lineality = false)
 
 Construct a C-star surface from the integral vectors $l_i=(l_{i1}, ...,
 l_{in_i})$ and $d_i=(d_{i1}, ..., d_{in_i})$ and a given C-star surface case.
@@ -52,6 +67,10 @@ The parameters `ls` and `ds` are given both given as a vector of vectors. They
 must be of the same length and satisfy `gcd(ls[i][j], ds[i][j]) == 1` for all
 `i` and `j`. The parameter `case` can be one of the four symbols `:ee, :pe,
 :ep, :pp`.
+
+If the keyword argument `check_lineality = true` is given, an error is thrown
+when the given vectors do not generate $\mathbb{Q}^2$ as a convex cone. By
+default, this is disabled for performance.
 
 # Example
 
@@ -68,8 +87,12 @@ julia> gen_matrix(X)
 ```
 
 """
-cstar_surface(ls :: Vector{Vector{Int64}}, ds :: Vector{Vector{Int64}}, case :: Symbol) = 
-cstar_surface(DoubleVector(ls), DoubleVector(ds), _case_sym_to_type(case))
+cstar_surface(
+    ls :: Vector{Vector{Int64}},
+    ds :: Vector{Vector{Int64}},
+    case :: Symbol;
+    check_lineality = false) = 
+cstar_surface(DoubleVector(ls), DoubleVector(ds), _case_sym_to_type(case); check_lineality)
 
 function _is_cstar_column(v :: Vector{T}) where {T <: IntegerUnion}
     r = length(v) - 1
@@ -136,6 +159,10 @@ d_0 & \dots & d_r
 \end{bmatrix}.
 ```
 
+If the keyword argument `check_lineality = true` is given, an error is thrown
+when the given vectors do not generate $\mathbb{Q}^2$ as a convex cone. By
+default, this is disabled for performance.
+
 # Example
 
 The ``E_6`` singular cubic.
@@ -147,7 +174,7 @@ C-star surface of type (e-e)
 ```
 
 """
-function cstar_surface(P :: ZZMatrix)
+function cstar_surface(P :: ZZMatrix; check_lineality = false)
     ls = DoubleVector{Int}(undef, 0)
     ds = DoubleVector{Int}(undef, 0)
     cols = [[P[j,i] for j = 1 : nrows(P)] for i = 1 : ncols(P)]
@@ -188,7 +215,7 @@ function cstar_surface(P :: ZZMatrix)
         throw(ArgumentError("given matrix is not in P-Matrix shape"))
     end
 
-    return cstar_surface(ls, ds, case)
+    return cstar_surface(ls, ds, case; check_lineality)
 end
 
 
