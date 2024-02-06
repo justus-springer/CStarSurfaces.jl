@@ -63,30 +63,32 @@ following keyword arguments are supported:
 - `insert_predicate`: Defaults to `default_insert_predicate(T)`. A function of 
   type `(db :: SQLiteAdapter{T}, X :: T) -> Bool`. Only objects where this
   predicate evaluates to `true` are exported.
+- `showinfo`: Defaults to `true`.
 
 """
 function export_to_database(
         db_adapter :: SQLiteAdapter{T}, 
         Xs :: AbstractVector;
         column_functions = default_column_functions(T),
-        insert_predicate = default_insert_predicate(T)) where {T <: MoriDreamSpace}
+        insert_predicate = default_insert_predicate(T),
+        showinfo = true) where {T <: MoriDreamSpace}
 
-    @info "Starting export to SQLite database file $(db_adapter.file_path)."
-    @info "Number of objects: $(length(Xs))."
+    showinfo && @info "Starting export to SQLite database file $(db_adapter.file_path)."
+    showinfo && @info "Number of objects: $(length(Xs))."
 
     db = db_adapter.db
     table_name = db_adapter.table_name
     if isempty(column_functions)
-        @info "No column functions provided. Inserting empty rows."
+        showinfo && @info "No column functions provided. Inserting empty rows."
         stmt = SQLite.Stmt(db, "INSERT INTO $table_name DEFAULT VALUES")
     else
-        @info "Provided column functions: " keys(column_functions)
+        showinfo && @info "Provided column functions: " keys(column_functions)
         columns = join(keys(column_functions), ",")
         values = join(":" .* string.(keys(column_functions)), ",")
         stmt = SQLite.Stmt(db, "INSERT INTO $table_name ($columns) VALUES ($values)")
     end
 
-    @info """
+    showinfo && @info """
     Starting to insert objects into database. 
     Use a `TerminalLogger` from `TerminalLoggers.jl` to see a nice progress bar.
     """
@@ -106,7 +108,7 @@ function export_to_database(
     end
 
     inserted_count = length(Xs) - skip_count
-    @info """
+    showinfo && @info """
     Inserted $inserted_count objects.
     Skipped $skip_count objects.
     """
@@ -115,24 +117,24 @@ end
 
 
 @doc raw"""
-    import_from_database(db :: SQLiteAdapter{T}; sql :: String = "TRUE", import_attributes = false) where {T <: MoriDreamSpace}
+    import_from_database(db :: SQLiteAdapter{T}; sql :: String = "TRUE", import_attributes = false, showinfo = true) where {T <: MoriDreamSpace}
 
 Return a list of objects of type `T` that match a given sql query. The string
 `sql` is used after the WHERE in a SELECT statement, hence can contain
 restrictions on the columns as well as an ORDER BY and a LIMIT clause.
 
 """
-function import_from_database(db :: SQLiteAdapter{T}; sql :: String = "TRUE", import_attributes = false) where {T <: MoriDreamSpace}
+function import_from_database(db :: SQLiteAdapter{T}; sql :: String = "TRUE", import_attributes = false, showinfo = true) where {T <: MoriDreamSpace}
 
-    @info "Importing from SQLite database file $(db.file_path)..."
+    showinfo && @info "Importing from SQLite database file $(db.file_path)..."
 
     select_stmt = SQLite.Stmt(db.db, "SELECT * FROM $(db.table_name) WHERE $sql")
     rows = DBInterface.execute(select_stmt) |> rowtable
     count = length(rows)
 
-    @info "Number of imported objects: $count."
+    showinfo && @info "Number of imported objects: $count."
 
-    @info "Converting to Julia type `$T`."
+    showinfo && @info "Converting to Julia type `$T`."
 
     Xs = T[]
     @progress for i = 1 : count
@@ -143,23 +145,24 @@ end
 
 
 @doc raw"""
-    import_from_database(db :: SQLiteAdapter{T}, ids :: AbstractVector{Int}; import_attributes = false) where {T <: MoriDreamSpace}
+    import_from_database(db :: SQLiteAdapter{T}, ids :: AbstractVector{Int}; import_attributes = false, showinfo = true) where {T <: MoriDreamSpace}
 
 Return the list of objects of type `T` from an SQLite database with the given
 `ids`.
 
 """
-import_from_database(db :: SQLiteAdapter{T}, ids :: AbstractVector{Int}; import_attributes = false) where {T <: MoriDreamSpace} = 
-import_from_database(db; sql="$(db.primary_key) IN ($(join(ids, ", ")))", import_attributes)
+import_from_database(db :: SQLiteAdapter{T}, ids :: AbstractVector{Int}; import_attributes = false, showinfo = true) where {T <: MoriDreamSpace} = 
+import_from_database(db; sql="$(db.primary_key) IN ($(join(ids, ", ")))", import_attributes, showinfo)
 
 
 @doc raw"""
-    import_from_database(db :: SQLiteAdapter{T}, id :: Int; import_attributes = false) 
+    import_from_database(db :: SQLiteAdapter{T}, id :: Int; import_attributes = false, showinfo = true) 
 
 Return the object of type `T` from an SQLite database with the given `id`.
 
 """
-import_from_database(db :: SQLiteAdapter{T}, id :: Int; import_attributes = false) where {T <: MoriDreamSpace} = first(import_from_database(db, [id]; import_attributes))
+import_from_database(db :: SQLiteAdapter{T}, id :: Int; import_attributes = false, showinfo = true) where {T <: MoriDreamSpace} =
+first(import_from_database(db, [id]; import_attributes, showinfo))
 
 
 _argsym_to_arg(T :: Type{<:MoriDreamSpace}, row :: Union{SQLite.Row, NamedTuple}, argsym :: Symbol) = 
@@ -167,7 +170,7 @@ argsym == :variety ? sqlite_import_row(T, row) : row[argsym]
 
 
 @doc raw"""
-    update_in_database(db :: SQLiteAdapter{T}, column_functions :: Dict{Symbol, <:Function}; sql :: String, column_function_args :: AbstractVector{Symbol}) where {T <: MoriDreamSpace}
+    update_in_database(db :: SQLiteAdapter{T}, column_functions :: Dict{Symbol, <:Function}; sql :: String, column_function_args :: AbstractVector{Symbol}, showinfo = true) where {T <: MoriDreamSpace}
 
 Update all rows in an SQLite database matching a given SQL query by recomputing
 the columns given by `column_functions`. See also `export_to_database` and
@@ -184,27 +187,29 @@ Keyword arguments:
   columns in the database, or the special symbol `:variety`, in which case the 
   variety corresponding to the row is imported using `sqlite_import_row` and then 
   passed as an argument.
+- `showinfo`: Defaults to `true`.
 
 """
 function update_in_database(
         db :: SQLiteAdapter{T}, 
         column_functions :: Dict{Symbol, <:Function};
         sql :: String = "TRUE",
-        column_function_args :: AbstractVector{Symbol} = [:variety]) where {T <: MoriDreamSpace}
+        column_function_args :: AbstractVector{Symbol} = [:variety],
+        showinfo :: Bool = true) where {T <: MoriDreamSpace}
 
     table_name, primary_key = db.table_name, db.primary_key
 
-    @info "Updating columns in SQLite database file $(db.file_path)."
-    @info "Provided column functions: " keys(column_functions)
-    @info "Importing..."
+    showinfo && @info "Updating columns in SQLite database file $(db.file_path)."
+    showinfo && @info "Provided column functions: " keys(column_functions)
+    showinfo && @info "Importing..."
 
     select_stmt = SQLite.Stmt(db.db, "SELECT * FROM $(db.table_name) WHERE $sql")
     rows = DBInterface.execute(select_stmt) |> rowtable
     count = length(rows)
 
-    @info "Number of affected rows: $count."
+    showinfo && @info "Number of affected rows: $count."
 
-    @info "Updating columns..."
+    showinfo && @info "Updating columns..."
 
     set_equations = join(["$k = :$k" for k in keys(column_functions)], ", ")
     update_stmt = SQLite.Stmt(db.db, "UPDATE $table_name SET $set_equations WHERE $primary_key = :$primary_key")
@@ -220,7 +225,7 @@ function update_in_database(
 end
 
 @doc raw"""
-    update_in_database(db :: SQLiteAdapter{T}, ids :: AbstractVector{Int}, column_functions :: Dict{Symbol, <:Function}; column_function_args :: AbstractVector{Symbol}) where {T <: MoriDreamSpace})
+    update_in_database(db :: SQLiteAdapter{T}, ids :: AbstractVector{Int}, column_functions :: Dict{Symbol, <:Function}; column_function_args :: AbstractVector{Symbol}, showinfo = true) where {T <: MoriDreamSpace})
 
 Update all rows in an SQLite database with the given `ids` by recomputing the
 columns given by `column_functions`.
@@ -231,11 +236,11 @@ update_in_database(
         column_functions :: Dict{Symbol, <:Function},
         ids :: AbstractVector{Int}; 
         column_function_args :: AbstractVector{Symbol} = [:variety]) where {T <: MoriDreamSpace} =
-update_in_database(db, column_functions; sql = "$(db.primary_key) IN ($(join(ids, ", ")))", column_function_args = column_function_args)
+update_in_database(db, column_functions; sql = "$(db.primary_key) IN ($(join(ids, ", ")))", column_function_args, showinfo)
 
 
 @doc raw"""
-    update_in_database(db :: SQLiteAdapter{T}, id :: Int, column_functions :: Dict{Symbol, <:Function}, column_function_args :: AbstractVector{Symbol}) where {T <: MoriDreamSpace}))
+    update_in_database(db :: SQLiteAdapter{T}, id :: Int, column_functions :: Dict{Symbol, <:Function}, column_function_args :: AbstractVector{Symbol}, showinfo = true) where {T <: MoriDreamSpace}))
 
 Update all rows in an SQLite database with the given `id` by recomputing the
 columns given by `column_functions`.
@@ -245,12 +250,13 @@ update_in_database(
         db :: SQLiteAdapter{T}, 
         id :: Int, 
         column_functions :: Dict{Symbol, <:Function};
-        column_function_args :: AbstractVector{Symbol} = [:variety]) where {T <: MoriDreamSpace} =
-update_in_database(db, column_functions, [id]; column_function_args = column_function_args)
+        column_function_args :: AbstractVector{Symbol} = [:variety],
+        showinfo = true) where {T <: MoriDreamSpace} =
+update_in_database(db, column_functions, [id]; column_function_args, showinfo)
 
 
 @doc raw"""
-    execute_on_database(f :: Function, db :: SQLiteAdapter{T}; sql :: String = "TRUE", function_args :: AbstractVector{Symbol} = [:variety]) where {T <: MoriDreamSpace}
+    execute_on_database(f :: Function, db :: SQLiteAdapter{T}; sql :: String = "TRUE", function_args :: AbstractVector{Symbol} = [:variety], showinfo = true) where {T <: MoriDreamSpace}
 
 Executes `f` on all rows of an SQLite database that are filtered `sql`. The
 argument `function_args` can be used to control the arguments that will be
@@ -261,20 +267,21 @@ function execute_on_database(
         f :: Function,
         db :: SQLiteAdapter{T};
         sql :: String = "TRUE",
-        function_args :: AbstractVector{Symbol} = [:variety]) where {T <: MoriDreamSpace}
+        function_args :: AbstractVector{Symbol} = [:variety],
+        showinfo = true) where {T <: MoriDreamSpace}
 
     table_name, primary_key = db.table_name, db.primary_key
 
-    @info "Executing on SQLite database file $(db.file_path)."
-    @info "Importing..."
+    showinfo && @info "Executing on SQLite database file $(db.file_path)."
+    showinfo && @info "Importing..."
 
     select_stmt = SQLite.Stmt(db.db, "SELECT * FROM $(db.table_name) WHERE $sql")
     rows = DBInterface.execute(select_stmt) |> rowtable
     count = length(rows)
 
-    @info "Number of affected rows: $count."
+    showinfo && @info "Number of affected rows: $count."
 
-    @info "Executing..."
+    showinfo && @info "Executing..."
 
     @progress for i = 1 : count
         row = rows[i]
