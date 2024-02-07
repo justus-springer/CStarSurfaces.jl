@@ -249,7 +249,7 @@ Base.one(α :: CompositeAdmissibleOperation) = CompositeAdmissibleOperation(map(
 
 Base.one(::Type{CompositeAdmissibleOperation}) = CompositeAdmissibleOperation([])
 
-function (p :: CompositeAdmissibleOperation)(X :: CStarSurface)
+function (p :: CompositeAdmissibleOperation)(X)
     Y = deepcopy(X)
     for op in p.ops
         Y = op(Y)
