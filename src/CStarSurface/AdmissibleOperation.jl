@@ -67,7 +67,13 @@ Base.:*(α :: InvertLastRow, β :: InvertLastRow) = InvertLastRow(α.factor * β
 
 Base.inv(α :: InvertLastRow) = InvertLastRow(1 ÷ α.factor)
 
-(α :: InvertLastRow)(X :: CStarSurface) = cstar_surface(X.l, map(d -> α.factor * d, X.d), invert_case(X.case, α.factor == -1))
+(α :: InvertLastRow)(::Type{EE}) = EE
+(α :: InvertLastRow)(::Type{PE}) = α.factor == -1 ? EP : PE
+(α :: InvertLastRow)(::Type{EP}) = α.factor == -1 ? PE : EP
+(α :: InvertLastRow)(::Type{PP}) = PP
+
+(α :: InvertLastRow)(X :: CStarSurface{C}) where {C <: CStarSurfaceCase} =
+cstar_surface(X.l, map(d -> α.factor * d, X.d), α(C))
 
 function Base.show(io :: IO, α :: InvertLastRow) 
     print(io, "Multiply the last row by $(α.factor).")
@@ -111,6 +117,8 @@ function PermutationOfRays(i :: Int, r :: Int, ray_perm :: PermGroupElem)
 end
 
 Base.:(==)(α :: PermutationOfRays, β :: PermutationOfRays) = α.ray_perms == β.ray_perms
+
+(α :: PermutationOfRays)(::Type{C}) where {C <: CStarSurfaceCase} = C
 
 function (α :: PermutationOfRays)(X :: CStarSurface)
     @req length(α.ray_perms) == nblocks(X) "number of permutations must equal number of blocks"
@@ -161,6 +169,8 @@ Base.:(==)(α :: PermutationOfBlocks, β :: PermutationOfBlocks) = α.block_perm
 Base.one(α :: PermutationOfBlocks) = PermutationOfBlocks(one(α.block_perm))
 Base.one(::Type{PermutationOfBlocks}) = PermutationOfBlocks(perm([1]))
 
+(α :: PermutationOfBlocks)(::Type{C}) where {C <: CStarSurfaceCase} = C
+
 (p :: PermutationOfBlocks)(X :: CStarSurface) =
 cstar_surface(permuted(X.l, p.block_perm), permuted(X.d, p.block_perm), X.case)
 
@@ -205,6 +215,8 @@ Base.:(==)(α :: AdmissibleRowOperation, β :: AdmissibleRowOperation) = α.fact
 Base.one(α :: AdmissibleRowOperation) = AdmissibleRowOperation(ZeroVector(repeat([0], length(α.factors))))
 
 Base.one(α :: Type{AdmissibleRowOperation}) = AdmissibleRowOperation([0])
+
+(α :: AdmissibleRowOperation)(::Type{C}) where {C <: CStarSurfaceCase} = C
 
 function (p :: AdmissibleRowOperation)(X :: CStarSurface)
     @req length(p.factors) == nblocks(X) "length of factors does not match the format of the C-star surface"
