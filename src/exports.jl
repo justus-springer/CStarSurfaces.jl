@@ -1,3 +1,7 @@
+export singularity_types_hyperbolic
+export singularity_types_parabolic_plus
+export singularity_types_parabolic_minus
+export singularity_types_string
 export AdmissibleOperation
 export AdmissibleRowOperation
 export admits_kaehler_einstein_metric

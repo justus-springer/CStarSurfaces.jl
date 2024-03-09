@@ -396,6 +396,8 @@ end
 
 @attr singularity_type(x :: HyperbolicFixedPoint) = SingularityTypeA(length(minimal_resolution(x)[2]))
 
+@attr singularity_types_hyperbolic(X :: CStarSurface) = map2(singularity_type, hyperbolic_fixed_points(X))
+
 
 #################################################
 # Parabolic fixed points
@@ -505,6 +507,10 @@ end
 
 end
 
+@attr singularity_types_parabolic_plus(X :: CStarSurface{<:Union{PE,PP}})  =
+map(singularity_type, parabolic_fixed_points_plus(X))
+
+
 @doc raw"""
     ParabolicFixedPointMinus{T<:Union{EP,PP}} <: ParabolicFixedPoint{T}
 
@@ -594,6 +600,10 @@ end
 
 end
 
+@attr singularity_types_parabolic_minus(X :: CStarSurface{<:Union{EP,PP}})  =
+map(singularity_type, parabolic_fixed_points_minus(X))
+
+
 @attr minimal_resolution(x :: ParabolicFixedPoint) = canonical_resolution(x)
 
 @doc raw"""
@@ -653,3 +663,60 @@ CStarSurfaceFixedPoint{T}[
     vcat(hyperbolic_fixed_points(X)...) ; 
     parabolic_fixed_points(X)
 ]
+
+
+@doc raw"""
+    singularity_types_string(X :: CStarSurface)
+
+Return a string encoding of the singularity types of all fixed points of `X`. The format is as follows:
+
+(ee): <x_plus>;<hyperbolic>;<x_minus>
+
+(pe): <D_plus>;<hyperbolic>;<x_minus>
+
+(ep): <x_plus>;<hyperbolic>;<D_minus>
+
+(pp): <D_plus>;<hyperbolic>;<D_minus>
+
+where
+
+<x_plus> = singularity type of `x_plus(X)`
+
+<x_minus> = singularity type of `x_minus(X)`
+
+<D_plus> = comma seperated list of singularity types of parabolic fixed points in the source
+
+<D_minus> = comma seperated list of singularity types of parabolic fixed points in the sink
+
+<hyperbolic> = colon seperated list of comma seperated lists of singularity types of hyperbolic fixed points
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ep)
+C-star surface of type (e-p)
+
+julia> singularity_types_string(X)
+"E6;A0::;A0,A1,A1"
+```
+
+"""
+@attr singularity_types_string(X :: CStarSurface{EE}) =
+"$(singularity_type(x_plus(X)))" * ";" *
+join([join(singularity_types_hyperbolic(X)[i],",") for i = 0 : 2],":") * ";" *
+"$(singularity_type(x_minus(X)))"
+
+@attr singularity_types_string(X :: CStarSurface{PE}) =
+join(singularity_types_parabolic_plus(X), ",") * ";" *
+join([join(singularity_types_hyperbolic(X)[i],",") for i = 0 : 2],":") * ";" *
+"$(singularity_type(x_minus(X)))"
+
+@attr singularity_types_string(X :: CStarSurface{EP}) =
+"$(singularity_type(x_plus(X)))" * ";" *
+join([join(singularity_types_hyperbolic(X)[i],",") for i = 0 : 2],":") * ";" *
+join(singularity_types_parabolic_minus(X), ",")
+
+@attr singularity_types_string(X :: CStarSurface{PP}) =
+join(singularity_types_parabolic_plus(X), ",") * ";" *
+join([join(singularity_types_hyperbolic(X)[i],",") for i = 0 : 2],":") * ";" *
+join(singularity_types_parabolic_minus(X), ",")
