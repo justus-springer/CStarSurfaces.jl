@@ -54,6 +54,8 @@ const _db_column_defs = [
     (:is_factorial, "INTEGER", true, true),
     (:is_smooth, "INTEGER", true, true),
     (:number_of_singularities, "INTEGER", true, true),
+    (:singularity_type_x_plus, "TEXT", true, false),
+    (:singularity_type_x_minus, "TEXT", true, false)
 ]
 
 @doc raw"""
@@ -111,7 +113,9 @@ julia> SQLite.tables(db.db)
  :is_quasismooth                               Union{Missing, Int64}
  :is_factorial                                 Union{Missing, Int64}
  :is_smooth                                    Union{Missing, Int64}
- :number_of_singularities                      Union{Missing, Int64})
+ :number_of_singularities                      Union{Missing, Int64}
+ :singularity_type_x_plus                      Union{Missing, String}
+ :singularity_type_x_minus                     Union{Missing, String})
 
 ```
 
@@ -212,6 +216,15 @@ is_smooth(X) ? 1 : 0
 _db_number_of_singularities(X :: SurfaceWithTorusAction) = 
 number_of_singularities(X)
 
+_db_singularity_type_x_plus(X :: CStarSurface{<:Union{EE,EP}}) =
+"$(singularity_type(x_plus(X)))"
+_db_singularity_type_x_plus(X :: CStarSurface{<:Union{PE,PP}}) = missing
+_db_singularity_type_x_plus(X :: ToricSurface) = missing
+
+_db_singularity_type_x_minus(X :: CStarSurface{<:Union{EE,PE}}) =
+"$(singularity_type(x_minus(X)))"
+_db_singularity_type_x_minus(X :: CStarSurface{<:Union{EP,PP}}) = missing
+_db_singularity_type_x_minus(X :: ToricSurface) = missing
 
 @doc raw"""
     default_column_functions(::Type{<:SurfaceWithTorusAction})   

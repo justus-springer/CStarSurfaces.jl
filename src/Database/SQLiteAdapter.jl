@@ -235,7 +235,8 @@ update_in_database(
         db :: SQLiteAdapter{T}, 
         column_functions :: Dict{Symbol, <:Function},
         ids :: AbstractVector{Int}; 
-        column_function_args :: AbstractVector{Symbol} = [:variety]) where {T <: MoriDreamSpace} =
+        column_function_args :: AbstractVector{Symbol} = [:variety],
+        showinfo :: Bool = true) where {T <: MoriDreamSpace} =
 update_in_database(db, column_functions; sql = "$(db.primary_key) IN ($(join(ids, ", ")))", column_function_args, showinfo)
 
 

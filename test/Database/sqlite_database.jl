@@ -44,6 +44,9 @@ PRIMARY_KEY = "surface_id"
         @test row[:is_quasismooth] == 0
         @test row[:is_factorial] == 0
         @test row[:is_smooth] == 0
+        @test row[:number_of_singularities] == 3
+        @test row[:singularity_type_x_plus] == "A4"
+        @test row[:singularity_type_x_minus] == "E6"
 
         @test import_from_database(db, row[:surface_id]) == X
 
