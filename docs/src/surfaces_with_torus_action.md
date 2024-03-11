@@ -68,7 +68,7 @@ log_canonicity(X :: SurfaceWithTorusAction)
 singularities(X :: SurfaceWithTorusAction)
 number_of_singularities(X :: SurfaceWithTorusAction)
 singularity_types(X :: SurfaceWithTorusAction)
-singularity_types_string(X :: CStarSurface{EE})
+singularity_types_string
 canonical_resolution(X :: CStarSurface)
 canonical_resolution(X :: ToricSurface)
 minimal_resolution(X :: CStarSurface)

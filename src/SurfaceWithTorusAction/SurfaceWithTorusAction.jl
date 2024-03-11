@@ -151,6 +151,25 @@ julia> singularity_types(X)
 
 
 @doc raw"""
+    singularity_types_string(X :: SurfaceWithTorusAction)
+
+Return a string encoding of the singularity types of all fixed points of `X`.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ep)
+C-star surface of type (e-p)
+
+julia> singularity_types_string(X)
+"E6;A0::;A0,A1,A1"
+```
+
+"""
+function singularity_types_string end
+
+
+@doc raw"""
     is_log_terminal(X :: SurfaceWithTorusAction)
 
 Check whether a surface with torus action has at most log terminal

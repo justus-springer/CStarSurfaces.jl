@@ -58,3 +58,6 @@ end
 @attr is_log_terminal(x :: ToricSurfaceFixedPoint) = true
 
 @attr singularity_type(x :: ToricSurfaceFixedPoint) = SingularityTypeA(length(minimal_resolution(x)[2]))
+
+@attr singularity_types_string(X :: ToricSurface) =
+join([singularity_type(x) for x ∈ fixed_points(X)], ",")
