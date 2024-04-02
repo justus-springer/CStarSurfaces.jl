@@ -27,6 +27,8 @@ struct SingularityTypeA <: SingularityTypeADE
     n :: Integer
 end
 
+singularity_kind_string(:: SingularityTypeA) = "A"
+
 number_of_exceptional_prime_divisors(st :: SingularityTypeA) = st.n
 
 Base.show(io :: IO, st :: SingularityTypeA) = print(io, "A$(st.n)")
@@ -43,6 +45,8 @@ struct SingularityTypeD <: SingularityTypeADE
     n :: Integer
 end
 
+singularity_kind_string(:: SingularityTypeD) = "D"
+
 number_of_exceptional_prime_divisors(st :: SingularityTypeD) = st.n
 
 Base.show(io :: IO, st :: SingularityTypeD) = print(io, "D$(st.n)")
@@ -55,6 +59,8 @@ Abstact supertype of singularity types E6, E7 and E8.
 
 """
 abstract type SingularityTypeE <: SingularityTypeADE end
+
+singularity_kind_string(:: SingularityTypeE) = "E"
 
 
 @doc raw"""

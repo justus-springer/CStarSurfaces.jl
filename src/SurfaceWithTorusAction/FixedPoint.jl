@@ -97,6 +97,16 @@ minimal resolution of singularities.
 """
 @attr number_of_exceptional_prime_divisors(x :: SurfaceWithTorusActionFixedPoint) =
 number_of_exceptional_prime_divisors(singularity_type(x))
+
+@doc raw"""
+    singularity_kind_string(x :: SurfaceWithTorusActionFixedPoint)
+
+Return one of the strings "A", "D" or "E", depending on the singularity type
+of the point `x`.
+
+"""
+@attr singularity_kind_string(x :: SurfaceWithTorusActionFixedPoint) =
+singularity_kind_string(singularity_type(x))
  
 
 @doc raw"""

@@ -1,3 +1,4 @@
+export singularity_kind_string
 export number_of_exceptional_prime_divisors
 export singularity_types_hyperbolic
 export singularity_types_parabolic_plus
