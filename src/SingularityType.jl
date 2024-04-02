@@ -6,6 +6,7 @@ Abstract supertype of various "types" of singularities.
 """
 abstract type SingularityType end
 
+
 @doc raw"""
     SingularityTypeADE <: SingularityType
 
@@ -29,6 +30,7 @@ end
 Base.show(io :: IO, st :: SingularityTypeA) = print(io, "A$(st.n)")
 
 
+
 @doc raw"""
     SingularityTypeD <: SingularityTypeADE
 
@@ -44,12 +46,21 @@ Base.show(io :: IO, st :: SingularityTypeD) = print(io, "D$(st.n)")
 
 
 @doc raw"""
+    SingularityTypeE <: SingularityTypeADE
+
+Abstact supertype of singularity types E6, E7 and E8.
+
+"""
+abstract type SingularityTypeE <: SingularityTypeADE end
+
+
+@doc raw"""
     SingularityTypeE6 <: SingularityTypeADE
 
 The singularity type $E_6$.
 
 """
-struct SingularityTypeE6 <: SingularityTypeADE end
+struct SingularityTypeE6 <: SingularityTypeE end
 
 Base.show(io :: IO, st :: SingularityTypeE6) = print(io, "E6")
 
@@ -60,7 +71,7 @@ Base.show(io :: IO, st :: SingularityTypeE6) = print(io, "E6")
 The singularity type $E_7$.
 
 """
-struct SingularityTypeE7 <: SingularityTypeADE end
+struct SingularityTypeE7 <: SingularityTypeE end
 
 Base.show(io :: IO, st :: SingularityTypeE7) = print(io, "E7")
 
@@ -71,7 +82,7 @@ Base.show(io :: IO, st :: SingularityTypeE7) = print(io, "E7")
 The singularity type $E_8$.
 
 """
-struct SingularityTypeE8 <: SingularityTypeADE end
+struct SingularityTypeE8 <: SingularityTypeE end
 
 Base.show(io :: IO, st :: SingularityTypeE8) = print(io, "E8")
 

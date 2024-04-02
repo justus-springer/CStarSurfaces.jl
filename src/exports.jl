@@ -178,6 +178,7 @@ export SingularityType
 export SingularityTypeA
 export SingularityTypeADE
 export SingularityTypeD
+export SingularityTypeE
 export SingularityTypeE6
 export SingularityTypeE7
 export SingularityTypeE8
