@@ -27,8 +27,9 @@ struct SingularityTypeA <: SingularityTypeADE
     n :: Integer
 end
 
-Base.show(io :: IO, st :: SingularityTypeA) = print(io, "A$(st.n)")
+number_of_exceptional_prime_divisors(st :: SingularityTypeA) = st.n
 
+Base.show(io :: IO, st :: SingularityTypeA) = print(io, "A$(st.n)")
 
 
 @doc raw"""
@@ -41,6 +42,8 @@ of nodes in the resolution graph.
 struct SingularityTypeD <: SingularityTypeADE
     n :: Integer
 end
+
+number_of_exceptional_prime_divisors(st :: SingularityTypeD) = st.n
 
 Base.show(io :: IO, st :: SingularityTypeD) = print(io, "D$(st.n)")
 
@@ -62,6 +65,8 @@ The singularity type $E_6$.
 """
 struct SingularityTypeE6 <: SingularityTypeE end
 
+number_of_exceptional_prime_divisors(:: SingularityTypeE6) = 6
+
 Base.show(io :: IO, st :: SingularityTypeE6) = print(io, "E6")
 
 
@@ -73,6 +78,8 @@ The singularity type $E_7$.
 """
 struct SingularityTypeE7 <: SingularityTypeE end
 
+number_of_exceptional_prime_divisors(:: SingularityTypeE7) = 7
+
 Base.show(io :: IO, st :: SingularityTypeE7) = print(io, "E7")
 
 
@@ -83,6 +90,8 @@ The singularity type $E_8$.
 
 """
 struct SingularityTypeE8 <: SingularityTypeE end
+
+number_of_exceptional_prime_divisors(:: SingularityTypeE8) = 8
 
 Base.show(io :: IO, st :: SingularityTypeE8) = print(io, "E8")
 

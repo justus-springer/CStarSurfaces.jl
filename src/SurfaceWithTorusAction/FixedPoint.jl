@@ -89,6 +89,17 @@ function singularity_type end
 
 
 @doc raw"""
+    number_of_exceptional_prime_divisors(x :: SurfaceWithTorusActionFixedPoint)
+
+Return the number of exceptional prime divisors over a given point in the
+minimal resolution of singularities.
+
+"""
+@attr number_of_exceptional_prime_divisors(x :: SurfaceWithTorusActionFixedPoint) =
+number_of_exceptional_prime_divisors(singularity_type(x))
+ 
+
+@doc raw"""
     is_log_terminal(x :: SurfaceWithTorusActionFixedPoint)
 
 Check whether a point on a surface with torus action is at most a log terminal

@@ -170,6 +170,16 @@ function singularity_types_string end
 
 
 @doc raw"""
+    number_of_exceptional_prime_divisors(X :: SurfaceWithTorusAction)
+
+Return the total number of exceptional prime divisors in the minimal resolution of `X`.
+
+"""
+@attr number_of_exceptional_prime_divisors(X :: SurfaceWithTorusAction) =
+sum(number_of_exceptional_prime_divisors.(fixed_points(X)))
+
+
+@doc raw"""
     is_log_terminal(X :: SurfaceWithTorusAction)
 
 Check whether a surface with torus action has at most log terminal
