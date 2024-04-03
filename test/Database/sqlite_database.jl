@@ -45,8 +45,12 @@ PRIMARY_KEY = "surface_id"
         @test row[:is_factorial] == 0
         @test row[:is_smooth] == 0
         @test row[:number_of_singularities] == 3
-        @test row[:singularity_type_x_plus] == "A4"
-        @test row[:singularity_type_x_minus] == "E6"
+        @test row[:singularity_types_string] == "A4;A2::;E6"
+        @test row[:number_of_exceptional_prime_divisors] == 12
+        @test row[:singularity_kind_x_plus] == "A"
+        @test row[:number_of_exceptional_prime_divisors_x_plus] == 4
+        @test row[:singularity_kind_x_minus] == "E"
+        @test row[:number_of_exceptional_prime_divisors_x_minus] == 6
 
         @test import_from_database(db, row[:surface_id]) == X
 
@@ -89,6 +93,9 @@ PRIMARY_KEY = "surface_id"
         @test row[:is_quasismooth] == 1
         @test row[:is_factorial] == 0
         @test row[:is_smooth] == 0
+        @test row[:number_of_singularities] == 3
+        @test row[:singularity_types_string] == "A2,A2,A3"
+        @test row[:number_of_exceptional_prime_divisors] == 7
 
         @test import_from_database(db, row[:surface_id]) == X
 

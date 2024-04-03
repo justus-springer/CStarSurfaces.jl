@@ -54,8 +54,12 @@ const _db_column_defs = [
     (:is_factorial, "INTEGER", true, true),
     (:is_smooth, "INTEGER", true, true),
     (:number_of_singularities, "INTEGER", true, true),
-    (:singularity_type_x_plus, "TEXT", true, false),
-    (:singularity_type_x_minus, "TEXT", true, false)
+    (:singularity_types_string, "TEXT", true, true),
+    (:number_of_exceptional_prime_divisors, "INTEGER", true, true),
+    (:singularity_kind_x_plus, "TEXT", true, false),
+    (:number_of_exceptional_prime_divisors_x_plus, "INTEGER", true, false),
+    (:singularity_kind_x_minus, "TEXT", true, false),
+    (:number_of_exceptional_prime_divisors_x_minus, "INTEGER", true, false)
 ]
 
 @doc raw"""
@@ -114,8 +118,12 @@ julia> SQLite.tables(db.db)
  :is_factorial                                 Union{Missing, Int64}
  :is_smooth                                    Union{Missing, Int64}
  :number_of_singularities                      Union{Missing, Int64}
- :singularity_type_x_plus                      Union{Missing, String}
- :singularity_type_x_minus                     Union{Missing, String})
+ :singularity_types_string                      Union{Missing, String}
+ :number_of_exceptional_prime_divisors          Union{Missing, Int64}
+ :singularity_kind_x_plus                       Union{Missing, String}
+ :number_of_exceptional_prime_divisors_x_plus   Union{Missing, Int64}
+ :singularity_kind_x_minus                      Union{Missing, String}
+ :number_of_exceptional_prime_divisors_x_minus  Union{Missing, Int64})
 
 ```
 
@@ -216,15 +224,33 @@ is_smooth(X) ? 1 : 0
 _db_number_of_singularities(X :: SurfaceWithTorusAction) = 
 number_of_singularities(X)
 
-_db_singularity_type_x_plus(X :: CStarSurface{<:Union{EE,EP}}) =
-"$(singularity_type(x_plus(X)))"
-_db_singularity_type_x_plus(X :: CStarSurface{<:Union{PE,PP}}) = missing
-_db_singularity_type_x_plus(X :: ToricSurface) = missing
+_db_singularity_types_string(X :: SurfaceWithTorusAction) =
+singularity_types_string(X)
 
-_db_singularity_type_x_minus(X :: CStarSurface{<:Union{EE,PE}}) =
-"$(singularity_type(x_minus(X)))"
-_db_singularity_type_x_minus(X :: CStarSurface{<:Union{EP,PP}}) = missing
-_db_singularity_type_x_minus(X :: ToricSurface) = missing
+_db_number_of_exceptional_prime_divisors(X :: SurfaceWithTorusAction) =
+number_of_exceptional_prime_divisors(X)
+
+_db_singularity_kind_x_plus(X :: CStarSurface{<:Union{EE,EP}}) =
+"$(singularity_kind(x_plus(X)))"
+_db_singularity_kind_x_plus(X :: CStarSurface{<:Union{PE,PP}}) = missing
+_db_singularity_kind_x_plus(X :: ToricSurface) = missing
+
+_db_number_of_exceptional_prime_divisors_x_plus(X :: CStarSurface{<:Union{EE,EP}}) =
+number_of_exceptional_prime_divisors(x_plus(X))
+_db_number_of_exceptional_prime_divisors_x_plus(X :: CStarSurface{<:Union{PE,PP}}) = missing
+_db_number_of_exceptional_prime_divisors_x_plus(X :: ToricSurface) = missing
+
+_db_singularity_kind_x_minus(X :: CStarSurface{<:Union{EE,PE}}) =
+"$(singularity_kind(x_minus(X)))"
+_db_singularity_kind_x_minus(X :: CStarSurface{<:Union{EP,PP}}) = missing
+_db_singularity_kind_x_minus(X :: ToricSurface) = missing
+
+_db_number_of_exceptional_prime_divisors_x_minus(X :: CStarSurface{<:Union{EE,PE}}) =
+number_of_exceptional_prime_divisors(x_minus(X))
+_db_number_of_exceptional_prime_divisors_x_minus(X :: CStarSurface{<:Union{EP,PP}}) = missing
+_db_number_of_exceptional_prime_divisors_x_minus(X :: ToricSurface) = missing
+
+
 
 @doc raw"""
     default_column_functions(::Type{<:SurfaceWithTorusAction})   
@@ -301,6 +327,12 @@ row[:is_smooth] == 1
 
 _import_db_number_of_singularities(row :: Union{SQLite.Row, NamedTuple}) =
 row[:number_of_singularities]
+
+_import_db_singularity_types_string(row :: Union{SQLite.Row, NamedTuple}) =
+row[:singularity_types_string]
+
+_import_db_number_of_exceptional_prime_divisors(row :: Union{SQLite.Row, NamedTuple}) =
+row[:number_of_exceptional_prime_divisors]
 
 
 @doc raw"""
