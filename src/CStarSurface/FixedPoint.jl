@@ -126,12 +126,17 @@ end
 @attr is_log_terminal(x :: EllipticFixedPointPlus) = 
 _is_platonic_tuple(Vector(first.(_slope_ordered_l(parent(x)))))
 
-function _singularity_type_elliptic(x :: EllipticFixedPoint; is_plus :: Bool)
+function _platonicity_type_elliptic(x :: EllipticFixedPoint; is_plus :: Bool)
     l = _slope_ordered_l(parent(x))
     q = is_plus ? Vector(first.(l)) : Vector(last.(l))
-    !_is_platonic_tuple(q) && return SingularityTypeNonLogTerminal()
+    !_is_platonic_tuple(q) && return :NonLogTerminal
 
-    ty = _platonicity_type(Vector(q))
+    return _platonicity_type(Vector(q))
+end
+
+function _singularity_type_elliptic(x :: EllipticFixedPoint; is_plus :: Bool)
+    ty = _platonicity_type_elliptic(x; is_plus)
+
     ty == :E6 && return SingularityTypeE6()
     ty == :E7 && return SingularityTypeE7()
     ty == :E8 && return SingularityTypeE8()
@@ -142,8 +147,17 @@ function _singularity_type_elliptic(x :: EllipticFixedPoint; is_plus :: Bool)
     ty == :D && return SingularityTypeD(n)
 end
 
+function _singularity_kind_elliptic(x :: EllipticFixedPoint; is_plus :: Bool)
+    ty = _platonicity_type_elliptic(x; is_plus)
+    ty ∈ [:E6, :E7, :E8] && return :E
+    return ty
+end
+
 @attr singularity_type(x :: EllipticFixedPointPlus) = 
 _singularity_type_elliptic(x; is_plus = true)
+
+@attr singularity_kind(x :: EllipticFixedPointPlus) =
+_singularity_kind_elliptic(x; is_plus = true)
 
 
 @doc raw"""
@@ -225,6 +239,8 @@ _is_platonic_tuple(Vector(last.(_slope_ordered_l(parent(x)))))
 @attr singularity_type(x :: EllipticFixedPointMinus) = 
 _singularity_type_elliptic(x; is_plus = false)
 
+@attr singularity_kind(x :: EllipticFixedPointMinus) =
+_singularity_kind_elliptic(x; is_plus = false)
 
 @attr function minimal_resolution(x :: EllipticFixedPoint)
     (Y, divs, discrepancies) = deepcopy(canonical_resolution(x))
@@ -396,6 +412,8 @@ end
 
 @attr singularity_type(x :: HyperbolicFixedPoint) = SingularityTypeA(length(minimal_resolution(x)[2]))
 
+@attr singularity_kind(x :: HyperbolicFixedPoint) = :A
+
 @attr singularity_types_hyperbolic(X :: CStarSurface) = map2(singularity_type, hyperbolic_fixed_points(X))
 
 
@@ -416,7 +434,10 @@ abstract type ParabolicFixedPoint{T} <: CStarSurfaceFixedPoint{T} end
 
 @attr singularity_type(x :: ParabolicFixedPoint) = SingularityTypeA(length(minimal_resolution(x)[2]))
 
+@attr singularity_kind(x :: ParabolicFixedPoint) = :A
+
 @attr is_log_terminal(x :: ParabolicFixedPoint) = true
+
 
 @doc raw"""
     ParabolicFixedPointPlus{T<:Union{PE,PP}} <: ParabolicFixedPoint{T}

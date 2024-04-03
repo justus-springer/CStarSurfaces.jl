@@ -59,5 +59,7 @@ end
 
 @attr singularity_type(x :: ToricSurfaceFixedPoint) = SingularityTypeA(length(minimal_resolution(x)[2]))
 
+@attr singularity_kind(x :: ToricSurfaceFixedPoint) = :A
+
 @attr singularity_types_string(X :: ToricSurface) =
 join([singularity_type(x) for x ∈ fixed_points(X)], ",")
