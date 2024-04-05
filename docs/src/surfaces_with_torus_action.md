@@ -72,6 +72,7 @@ singularity_types_string
 canonical_resolution(X :: CStarSurface)
 canonical_resolution(X :: ToricSurface)
 minimal_resolution(X :: CStarSurface)
+number_of_exceptional_prime_divisors(X :: SurfaceWithTorusAction)
 ```
 
 ## Intersection numbers
@@ -79,6 +80,7 @@ minimal_resolution(X :: CStarSurface)
 ```@docs
 intersection_matrix
 anticanonical_self_intersection(X :: SurfaceWithTorusAction)
+is_combinatorially_minimal
 ```
 
 ## Kaehler Einstein metrics

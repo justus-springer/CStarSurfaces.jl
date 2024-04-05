@@ -68,8 +68,9 @@ is_log_terminal
 ```@docs
 canonical_resolution
 minimal_resolution
-log_canonicity(X :: SurfaceWithTorusActionFixedPoint)
-resolution_graph(X :: SurfaceWithTorusActionFixedPoint)
+log_canonicity(x :: SurfaceWithTorusActionFixedPoint)
+resolution_graph(x :: SurfaceWithTorusActionFixedPoint)
+number_of_exceptional_prime_divisors(x :: SurfaceWithTorusActionFixedPoint)
 ```
 
 ## Singularity types

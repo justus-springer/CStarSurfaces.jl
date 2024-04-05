@@ -198,6 +198,16 @@ function singularity_types_string end
 
 Return the total number of exceptional prime divisors in the minimal resolution of `X`.
 
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ep)
+C-star surface of type (e-p)
+
+julia> number_of_exceptional_prime_divisors(X)
+8
+```
+
 """
 @attr number_of_exceptional_prime_divisors(X :: SurfaceWithTorusAction) =
 sum(number_of_exceptional_prime_divisors.(fixed_points(X)))
