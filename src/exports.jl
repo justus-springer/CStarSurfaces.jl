@@ -1,3 +1,4 @@
+export is_combinatorially_minimal
 export singularity_kind
 export number_of_exceptional_prime_divisors
 export singularity_types_hyperbolic

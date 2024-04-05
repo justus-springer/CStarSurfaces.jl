@@ -40,6 +40,30 @@ function intersection_matrix end
 
 
 @doc raw"""
+    is_combinatorially_minimal(X :: SurfaceWithTorusAction)
+
+Check if a given surface with torus action `X` is combinatorially minimal,
+i.e. every contraction `X -> Y` is an isomorphism. Equivalently, every
+torus-invariant divisor has non-negative self-intersection.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface([[3, 1], [3], [2]], [[-2, -1], [1], [1]], :ee)
+C-star surface of type (e-e)
+
+julia> is_combinatorially_minimal(X)
+true
+```
+
+"""
+@attr function is_combinatorially_minimal(X :: SurfaceWithTorusAction)
+    M = intersection_matrix(X)
+    return all(i -> M[i,i] > 0, 1 : nrows(M))
+end
+
+
+@doc raw"""
     picard_index(X :: SurfaceWithTorusAction)   
 
 Return the index of the Picard group in the class group of a surface with torus
