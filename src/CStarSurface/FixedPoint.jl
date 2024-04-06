@@ -688,20 +688,20 @@ CStarSurfaceFixedPoint{T}[
 
 @attr singularity_types_string(X :: CStarSurface{EE}) =
 "$(singularity_type(x_plus(X)))" * ";" *
-join([join(singularity_types_hyperbolic(X)[i],",") for i = 0 : 2],":") * ";" *
+join([join(singularity_types_hyperbolic(X)[i],",") for i = 0 : nblocks(X)-1],":") * ";" *
 "$(singularity_type(x_minus(X)))"
 
 @attr singularity_types_string(X :: CStarSurface{PE}) =
 join(singularity_types_parabolic_plus(X), ",") * ";" *
-join([join(singularity_types_hyperbolic(X)[i],",") for i = 0 : 2],":") * ";" *
+join([join(singularity_types_hyperbolic(X)[i],",") for i = 0 : nblocks(X)-1],":") * ";" *
 "$(singularity_type(x_minus(X)))"
 
 @attr singularity_types_string(X :: CStarSurface{EP}) =
 "$(singularity_type(x_plus(X)))" * ";" *
-join([join(singularity_types_hyperbolic(X)[i],",") for i = 0 : 2],":") * ";" *
+join([join(singularity_types_hyperbolic(X)[i],",") for i = 0 : nblocks(X)-1],":") * ";" *
 join(singularity_types_parabolic_minus(X), ",")
 
 @attr singularity_types_string(X :: CStarSurface{PP}) =
 join(singularity_types_parabolic_plus(X), ",") * ";" *
-join([join(singularity_types_hyperbolic(X)[i],",") for i = 0 : 2],":") * ";" *
+join([join(singularity_types_hyperbolic(X)[i],",") for i = 0 : nblocks(X)-1],":") * ";" *
 join(singularity_types_parabolic_minus(X), ",")
