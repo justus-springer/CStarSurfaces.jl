@@ -59,7 +59,8 @@ const _db_column_defs = [
     (:singularity_kind_x_plus, "TEXT", true, false),
     (:number_of_exceptional_prime_divisors_x_plus, "INTEGER", true, false),
     (:singularity_kind_x_minus, "TEXT", true, false),
-    (:number_of_exceptional_prime_divisors_x_minus, "INTEGER", true, false)
+    (:number_of_exceptional_prime_divisors_x_minus, "INTEGER", true, false),
+    (:is_combinatorially_minimal, "INTEGER", true, true)
 ]
 
 @doc raw"""
@@ -123,7 +124,8 @@ julia> SQLite.tables(db.db)
  :singularity_kind_x_plus                       Union{Missing, String}
  :number_of_exceptional_prime_divisors_x_plus   Union{Missing, Int64}
  :singularity_kind_x_minus                      Union{Missing, String}
- :number_of_exceptional_prime_divisors_x_minus  Union{Missing, Int64})
+ :number_of_exceptional_prime_divisors_x_minus  Union{Missing, Int64}
+ :is_combinatorially_minimal                    Union{Missing, Int64})
 
 ```
 
@@ -250,6 +252,9 @@ number_of_exceptional_prime_divisors(x_minus(X))
 _db_number_of_exceptional_prime_divisors_x_minus(X :: CStarSurface{<:Union{EP,PP}}) = missing
 _db_number_of_exceptional_prime_divisors_x_minus(X :: ToricSurface) = missing
 
+_db_is_combinatorially_minimal(X :: SurfaceWithTorusAction) = 
+is_combinatorially_minimal(X) ? 1 : 0
+
 
 
 @doc raw"""
@@ -333,6 +338,9 @@ row[:singularity_types_string]
 
 _import_db_number_of_exceptional_prime_divisors(row :: Union{SQLite.Row, NamedTuple}) =
 row[:number_of_exceptional_prime_divisors]
+
+_import_db_is_combinatorially_minimal(row :: Union{SQLite.Row, NamedTuple}) =
+row[:is_combinatorially_minimal] == 1
 
 
 @doc raw"""
