@@ -1,10 +1,3 @@
-export is_combinatorially_minimal
-export singularity_kind
-export number_of_exceptional_prime_divisors
-export singularity_types_hyperbolic
-export singularity_types_parabolic_plus
-export singularity_types_parabolic_minus
-export singularity_types_string
 export AdmissibleOperation
 export AdmissibleRowOperation
 export admits_kaehler_einstein_metric
@@ -98,6 +91,7 @@ export invariant_divisors
 export InvertLastRow
 export is_ample
 export is_cartier
+export is_combinatorially_minimal
 export is_complete_intersection
 export is_factorial
 export is_fano
@@ -146,6 +140,7 @@ export normalize_admissible_operation
 export normal_toric_variety
 export norm_ratio
 export nrays
+export number_of_exceptional_prime_divisors
 export number_of_parabolic_fixed_point_curves
 export number_of_singularities
 export orbit_cone
@@ -176,6 +171,7 @@ export resolution_graphs
 export restrict_to_stratum
 export semiample_cone
 export singularities
+export singularity_kind
 export singularity_type
 export SingularityType
 export SingularityTypeA
@@ -187,6 +183,10 @@ export SingularityTypeE7
 export SingularityTypeE8
 export SingularityTypeNonLogTerminal
 export singularity_types
+export singularity_types_hyperbolic
+export singularity_types_parabolic_minus
+export singularity_types_parabolic_plus
+export singularity_types_string
 export slope_ordered_indices
 export slopes
 export special_indices
