@@ -22,6 +22,10 @@ if format == "html"
         pages = [
             "CStarSurfaces.jl" => "index.md",
         ],
+
+        deploydocs(
+            repo = "github.com/justus-springer/CStarSurfaces.jl.git",
+        )
     )
 
 elseif format == "thesis"
