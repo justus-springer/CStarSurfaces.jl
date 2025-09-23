@@ -2,15 +2,15 @@
 @doc raw"""
     CStarSurface{T<:Integer,C,N,M,R}
 
-The type of a C*-star surface. It has the following type parameters:
+The type of a ``\mathbb{C}^*``-star surface. It has the following type parameters:
 
 - `T <: Integer`. The integer type to be used, e.g. `Int64` or `BigInt`.
 - `C :: CStarSurfaceCase`. One of `EE`, `EP, `PE` and `PP`. This describes the
-  fixed point set of the C*-surface, namely the existence of elliptic fixed
+  fixed point set of the ``\mathbb{C}^*``-surface, namely the existence of elliptic fixed
   points and parabolic fixed point curves.
 - `N :: Int`. The number of rays in the toric ambient variety.
 - `M :: Int`. This always equals `2*N` is there purely for technical reasons.
-- `R :: Int`. The number of arms of the C*-surface.
+- `R :: Int`. The number of arms of the ``\mathbb{C}^*``-surface.
 
 The type itself has two fields:
 
@@ -45,7 +45,7 @@ end
 @doc raw"""
     vertex_matrix(X :: CStarSurface)
 
-The vertex matrix of a C*-surface. This encodes the rays in the toric ambient
+The vertex matrix of a ``\mathbb{C}^*``-surface. This encodes the rays in the toric ambient
 variety.
 
 """
@@ -55,7 +55,7 @@ vertex_matrix(X :: CStarSurface) = X.vertex_matrix
 @doc raw"""
     number_of_blocks(X :: CStarSurface)
 
-The number of blocks (arms) of a C*-surface.
+The number of blocks (arms) of a ``\mathbb{C}^*``-surface.
 
 """
 number_of_blocks(:: CStarSurface{T,C,N,M,R}) where {C, T <: Integer, N, M, R} = R
@@ -64,7 +64,7 @@ number_of_blocks(:: CStarSurface{T,C,N,M,R}) where {C, T <: Integer, N, M, R} = 
 @doc raw"""
     block_sizes(X :: CStarSurface)
 
-The sizes of the individual blocks of a C*-surface.
+The sizes of the individual blocks of a ``\mathbb{C}^*``-surface.
 
 """
 block_sizes(X :: CStarSurface) = X.block_sizes
@@ -82,7 +82,7 @@ case(:: CStarSurface{T,C}) where {C, T <: Integer} = C
 @doc raw"""
     block_sizes(X :: CStarSurface, i :: Int)
 
-The size of the `i`-th block of a C*-surface.
+The size of the `i`-th block of a ``\mathbb{C}^*``-surface.
 
 """
 block_sizes(X :: CStarSurface, i :: Int) = block_sizes(X)[i+1]
@@ -91,7 +91,7 @@ block_sizes(X :: CStarSurface, i :: Int) = block_sizes(X)[i+1]
 @doc raw"""
     has_elliptic_fixed_point_plus(X :: CStarSurface)
 
-Whether the C*-surface has an elliptic fixed point x^+ as the source.
+Whether the ``\mathbb{C}^*``-surface has an elliptic fixed point x^+ as the source.
 
 """
 has_elliptic_fixed_point_plus(:: CStarSurface{T,C}) where {T<:Integer, C} =
@@ -101,7 +101,7 @@ has_elliptic_fixed_point_plus(C)
 @doc raw"""
     has_elliptic_fixed_point_minus(X :: CStarSurface)
 
-Whether the C*-surface has an elliptic fixed point x^- as the sink.
+Whether the ``\mathbb{C}^*``-surface has an elliptic fixed point x^- as the sink.
 
 """
 has_elliptic_fixed_point_minus(:: CStarSurface{T,C}) where {T<:Integer, C} =
@@ -111,7 +111,7 @@ has_elliptic_fixed_point_minus(C)
 @doc raw"""
     has_parabolic_fixed_point_curve_plus(X :: CStarSurface)
 
-Whether the C*-surface has a curve of parabolic fixed points as the source.
+Whether the ``\mathbb{C}^*``-surface has a curve of parabolic fixed points as the source.
 
 """
 has_parabolic_fixed_point_curve_plus(:: CStarSurface{T,C}) where {T<:Integer,C} =
@@ -121,7 +121,7 @@ has_parabolic_fixed_point_curve_plus(C)
 @doc raw"""
     has_parabolic_fixed_point_curve_minus(X :: CStarSurface)
 
-Whether the C*-surface has a curve of parabolic fixed points as the sink.
+Whether the ``\mathbb{C}^*``-surface has a curve of parabolic fixed points as the sink.
 
 """
 has_parabolic_fixed_point_curve_minus(:: CStarSurface{T,C}) where {T<:Integer,C} =
@@ -161,7 +161,7 @@ end
 @doc raw"""
     ray(X :: CStarSurface, i :: Int, j :: Int)
 
-Return the `j`-th ray of the `i`-th block of the C*-surface. By convention, the
+Return the `j`-th ray of the `i`-th block of the ``\mathbb{C}^*``-surface. By convention, the
 indexation of the blocks starts with zero, i.e. `i` goes from 0 to
 `number_of_blocks(X)-1`. The indexation of the rays in each individual block
 starts with one.
@@ -276,8 +276,7 @@ end
 @doc raw"""
     sum_of_maximal_slopes(X :: CStarSurface)
 
-The sum of the maximal slopes over all blocks. This is denoted as $m^+$ in
-[HHS23](@cite).
+The sum of the maximal slopes over all blocks.
 
 """
 function sum_of_maximal_slopes(X :: CStarSurface)
@@ -289,8 +288,7 @@ end
 @doc raw"""
     sum_of_minimal_slopes(X :: CStarSurface)
 
-The sum of the minimal slopes over all blocks. This is denoted as $m^-$ in
-[HHS23](@cite).
+The sum of the minimal slopes over all blocks.
 
 """
 function sum_of_minimal_slopes(X :: CStarSurface)
@@ -303,8 +301,7 @@ end
 @doc raw"""
     l_plus(X :: CStarSurface)
 
-The sum over the reciprocals of $l_{i1}$, minus $(r-1)$. This is denoted as
-$\ell^+$ in [HHS23](@cite).
+The sum over the reciprocals of $l_{i1}$, minus $(r-1)$.
 
 """
 function l_plus(X :: CStarSurface)
@@ -317,8 +314,7 @@ end
 @doc raw"""
     l_minus(X :: CStarSurface)
 
-The sum over the reciprocals of $l_{in_i}$, minus $(r-1)$. This is denoted as
-$\ell^-$ in [HHS23](@cite).
+The sum over the reciprocals of $l_{in_i}$, minus $(r-1)$.
 
 """
 function l_minus(X :: CStarSurface)
