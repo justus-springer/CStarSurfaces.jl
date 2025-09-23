@@ -22,7 +22,6 @@ if format == "html"
         pages = [
             "CStarSurfaces.jl" => "index.md",
         ],
-        remotes = nothing,
     )
 
 elseif format == "thesis"
@@ -32,7 +31,6 @@ elseif format == "thesis"
         pages = [
             "CStarSurfaces.jl" => "index.md",
         ],
-        remotes = nothing,
     )
 
     filename = joinpath(@__DIR__, "build", "CStarSurfaces.tex")
