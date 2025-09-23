@@ -2,42 +2,23 @@ module CStarSurfaces
 
 include("imports.jl")
 include("exports.jl")
+
 include("Tools.jl")
+include("snf.jl")
+include("AbelianGroup.jl")
 
-include("types.jl")
-
-include("SingularityType.jl")
-
-include("MoriDreamSpace/MoriDreamSpace.jl")
-include("MoriDreamSpace/MoriDreamSpaceUnion.jl")
-include("MoriDreamSpace/Divisor.jl")
-#include("MoriDreamSpace/SubvarietyOfToricVariety.jl")
-include("MoriDreamSpace/ToricVarietyMDS.jl")
-include("MoriDreamSpace/Point.jl")
-
-include("ToricGeometry/AbstractNormalToricVariety.jl")
-
-include("ToricSurface/Resolution.jl")
-include("ToricSurface/ToricSurface.jl")
-include("ToricSurface/normal_form.jl")
-include("ToricSurface/ToricSurfaceDivisor.jl")
-include("ToricSurface/FixedPoint.jl")
-
-include("CStarSurface/ZeroVector.jl")
-include("CStarSurface/DoubleVector.jl")
 include("CStarSurface/Case.jl")
 include("CStarSurface/CStarSurface.jl")
-include("CStarSurface/Divisor.jl")
-include("CStarSurface/AdmissibleOperation.jl")
+include("CStarSurface/properties.jl")
 include("CStarSurface/normal_form.jl")
-include("CStarSurface/FixedPoint.jl")
+include("CStarSurface/io.jl")
 
-include("SurfaceWithTorusAction/SurfaceWithTorusAction.jl")
-include("SurfaceWithTorusAction/Divisor.jl")
-include("SurfaceWithTorusAction/FixedPoint.jl")
+include("CStarSurface/FixedPoint/FixedPoint.jl")
+include("CStarSurface/FixedPoint/Elliptic.jl")
+include("CStarSurface/FixedPoint/Bolic.jl")
+include("CStarSurface/FixedPoint/Parabolic.jl")
+include("CStarSurface/FixedPoint/Hyperbolic.jl")
 
-include("Database/DatabaseAdapter.jl")
-include("Database/SQLiteAdapter.jl")
-include("Database/SQLiteAdapterSurfaces.jl")
+include("Classifications/picard_index.jl")
 
-end 
+end

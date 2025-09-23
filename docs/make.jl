@@ -1,29 +1,60 @@
-using Documenter, DocumenterCitations, CStarSurfaces, Oscar
+if length(ARGS) > 1
+    println("Usage: julia make.jl <format>")
+    println("Format can be 'html', 'thesis'")
+    exit(1)
+end
 
-DocMeta.setdocmeta!(CStarSurfaces, :DocTestSetup, :(using CStarSurfaces, Oscar); recursive=true)
+format = isempty(ARGS) ? "html" : ARGS[1]
 
-bib = CitationBibliography(
-    joinpath(@__DIR__, "references.bib");
-    style = :numeric
-)
+if format ∉ ["html", "thesis"]
+    println("Usage: julia make.jl <format>")
+    println("Format can be 'html', 'thesis'")
+    exit(1)
+end
 
-makedocs(
-    plugins = [bib],
-    #modules = [CStarSurfaces],
-    doctest = true,
-    format = Documenter.HTML(prettyurls = false),
-    sitename = "CStarSurfaces.jl",
-    pages = [
-        "Home" => "index.md",
-        "Surfaces with torus action" => "surfaces_with_torus_action.md",
-        "Divisors" => "divisors.md",
-        "Points" => "points.md",
-        "Normal forms" => "admissible_operations.md",
-        "Database functionality" => "database_functionality.md",
-        "Index" => "docs_index.md"
-    ]
-)
+@info "make.jl: Building documentation for format \"$format\""
 
-deploydocs(
-    repo = "github.com/justus-springer/CStarSurfaces.jl.git",
-)
+using Documenter, CStarSurfaces
+
+if format == "html"
+    makedocs(
+        sitename = "CStarSurfaces",
+        pages = [
+            "CStarSurfaces.jl" => "index.md",
+        ],
+        remotes = nothing,
+    )
+
+elseif format == "thesis"
+    makedocs(
+        sitename = "CStarSurfaces",
+        format = Documenter.LaTeX(platform = "none"),
+        pages = [
+            "CStarSurfaces.jl" => "index.md",
+        ],
+        remotes = nothing,
+    )
+
+    filename = joinpath(@__DIR__, "build", "CStarSurfaces.tex")
+
+    txt = read(filename, String)
+
+
+    # Add chapter heading
+    txt = "\\chapter{CStarSurfaces.jl}\n\\label{apx:julia_cstar_surfaces}\n" * txt
+
+    # Add Tex root directive
+    txt = "%!TEX root = thesis.tex\n\n" * txt
+
+    # Remove line breaks before examples
+    txt = replace(txt, r"\n+(\textbf{Example})" => s"\n\1")
+
+    # Remove math mode for references and add tilde
+    txt = replace(txt, r" \\\( (\\ref\{\S+\}) \\\)" => s"~\1")
+
+    write(filename, txt)
+
+else
+    println("Invalid format. Please choose 'html' or thesis")
+    exit(1)
+end
