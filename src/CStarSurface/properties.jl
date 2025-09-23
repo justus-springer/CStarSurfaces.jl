@@ -141,7 +141,7 @@ function degree(X :: CStarSurface{T,C}) where {C, T <: Integer}
 
 end
 
-function degree_matrix(X :: CStarSurface{T,C,N,M,R}) where {C, T <: Integer, N, M, R}
+function grading_matrix(X :: CStarSurface{T,C,N,M,R}) where {C, T <: Integer, N, M, R}
     P = generator_matrix(X)
     S, U, _ = snf_with_transform(transpose(P))
     i0 = findfirst(i -> S[i,i] > 1, 1 : R) |> x -> x !== nothing ? x : R + 1
@@ -153,8 +153,8 @@ function degree_matrix(X :: CStarSurface{T,C,N,M,R}) where {C, T <: Integer, N, 
 end
 
 
-degree_matrix_free_part(P :: CStarSurface{T,C,N,M,R}) where {C, T <: Integer, N, M, R} =
-degree_matrix(P)[1]
+grading_matrix_free_part(P :: CStarSurface{T,C,N,M,R}) where {C, T <: Integer, N, M, R} =
+grading_matrix(P)[1]
 
-degree_matrix_torsion_part(P :: CStarSurface{T,C,N,M,R}) where {C, T <: Integer, N, M, R} =
-degree_matrix(P)[2]
+grading_matrix_torsion_part(P :: CStarSurface{T,C,N,M,R}) where {C, T <: Integer, N, M, R} =
+grading_matrix(P)[2]

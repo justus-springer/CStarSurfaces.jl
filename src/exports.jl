@@ -23,9 +23,9 @@ export CStarSurfaceCase
 export d
 export decompositions
 export degree
-export degree_matrix
-export degree_matrix_free_part
-export degree_matrix_torsion_part
+export grading_matrix
+export grading_matrix_free_part
+export grading_matrix_torsion_part
 export discrepancies
 export eAeA
 export eAeD
