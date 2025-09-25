@@ -65,7 +65,7 @@ defining triples are equivalent.
 """
 are_equivalent(X :: CStarSurface{T,C1}, Y :: CStarSurface{T,C2}) where {C1, C2, T <: Integer} =
 (C1 == C2 && mfrak_plus(X) == mfrak_plus(Y) && sort(beta_plus(X)) == sort(beta_plus(Y))) ||
-(C1 == swap_case(C2) && mfrak_plus(X) == mfrak_minus(Y) && sort(beta_plus(X)) == sort(beta_minus(Y)))
+(C1 == invert_case(C2) && mfrak_plus(X) == mfrak_minus(Y) && sort(beta_plus(X)) == sort(beta_minus(Y)))
 
 
 @doc raw"""
@@ -176,7 +176,7 @@ Apply an admissible operation to a ``\mathbb{C}^*``-surface.
 
 """
 function (ψ :: AdmissibleOperation{T,R})(X :: CStarSurface{T,C,N,M,R}) where {T <: Integer, C, N, M, R}
-    new_C = swap_case(C, ψ.invert)
+    new_C = invert_case(C, ψ.invert)
     new_ns = SVector{R,T}([X.block_sizes[ψ.perm[i]] for i = 1 : R])
     new_V = hcat([SVector{2,T}(l(X, ψ.perm[i]-1, ψ.invert ? new_ns[i]-j+1 : j),
                                (ψ.invert ? -1 : 1) * d(X, ψ.perm[i]-1, ψ.invert ? new_ns[i]-j+1 : j) +

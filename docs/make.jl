@@ -14,18 +14,23 @@ end
 
 @info "make.jl: Building documentation for format \"$format\""
 
-using Documenter, CStarSurfaces
+using Documenter, CStarSurfaces, DocumenterCitations
+
+bib = CitationBibliography(joinpath(@__DIR__, "src", "refs.bib"))
 
 if format == "html"
     makedocs(
         sitename = "CStarSurfaces",
         pages = [
             "CStarSurfaces.jl" => "index.md",
+            "``\\mathbb{C}^*``-surfaces" => "cstar_surfaces.md",
+            "Local properties" => "local_properties.md",
+            "Classifications" => "classifications.md",
         ],
+    )
 
-        deploydocs(
-            repo = "github.com/justus-springer/CStarSurfaces.jl.git",
-        )
+    deploydocs(
+        repo = "github.com/justus-springer/CStarSurfaces.jl.git",
     )
 
 elseif format == "thesis"
@@ -34,7 +39,11 @@ elseif format == "thesis"
         format = Documenter.LaTeX(platform = "none"),
         pages = [
             "CStarSurfaces.jl" => "index.md",
+            "C*-surfaces" => "cstar_surfaces.md",
+            "Local properties" => "local_properties.md",
+            "Classifications" => "classifications.md",
         ],
+        plugins = [bib],
     )
 
     filename = joinpath(@__DIR__, "build", "CStarSurfaces.tex")
@@ -53,6 +62,9 @@ elseif format == "thesis"
 
     # Remove math mode for references and add tilde
     txt = replace(txt, r" \\\( (\\ref\{\S+\}) \\\)" => s"~\1")
+
+    # Fix citations
+    txt = replace(txt, r"\[\\hyperref\[doc:(\w+)\]\{\d+\}\]" => s"\\cite{\1}")
 
     write(filename, txt)
 

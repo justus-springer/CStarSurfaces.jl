@@ -8,16 +8,27 @@ The type of a ``\mathbb{C}^*`` surface. It has the following type parameters:
 - `C :: CStarSurfaceCase`. One of `EE`, `EP`, `PE` and `PP`. This describes the
   fixed point set of the ``\mathbb{C}^*``-surface, namely the existence of elliptic fixed
   points and parabolic fixed point curves.
-- `N :: Int`. The number of rays in the toric ambient variety.
-- `M :: Int`. This always equals `2*N` is there purely for technical reasons.
-- `R :: Int`. The number of arms of the ``\mathbb{C}^*``-surface.
+- `N :: Int`. The number of rays in the toric ambient variety. This equals ``n_0 + \dots + n_r``
+  in the notation of Section ``\ref{sec:background_cstar_surfaces}``.
+- `M :: Int`. This always equals `2*N`.
+- `R :: Int`. The number of arms of the ``\mathbb{C}^*``-surface. This equals ``r+1`` in the
+  notation of Section ``\ref{sec:background_cstar_surfaces}``.
 
 The type itself has two fields:
 
 - `vertex_matrix :: SMatrix{2,N,T,M}`. This contains the main part of the data:
-  A 2xN integral matrix encoding the rays of the toric ambient variety.
+  A 2xN integral matrix encoding the entries ``l_{ij}`` and ``d_{ij}`` of the rays
+  of the toric ambient. In the notation of Section ``\ref{sec:background_cstar_surfaces}``,
+  the vertex matrix has the form
+  ```math
+  \begin{bmatrix}
+  l_{01} & \dots & l_{0n_0} & \dots & l_{r1} & \dots & l_{rn_r} \\
+  d_{01} & \dots & d_{0n_0} & \dots & d_{r1} & \dots & d_{rn_r} \\
+  \end{bmatrix}.
+  ```
 - `block_sizes :: SVector{R, T}`. This determines which rays belong to which
-  arm in the toric ambient variety. It can be thought of as a partition $n = n_1 + ... + n_r$.
+  arm in the toric ambient variety. In the notation of Section ``\ref{sec:background_cstar_surfaces}``,
+  it is the tuple ``(n_0, \dots, n_r)``.
 
 """
 struct CStarSurface{T,C,N,M,R}
@@ -81,7 +92,7 @@ block_sizes(X :: CStarSurface, i :: Int) = block_sizes(X)[i+1]
 @doc raw"""
     case(X :: CStarSurface{T,C}) where {T <: Integer}
 
-The case of the ``\mathbb{C}^*``-surface, as a `CStarSurfaceCase`.
+The case of the ``\mathbb{C}^*``-surface, as a [`CStarSurfaceCase`](@ref).
 
 """
 case(:: CStarSurface{T,C}) where {C, T <: Integer} = C
@@ -101,7 +112,8 @@ end
 @doc raw"""
     has_elliptic_fixed_point_plus(X :: CStarSurface)
 
-Whether the ``\mathbb{C}^*``-surface has an elliptic fixed point x^+ as the source.
+Whether the ``\mathbb{C}^*``-surface has an elliptic fixed point ``x^+`` as the source.
+This means the case is either `EE` or `EP`.
 
 """
 has_elliptic_fixed_point_plus(:: CStarSurface{T,C}) where {T<:Integer, C} =
@@ -111,7 +123,8 @@ has_elliptic_fixed_point_plus(C)
 @doc raw"""
     has_elliptic_fixed_point_minus(X :: CStarSurface)
 
-Whether the ``\mathbb{C}^*``-surface has an elliptic fixed point x^- as the sink.
+Whether the ``\mathbb{C}^*``-surface has an elliptic fixed point ``x^-`` as the sink.
+This means the case is either `EE` or `PE`.
 
 """
 has_elliptic_fixed_point_minus(:: CStarSurface{T,C}) where {T<:Integer, C} =
@@ -122,6 +135,7 @@ has_elliptic_fixed_point_minus(C)
     has_parabolic_fixed_point_curve_plus(X :: CStarSurface)
 
 Whether the ``\mathbb{C}^*``-surface has a curve of parabolic fixed points as the source.
+This means the case is either `PE` or `PP`.
 
 """
 has_parabolic_fixed_point_curve_plus(:: CStarSurface{T,C}) where {T<:Integer,C} =
@@ -132,6 +146,7 @@ has_parabolic_fixed_point_curve_plus(C)
     has_parabolic_fixed_point_curve_minus(X :: CStarSurface)
 
 Whether the ``\mathbb{C}^*``-surface has a curve of parabolic fixed points as the sink.
+This means the case is either `EP` or ``PP``.
 
 """
 has_parabolic_fixed_point_curve_minus(:: CStarSurface{T,C}) where {T<:Integer,C} =
@@ -142,7 +157,7 @@ has_parabolic_fixed_point_curve_minus(C)
     l(X :: CStarSurface, i :: Int, j :: Int)
 
 Return the entry ``l_{ij}`` of the defining triple. By convention, the
-indexation of the blocks starts with zero, i.e. ``i`` goes from 0 to
+indexation of the blocks starts with zero, i.e. ``i`` goes from ``0`` to
 `number_of_blocks(X)-1`. The indexation of the rays in each individual block
 starts with one.
 
@@ -157,7 +172,7 @@ end
     d(X :: CStarSurface, i :: Int, j :: Int)
 
 Return the entry ``l_{ij}`` of the defining triple. By convention, the
-indexation of the blocks starts with zero, i.e. ``i`` goes from 0 to
+indexation of the blocks starts with zero, i.e. ``i`` goes from ``0`` to
 `number_of_blocks(X)-1`. The indexation of the rays in each individual block
 starts with one.
 
@@ -172,12 +187,12 @@ end
     ray(X :: CStarSurface, i :: Int, j :: Int)
 
 Return the `j`-th ray of the `i`-th block of the ``\mathbb{C}^*``-surface. By convention, the
-indexation of the blocks starts with zero, i.e. `i` goes from 0 to
+indexation of the blocks starts with zero, i.e. `i` goes from ``0`` to
 `number_of_blocks(X)-1`. The indexation of the rays in each individual block
 starts with one.
 
-This returns the ray as a vector with two entries. See also `embedded_ray` for
-the embedding into $r+1$-dimensional space, which is the actual ray of the
+This returns the ray as a vector with two entries. See also [`embedded_ray`](@ref) for
+the embedding into `R`-dimensional space, which is the actual ray of the
 ambient toric variety.
 
 """
@@ -216,7 +231,7 @@ end
     embedded_ray(X :: CStarSurface, i :: Int, j :: Int)
 
 The `j`-th ray of the `i`-th block of the toric ambient variety. This is the
-embedde ray into r-dimensional space, where `r` is the number of blocks.
+embedded ray into `R`-dimensional space, where `R` is the number of blocks.
 
 """
 function embedded_ray(X :: CStarSurface{T,C,N,M,R}, i :: Int, j :: Int) where {C, T <: Integer, N, M, R}
@@ -253,7 +268,7 @@ hcat([hcat([embedded_ray(X, i, j) for j = 1 : block_sizes(X)[i+1]]...) for i = 0
 @doc raw"""
     generator_matrix(X :: CStarSurface)
 
-The generator matrix of the ambient toric variety of `X`. The columns of this
+The generator matrix of the ambient toric variety of ``X``. The columns of this
 matrix are the primitive ray generators of the fan of the ambient toric
 variety.
 
@@ -274,7 +289,7 @@ hcat(generator_matrix_core(X),
 @doc raw"""
     slope(X :: CStarSurface, i :: Int, j :: Int)
 
-The slope of the `j`-th ray of the `i`-th block, i.e. $d_{ij} / l_{ij}$.
+The slope of the `j`-th ray of the `i`-th block, i.e. ``d_{ij} / l_{ij}``.
 
 """
 function slope(X :: CStarSurface, i :: Int, j :: Int)
@@ -311,7 +326,8 @@ end
 @doc raw"""
     l_plus(X :: CStarSurface)
 
-The sum over the reciprocals of $l_{i1}$, minus $(r-1)$.
+The rational number ``\ell^+ := \frac{1}{l_{01}} + \dots + \frac{1}{l_{r1}} - r + 1``, see
+Definition 7.4 of [`HaHaSp25`](@cite)
 
 """
 function l_plus(X :: CStarSurface)
@@ -324,7 +340,8 @@ end
 @doc raw"""
     l_minus(X :: CStarSurface)
 
-The sum over the reciprocals of $l_{in_i}$, minus $(r-1)$.
+The rational number ``\ell^- := \frac{1}{l_{0n_0}} + \dots + \frac{1}{l_{rn_r}} - r + 1``, see
+Definition 7.4 of [`HaHaSp25`](@cite)
 
 """
 function l_minus(X :: CStarSurface)

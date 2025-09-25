@@ -97,7 +97,7 @@ export snf_with_transform
 export snf_with_transform!
 export sum_of_maximal_slopes
 export sum_of_minimal_slopes
-export swap_case
+export invert_case
 export top_embedded_ray
 export top_ray
 export toric_chart
