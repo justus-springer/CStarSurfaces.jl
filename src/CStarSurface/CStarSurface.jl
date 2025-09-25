@@ -327,7 +327,7 @@ end
     l_plus(X :: CStarSurface)
 
 The rational number ``\ell^+ := \frac{1}{l_{01}} + \dots + \frac{1}{l_{r1}} - r + 1``, see
-Definition 7.4 of [`HaHaSp25`](@cite)
+Definition 7.4 of [HaHaSp25](@cite)
 
 """
 function l_plus(X :: CStarSurface)
@@ -341,7 +341,7 @@ end
     l_minus(X :: CStarSurface)
 
 The rational number ``\ell^- := \frac{1}{l_{0n_0}} + \dots + \frac{1}{l_{rn_r}} - r + 1``, see
-Definition 7.4 of [`HaHaSp25`](@cite)
+Definition 7.4 of [HaHaSp25](@cite)
 
 """
 function l_minus(X :: CStarSurface)
