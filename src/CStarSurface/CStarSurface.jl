@@ -70,6 +70,15 @@ block_sizes(X :: CStarSurface) = X.block_sizes
 
 
 @doc raw"""
+    block_sizes(X :: CStarSurface, i :: Int)
+
+The size of the `i`-th block of a ``\mathbb{C}^*``-surface.
+
+"""
+block_sizes(X :: CStarSurface, i :: Int) = block_sizes(X)[i+1]
+
+
+@doc raw"""
     case(X :: CStarSurface{T,C}) where {T <: Integer}
 
 The case of the ``\mathbb{C}^*``-surface, as a `CStarSurfaceCase`.
@@ -78,13 +87,15 @@ The case of the ``\mathbb{C}^*``-surface, as a `CStarSurfaceCase`.
 case(:: CStarSurface{T,C}) where {C, T <: Integer} = C
 
 
-@doc raw"""
-    block_sizes(X :: CStarSurface, i :: Int)
-
-The size of the `i`-th block of a ``\mathbb{C}^*``-surface.
-
-"""
-block_sizes(X :: CStarSurface, i :: Int) = block_sizes(X)[i+1]
+function Base.show(io :: IO, X :: CStarSurface{T,C,N,M,R}) where {T<:Integer, C, N, M, R}
+    ns = block_sizes(X)
+    print(io, "C*-surface of case ", C, " with l = (")
+    print(join([ns[i] == 1 ? l(X,i-1,1) : "(" * join([l(X,i-1,j) for j = 1 : ns[i]], ",") * ")"
+                for i = 1 : R], ","), ") ")
+    print(io, "and d = (")
+    print(join([ns[i] == 1 ? d(X,i-1,1) : "(" * join([d(X,i-1,j) for j = 1 : ns[i]], ",") * ")"
+                for i = 1 : R], ","), ") ")
+end
 
 
 @doc raw"""
