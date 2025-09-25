@@ -1,7 +1,7 @@
 @doc raw"""
     class_group(X :: CStarSurface)
 
-The divisor class group of a C*-surface.
+The divisor class group of a ``\mathbb{C}^*``-surface.
 
 """
 class_group(X :: CStarSurface) = cokernel(transpose(generator_matrix(X)))
@@ -19,7 +19,7 @@ multiplicity(X :: CStarSurface) = torsion_order(class_group(X))
 @doc raw"""
     picard_index(X :: CStarSurface)
 
-The index of the Picard group inside the divisor class group of a C*-surface.
+The index of the Picard group inside the divisor class group of a ``\mathbb{C}^*``-surface.
 
 """
 picard_index(X :: CStarSurface) = prod([multiplicity(X,x) for x in fixed_points(X)]) ÷ multiplicity(X)
@@ -28,7 +28,7 @@ picard_index(X :: CStarSurface) = prod([multiplicity(X,x) for x in fixed_points(
 @doc raw"""
     gorenstein_index(X :: CStarSurface)
 
-The Gorenstein index of a C*-surface.
+The Gorenstein index of a ``\mathbb{C}^*``-surface.
 
 """
 gorenstein_index(X :: CStarSurface) = lcm([gorenstein_index(X,x) for x in fixed_points(X)])
@@ -37,7 +37,7 @@ gorenstein_index(X :: CStarSurface) = lcm([gorenstein_index(X,x) for x in fixed_
 @doc raw"""
     is_quasismooth(X :: CStarSurface)   
 
-Check whether the C*-surface is quasismooth, i.e. its characteristic space is
+Check whether the ``\mathbb{C}^*``-surface is quasismooth, i.e. its characteristic space is
 smooth.
 
 """
@@ -47,7 +47,7 @@ is_quasismooth(X :: CStarSurface) = all(x -> is_quasismooth(X, x), elliptic_fixe
 @doc raw"""
     is_factorial(X :: CStarSurface)   
 
-Check whether the C*-surface is locally factorial, i.e. all local class groups
+Check whether the ``\mathbb{C}^*``-surface is locally factorial, i.e. all local class groups
 are trivial.
 
 """
@@ -57,7 +57,7 @@ is_factorial(X :: CStarSurface) = all(x -> is_factorial(X, x), fixed_points(X))
 @doc raw"""
     is_smooth(X :: CStarSurface)
 
-Check whether the C*-surface is smooth.
+Check whether the ``\mathbb{C}^*``-surface is smooth.
 
 """
 is_smooth(X :: CStarSurface) = is_factorial(X) && is_quasismooth(X)
@@ -76,7 +76,7 @@ log_canonicity(X :: CStarSurface) = minimum([log_canonicity(X, x) for x in fixed
 @doc raw"""
     is_log_terminal(X :: CStarSurface, ε :: Real = 0)   
 
-Check whether a C*-surface is ε-log terminal. The default value of ε is zero,
+Check whether a ``\mathbb{C}^*``-surface is ε-log terminal. The default value of ε is zero,
 which is the usual notion of log terminality.
 
 """
@@ -86,7 +86,7 @@ is_log_terminal(X :: CStarSurface, ε :: Real = 0) = log_canonicity(X) > ε
 @doc raw"""
     is_log_canonical(X :: CStarSurface, ε :: Real = 0)
 
-Check whether a C*-surface is ε-log canonical. The default value of ε is zero,
+Check whether a ``\mathbb{C}^*``-surface is ε-log canonical. The default value of ε is zero,
 which is the usual notion of log canonical..
 
 """
@@ -96,7 +96,7 @@ is_log_canonical(X :: CStarSurface, ε :: Real = 0) = log_canonicity(X) ≥ ε
 @doc raw"""
     is_terminal(X :: CStarSurface)
 
-Check whether a C*-surface is terminal. This is equivalent to being smooth.
+Check whether a ``\mathbb{C}^*``-surface is terminal. This is equivalent to being smooth.
 
 """
 is_terminal(X :: CStarSurface) = is_log_terminal(X, 1)
@@ -105,7 +105,7 @@ is_terminal(X :: CStarSurface) = is_log_terminal(X, 1)
 @doc raw"""
     is_canonical(X :: CStarSurface, x :: FixedPoint)
 
-Check whether a C*-surface is canonical.
+Check whether a ``\mathbb{C}^*``-surface is canonical.
 
 """
 is_canonical(X :: CStarSurface) = is_log_canonical(X, 1)
@@ -114,7 +114,7 @@ is_canonical(X :: CStarSurface) = is_log_canonical(X, 1)
 @doc raw"""
     degree(X :: CStarSurface)
 
-The self-intersection number of an anticanonical divisor on the C*-surface.
+The self-intersection number of an anticanonical divisor on the ``\mathbb{C}^*``-surface.
 
 """
 function degree(X :: CStarSurface{T,C}) where {C, T <: Integer}

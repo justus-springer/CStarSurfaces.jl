@@ -2,10 +2,10 @@
 @doc raw"""
     CStarSurface{T<:Integer,C,N,M,R}
 
-The type of a ``\mathbb{C}^*``-star surface. It has the following type parameters:
+The type of a ``\mathbb{C}^*`` surface. It has the following type parameters:
 
 - `T <: Integer`. The integer type to be used, e.g. `Int64` or `BigInt`.
-- `C :: CStarSurfaceCase`. One of `EE`, `EP, `PE` and `PP`. This describes the
+- `C :: CStarSurfaceCase`. One of `EE`, `EP`, `PE` and `PP`. This describes the
   fixed point set of the ``\mathbb{C}^*``-surface, namely the existence of elliptic fixed
   points and parabolic fixed point curves.
 - `N :: Int`. The number of rays in the toric ambient variety.
@@ -17,8 +17,7 @@ The type itself has two fields:
 - `vertex_matrix :: SMatrix{2,N,T,M}`. This contains the main part of the data:
   A 2xN integral matrix encoding the rays of the toric ambient variety.
 - `block_sizes :: SVector{R, T}`. This determines which rays belong to which
-  arm in the toric ambient variety. It can be thought of as a partition $n = n_1
-  + ... + n_r$.
+  arm in the toric ambient variety. It can be thought of as a partition $n = n_1 + ... + n_r$.
 
 """
 struct CStarSurface{T,C,N,M,R}
