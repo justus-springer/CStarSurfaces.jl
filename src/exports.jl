@@ -1,3 +1,5 @@
+export bolic_fixed_points
+export cstar_surface
 export AbelianGroup
 export addition
 export admissible_operation

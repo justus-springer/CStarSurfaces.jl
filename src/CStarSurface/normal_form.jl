@@ -30,6 +30,7 @@ end
 
 The nested vector with entries ``m_{ij} - \lfloor m_{i1} \rfloor``, see
 Definition ``\ref{def:defining_triple_magic_numbers}``.
+It is not yet sorted.
 
 """
 function beta_plus(X :: CStarSurface{T,C}) where {C, T <: Integer}
@@ -43,8 +44,9 @@ end
 @doc raw"""
     beta_minus(X :: CStarSurface)
 
-The sum of the rounded down slopes ``\lceil m_{in_i} \rceil - m_{ij}``, see
+The nested vector with entries ``\lceil m_{in_i} \rceil - m_{ij}``, see
 Definition ``\ref{def:defining_triple_magic_numbers}``.
+It is not yet sorted.
 
 """
 function beta_minus(X :: CStarSurface{T,C}) where {C, T <: Integer}
@@ -60,7 +62,9 @@ end
     are_equivalent(X :: CStarSurface{T}, Y :: CStarSurface{T}) where {T <: Integer}
 
 Check whether two ``\mathbb{C}^*``-surfaces are isomorphic, i.e. whether the
-defining triples are equivalent.
+defining triples are equivalent. This is done by comparing ``(\mathfrak{m}^+, \beta^+)`` and
+``(\mathfrak{m}^-, \beta^-)``, see
+Lemma ``\ref{lem:admissible_operations_magic_numbers}``.
 
 """
 are_equivalent(X :: CStarSurface{T,C1}, Y :: CStarSurface{T,C2}) where {C1, C2, T <: Integer} =
@@ -90,13 +94,11 @@ end
     is_normal_form(X :: CStarSurface)
 
 Check whether a (defining triple of a) ``\mathbb{C}^*``-surface is in normal form.
-This holds if the following three conditions are satisfied:
+This holds if the following three conditions are satisfied, see Definition ``\ref{def:defining_triple_normal_form}``.
 
 - The [`orientation`](@ref) is nonnegative,
 - [`beta_plus`](@ref) is sorted lexicographically,
 - We have ``0 \leq d_{i1} < l_{i1}`` for all ``i = 1, \dots, r``.
-
-See also Definition ``\ref{def:defining_triple_normal_form}``.
 
 """
 is_normal_form(X :: CStarSurface{T,C,N,M,R}) where {T <: Integer, C, N, M, R} =
@@ -112,11 +114,13 @@ An admissible operation of a ``\mathbb{C}^*``-surface. It consists of three fiel
 - `perm :: SVector{R,Int}`: The permutation to apply to the blocks,
 - `c :: SVector{R,T}`: The coefficients to apply for the addition.
 
-Note that both `perm` and `c` are static vectors of length equal to the number of blocks.
-In particular, we require that ``c_1 = -(c_2 + \dots + c_r)`` for the operation to be valid.
-
 See also Definition ``\ref{def:admissible_operations}`` and Lemma
-``\ref{lem:admissible_operations_normal_form}``.
+``\ref{lem:admissible_operations_normal_form}``. Note that both `perm` and `c` are static vectors of length equal to the number of blocks.
+In particular, we require that ``c_1 = -(c_2 + \dots + c_r)``
+(in contrast to Section ``\ref{subsec:defining_triples_normal_form}``, the indexation here
+is one-based).
+
+Admissible operations can be applied to ``\mathbb{C}^*``-surfaces using standard Julia call syntax.
 
 """
 struct AdmissibleOperation{T<:Integer,R}
@@ -141,7 +145,7 @@ end
 @doc raw"""
     inversion(R :: Int, T :: Type{<:Integer} = Int)
 
-Return an inversion as an admissible operation. It takes the number of blocks of the
+Return an inversion as an admissible operation, see Definition ``\ref{def:admissible_operations}``. It takes the number of blocks of the
 ``\mathbb{C}^*``-surface as well as optionally an integer type as input.
 
 """
@@ -152,7 +156,7 @@ AdmissibleOperation{T,R}(true, SVector{R,Int}(1:R), SVector{R,T}(zeros(T,R)))
 @doc raw"""
     permutation(perm :: SVector{R,Int}, T :: Type{<:Integer} = Int) where {R}
 
-Return a permutation as an admissible operation.
+Return a permutation as an admissible operation, see Definition ``\ref{def:admissible_operations}``.
 
 """
 permutation(perm :: SVector{R,Int}, T :: Type{<:Integer} = Int) where {R} =
@@ -162,7 +166,7 @@ AdmissibleOperation{T,R}(false, perm, SVector{R,T}(zeros(T,R)))
 @doc raw"""
     addition(c :: SVector{R,T}) where {R, T <: Integer}
 
-Return an addition as an admissible operation.
+Return an addition as an admissible operation, see Definition ``\ref{def:admissible_operations}``.
 
 """
 addition(c :: SVector{R,T}) where {R, T <: Integer} =
@@ -189,8 +193,8 @@ end
 @doc raw"""
     normal_form_with_operation(X :: CStarSurface)
 
-Return a tuple `(Y, ψ)`, where `ψ` is an admissible operation turning `X` into normal form
-and `Y = ψ(X)`.
+Return a tuple ``(Y, \psi)``, where ``\psi`` is an admissible operation turning ``X`` into normal form
+and ``Y = \psi(X)``, see Proposition ``\ref{prp:defining_triple_normal_form_unique}`` 
 
 """
 function normal_form_with_operation(X :: CStarSurface{T,C,N,M,R}) where {T <: Integer, C, N, M, R}
@@ -207,7 +211,7 @@ end
 @doc raw"""
     normal_form(X :: CStarSurface)
 
-Return the normal form of a defining triple of a ``\mathbb{C}^*``-surface.
+Return the normal form of a defining triple of a ``\mathbb{C}^*``-surface, see Proposition ``\ref{prp:defining_triple_normal_form_unique}``.
 
 """
 normal_form(X :: CStarSurface) = normal_form_with_operation(X)[1]

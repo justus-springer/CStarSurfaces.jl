@@ -50,6 +50,12 @@ elseif format == "thesis"
 
     txt = read(filename, String)
 
+    # Remove bibliography
+    start_idx = findfirst("{\\raggedright% @bibliography", txt)
+    end_idx = findfirst("}% end @bibliography", txt)
+    if start_idx !== nothing && end_idx !== nothing
+        txt = txt[1:first(start_idx)-1] * txt[last(end_idx)+1:end]
+    end
 
     # Add chapter heading
     txt = "\\chapter{CStarSurfaces.jl}\n\\label{apx:julia_cstar_surfaces}\n" * txt
@@ -57,8 +63,8 @@ elseif format == "thesis"
     # Add Tex root directive
     txt = "%!TEX root = thesis.tex\n\n" * txt
 
-    # Remove line breaks before examples
-    txt = replace(txt, r"\n+(\textbf{Example})" => s"\n\1")
+    # Remvoe line breaks before equations
+    txt = replace(txt, r"\n+(\\begin\{equation\*\})" => s"\n\1")
 
     # Remove math mode for references and add tilde
     txt = replace(txt, r" \\\( (\\ref\{\S+\}) \\\)" => s"~\1")

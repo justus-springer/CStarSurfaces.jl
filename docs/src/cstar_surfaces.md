@@ -27,21 +27,21 @@ anyway, so there isn't much use in distinguishing between
 coefficient matrices.
 
 Since Julia's indexing of vectors is one-based, the convention for numbering the
-blocks differs from the one used throughout Chapter
-``\ref{chp:log_del_pezzo_c_star_surfaces}``. In particular, we write ``R`` for
+blocks used here differs from the one used throughout Chapter
+``\ref{chp:log_del_pezzo_c_star_surfaces}``. In particular, we write `R` for
 the number of blocks, which equals ``r+1`` in the notation of Construction
 ``\ref{cns:generator_matrix_cstar_surface}``. For some user-facing functions,
-like [`l`](@ref), [`d`](@ref) and [`block_sizes`](@ref), we introduce an offset
-to match the convention used in Chapter
+like [`l`](@ref), [`d`](@ref) and [`block_sizes`](@ref), we add an offset
+automatically to match the convention used in Chapter
 ``\ref{chp:log_del_pezzo_c_star_surfaces}``.
 
 Like the polygon type in `RationalPolygons.jl`, we use statically sized matrices
 for the defining data of a ``\mathbb{C}^*``-surface. This means the type will
-depend both on the number of blocks ``r`` and the total number of rays ``n = n_0
-+ \dots + n_r`` as a type parameter.
+depend both on the number of blocks and the total number of rays ``n = n_0 + \dots + n_r`` as a type parameter.
 
 ```@docs
 CStarSurface
+cstar_surface
 vertex_matrix(X :: CStarSurface)
 l
 d
@@ -64,18 +64,47 @@ l_minus
 
 ## Global properties
 
+We describe functions that compute global properties of
+``\mathbb{C}^*``-surfaces. For the [`class_group`](@ref), [`multiplicity`](@ref)
+and [`picard_index`](@ref), we refer to Section ``\ref{subsec:defining_triple_picard_group}`` for
+more details. For other properties, like [`gorenstein_index`](@ref),
+[`is_quasismooth`](@ref), [`is_log_terminal`](@ref), [`log_canonicity`](@ref),
+and [`degree`](@ref), we refer to [HaHaSp25](@cite).
+
 ```@docs
-class_group
+class_group(X :: CStarSurface)
 multiplicity(X :: CStarSurface)
+grading_matrix_free_part(X :: CStarSurface)
+grading_matrix_torsion_part(X :: CStarSurface)
 picard_index(X :: CStarSurface)
 gorenstein_index(X :: CStarSurface)
-is_quasismooth
-is_factorial
-is_smooth
-log_canonicity
-is_log_canonical
-is_log_terminal
+is_quasismooth(X :: CStarSurface)
+is_factorial(X :: CStarSurface)
+is_smooth(X :: CStarSurface)
+log_canonicity(X :: CStarSurface)
+is_log_canonical(X :: CStarSurface)
+is_log_terminal(X :: CStarSurface)
 degree(X :: CStarSurface)
 ```
 
-## Normal form
+## Admissible operations and the normal form
+
+We provide an implementation of the normal form for defining triples from
+Section ``\ref{sec:cstar_surface_normal_form}``.
+
+```@docs
+mfrak_plus
+mfrak_minus
+beta_plus
+beta_minus
+are_equivalent
+orientation
+is_normal_form
+AdmissibleOperation
+admissible_operation
+inversion
+permutation
+addition
+normal_form_with_operation
+normal_form
+```

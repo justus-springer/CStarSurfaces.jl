@@ -1,7 +1,7 @@
 @doc raw"""
     CStarSurfaceCase
 
-An Enum type with four values: `EE`, `PE`, `EP`, `PP`.
+An enum type with four values: `EE`, `PE`, `EP`, `PP`.
 
 """
 Base.Enums.@enum CStarSurfaceCase EE PE EP PP

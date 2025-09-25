@@ -49,6 +49,31 @@ struct CStarSurface{T,C,N,M,R}
         V = hcat(leaf_matrices...)
         return CStarSurface{T,C}(V, block_sizes)
     end
+    
+end
+
+
+@doc raw"""
+    cstar_surface(C :: CStarSurfaceCase, l :: Vector{Vector{T}}, d :: Vector{Vector{T}}) where {T <: Integer}
+
+Construct a ``\mathbb{C}^*``-surface from a defining triple.
+
+# Example
+
+```jldoctest
+julia> cstar_surface(EE, [[1,4],[3],[2]], [[-1,-5],[2],[1]])
+C*-surface of case EE with l = ((1,4),3,2) and d = ((-1,-5),2,1) 
+```
+
+"""
+function cstar_surface(C :: CStarSurfaceCase, l :: Vector{Vector{T}}, d :: Vector{Vector{T}}) where {T <: Integer}
+    length(l) == length(d) || error("l and d must have the same length")
+    R = length(l)
+    length.(l) == length.(d) || error("all entries of l and d must have the same length")
+    block_sizes = SVector{R}(length.(l))
+    N = sum(block_sizes)
+    V = SMatrix{2,N,T}(transpose([vcat(l...) vcat(d...)]))
+    return CStarSurface{T,C}(V, block_sizes)
 end
 
 
@@ -57,6 +82,18 @@ end
 
 The vertex matrix of a ``\mathbb{C}^*``-surface. This encodes the rays in the toric ambient
 variety.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface(EE, [[1,4],[3],[2]], [[-1,-5],[2],[1]])
+C*-surface of case EE with l = ((1,4),3,2) and d = ((-1,-5),2,1) 
+
+julia> vertex_matrix(X)
+2×4 SMatrix{2, 4, Int64, 8} with indices SOneTo(2)×SOneTo(4):
+  1   4  3  2
+ -1  -5  2  1
+```
 
 """
 vertex_matrix(X :: CStarSurface) = X.vertex_matrix
@@ -195,6 +232,18 @@ This returns the ray as a vector with two entries. See also [`embedded_ray`](@re
 the embedding into `R`-dimensional space, which is the actual ray of the
 ambient toric variety.
 
+# Example
+
+```jldoctest
+julia> X = cstar_surface(EE, [[1,4],[3],[2]], [[-1,-5],[2],[1]])
+C*-surface of case EE with l = ((1,4),3,2) and d = ((-1,-5),2,1) 
+
+julia> ray(X,0,2)
+2-element SVector{2, Int64} with indices SOneTo(2):
+  4
+ -5
+```
+
 """
 function ray(X :: CStarSurface, i :: Int, j :: Int)
     V, ns = vertex_matrix(X), block_sizes(X)
@@ -232,6 +281,19 @@ end
 
 The `j`-th ray of the `i`-th block of the toric ambient variety. This is the
 embedded ray into `R`-dimensional space, where `R` is the number of blocks.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface(EE, [[1,4],[3],[2]], [[-1,-5],[2],[1]])
+C*-surface of case EE with l = ((1,4),3,2) and d = ((-1,-5),2,1) 
+
+julia> embedded_ray(X,0,2)
+3-element SVector{3, Int64} with indices SOneTo(3):
+ -4
+ -4
+ -5
+```
 
 """
 function embedded_ray(X :: CStarSurface{T,C,N,M,R}, i :: Int, j :: Int) where {C, T <: Integer, N, M, R}
@@ -271,6 +333,19 @@ hcat([hcat([embedded_ray(X, i, j) for j = 1 : block_sizes(X)[i+1]]...) for i = 0
 The generator matrix of the ambient toric variety of ``X``. The columns of this
 matrix are the primitive ray generators of the fan of the ambient toric
 variety.
+
+# Example
+
+```jldoctest
+julia> X = cstar_surface(EE, [[1,4],[3],[2]], [[-1,-5],[2],[1]])
+C*-surface of case EE with l = ((1,4),3,2) and d = ((-1,-5),2,1) 
+
+julia> generator_matrix(X)
+3×4 SMatrix{3, 4, Int64, 12} with indices SOneTo(3)×SOneTo(4):
+ -1  -4  3  0
+ -1  -4  0  2
+ -1  -5  2  1
+```
 
 """
 generator_matrix(X :: CStarSurface{T,EE}) where {T<:Integer} = generator_matrix_core(X)
@@ -341,7 +416,7 @@ end
     l_minus(X :: CStarSurface)
 
 The rational number ``\ell^- := \frac{1}{l_{0n_0}} + \dots + \frac{1}{l_{rn_r}} - r + 1``, see
-Definition 7.4 of [HaHaSp25](@cite)
+Definition 7.4 of [HaHaSp25](@cite).
 
 """
 function l_minus(X :: CStarSurface)

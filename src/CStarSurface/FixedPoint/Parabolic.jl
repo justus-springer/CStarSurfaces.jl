@@ -1,8 +1,8 @@
 @doc raw"""
     ParabolicFixedPoint <: BolicFixedPoint
 
-Abstract supertype of parabolic fixed points of a C*-surface. It has two
-subtypes `ParabolicFixedPointPlus` and `ParabolicFixedPointMinus`.
+Abstract supertype of parabolic fixed points of a ``\mathbb{C}^*``-surface.
+It has two subtypes [`ParabolicFixedPointPlus`](@ref) and [`ParabolicFixedPointMinus`](@ref).
 
 """
 abstract type ParabolicFixedPoint <: BolicFixedPoint end
@@ -11,7 +11,7 @@ abstract type ParabolicFixedPoint <: BolicFixedPoint end
 @doc raw"""
     ParabolicFixedPointPlus <: ParabolicFixedPoint
 
-A struct describing a parabolic fixed point. It has one field `i :: Int`, which
+A parabolic fixed point ``x^+_i``. It has one field `i :: Int`, which
 is the index of the arm of the fixed point.
 
 """
@@ -23,7 +23,7 @@ end
 @doc raw"""
     ParabolicFixedPointMinus <: ParabolicFixedPoint
 
-A struct describing a parabolic fixed point. It has one field `i :: Int`, which
+A parabolic fixed point ``x^-_i``. It has one field `i :: Int`, which
 is the index of the arm of the fixed point.
 
 """
@@ -35,7 +35,8 @@ end
 @doc raw"""
     parabolic_fixed_points(X :: CStarSurface)
 
-Return all parabolic fixed points of a C*-surface.
+Return all parabolic fixed points of a ``\mathbb{C}^*``-surface,
+see Definition ``\ref{def:defining_triple_fixed_points}``.
 
 """
 function parabolic_fixed_points(X :: CStarSurface)

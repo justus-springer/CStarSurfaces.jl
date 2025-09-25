@@ -1,8 +1,8 @@
 @doc raw"""
     EllipticFixedPoint <: FixedPoint
 
-Abstract supertype of elliptic fixed points of a C*-surface. It has two
-subtypes `EllipticFixedPointPlus` and `EllipticFixedPointMinus`.
+Abstract supertype of elliptic fixed points of a ``\mathbb{C}^*``-surface.
+It has two subtypes [`EllipticFixedPointPlus`](@ref) and [`EllipticFixedPointMinus`](@ref).
 
 """
 abstract type EllipticFixedPoint <: FixedPoint end
@@ -11,8 +11,7 @@ abstract type EllipticFixedPoint <: FixedPoint end
 @doc raw"""
     EllipticFixedPointPlus <: EllipticFixedPoint
 
-A struct describing an elliptic fixed point x^+. Since this point is uniquely
-determined, this struct has no fields.
+The elliptic fixed point ``x^+``. This struct has no fields.
 
 """
 struct EllipticFixedPointPlus <: EllipticFixedPoint end
@@ -21,8 +20,7 @@ struct EllipticFixedPointPlus <: EllipticFixedPoint end
 @doc raw"""
     EllipticFixedPointMinus <: EllipticFixedPoint
 
-A struct describing an elliptic fixed point x^-. Since this point is uniquely
-determined, this struct has no fields.
+The elliptic fixed point ``x^-``. This struct has no fields.
 
 """
 struct EllipticFixedPointMinus <: EllipticFixedPoint end
@@ -31,7 +29,7 @@ struct EllipticFixedPointMinus <: EllipticFixedPoint end
 @doc raw"""
     elliptic_fixed_points(X :: CStarSurface)
 
-Return all elliptic fixed points of a C*-surface.
+Return all elliptic fixed points of a ``\mathbb{C}^*``-surface, see Definition ``\ref{def:defining_triple_fixed_points}``.
 
 """
 function elliptic_fixed_points(X :: CStarSurface)
