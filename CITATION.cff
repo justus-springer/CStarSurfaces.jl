@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Springer"
+  given-names: "Justus"
+  orcid: "https://orcid.org/0009-0002-8457-1160"
+title: "CStarSurfaces.jl"
+version: 0.4.0
+date-released: 2024-04-08
+url: "https://github.com/justus-springer/CStarSurfaces.jl"
