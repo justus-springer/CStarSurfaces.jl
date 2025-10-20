@@ -35,7 +35,7 @@ end
 @doc raw"""
     parabolic_fixed_points(X :: CStarSurface)
 
-Return all parabolic fixed points of a ``\mathbb{C}^*``-surface,
+Return all parabolic fixed points of ``X``,
 see Definition ``\ref{def:defining_triple_fixed_points}``.
 
 """
@@ -55,10 +55,10 @@ function parabolic_fixed_points(X :: CStarSurface)
 end
 
 Base.show(io :: IO, x :: ParabolicFixedPointPlus) =
-print(io, "Parabolic fixed point x^+($(x.i))")
+print(io, "x⁺", to_subscript(x.i))
 
 Base.show(io :: IO, x :: ParabolicFixedPointMinus) =
-print(io, "Parabolic fixed point x^-($(x.i))")
+print(io, "x⁻", to_subscript(x.i))
 
 toric_chart(X :: CStarSurface{T,C}, x :: ParabolicFixedPointPlus) where {C, T <: Integer} =
 hcat(top_ray(X, x.i), LatticePoint{T}(0,1))

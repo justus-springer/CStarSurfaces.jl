@@ -407,7 +407,7 @@ snf(A :: AbstractMatrix) = snf_with_transform(A)[1]
 @doc raw"""
     elementary_divisors(A :: AbstractMatrix{T}) where {T <: Integer}
 
-Return the elementary_divisors divisors of `A`, i.e. the nonzero diagonal
+Return the elementary divisors of ``A``, i.e. the nonzero diagonal
 entries in the Smith normal form.
 
 """

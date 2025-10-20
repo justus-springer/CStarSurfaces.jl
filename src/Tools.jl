@@ -34,3 +34,14 @@ fixed points of C*-surfaces.
 """
 discrepancies(v1 :: LatticePoint{T}, v2 :: LatticePoint{T}, t :: Rational{T}) where {T <: Integer} =
 discrepancies(Matrix2{T}(v1[1],v1[2],v2[1],v2[2]), t)
+
+
+function to_subscript(n::Integer)
+    subscripts = Dict(
+        '0' => '₀', '1' => '₁', '2' => '₂', '3' => '₃', '4' => '₄',
+        '5' => '₅', '6' => '₆', '7' => '₇', '8' => '₈', '9' => '₉'
+    )
+    
+    str = string(n)
+    return join(subscripts[c] for c in str)
+end

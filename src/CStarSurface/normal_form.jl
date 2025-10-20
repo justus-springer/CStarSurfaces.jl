@@ -96,7 +96,7 @@ end
 Check whether a (defining triple of a) ``\mathbb{C}^*``-surface is in normal form.
 This holds if the following three conditions are satisfied, see Definition ``\ref{def:defining_triple_normal_form}``.
 
-- The [`orientation`](@ref) is nonnegative,
+- The [`orientation`](@ref) is non-negative,
 - [`beta_plus`](@ref) is sorted lexicographically,
 - We have ``0 \leq d_{i1} < l_{i1}`` for all ``i = 1, \dots, r``.
 
@@ -112,7 +112,7 @@ An admissible operation of a ``\mathbb{C}^*``-surface. It consists of three fiel
 
 - `invert :: Bool`: Whether the operation contains an inversion,
 - `perm :: SVector{R,Int}`: The permutation to apply to the blocks,
-- `c :: SVector{R,T}`: The coefficients to apply for the addition.
+- `c :: SVector{R,T}`: The coefficients to apply in the addition.
 
 See also Definition ``\ref{def:admissible_operations}`` and Lemma
 ``\ref{lem:admissible_operations_normal_form}``. Note that both `perm` and `c` are static vectors of length equal to the number of blocks.
@@ -121,6 +121,7 @@ In particular, we require that ``c_1 = -(c_2 + \dots + c_r)``
 is one-based).
 
 Admissible operations can be applied to ``\mathbb{C}^*``-surfaces using standard Julia call syntax.
+See for instance the example at [`inversion`](@ref).
 
 """
 struct AdmissibleOperation{T<:Integer,R}
@@ -134,6 +135,7 @@ end
     admissible_operation(invert :: Bool, perm :: SVector{R,Int}, c :: SVector{S,T}) where {R,S,T<:Integer}
 
 Construct an admissible operation from an inversion, a permutation and an addition.
+Here, we must have ``S = R-1``.
 
 """
 function admissible_operation(invert :: Bool, perm :: SVector{R,Int}, c :: SVector{S,T}) where {R,S,T<:Integer}
@@ -145,8 +147,25 @@ end
 @doc raw"""
     inversion(R :: Int, T :: Type{<:Integer} = Int)
 
-Return an inversion as an admissible operation, see Definition ``\ref{def:admissible_operations}``. It takes the number of blocks of the
-``\mathbb{C}^*``-surface as well as optionally an integer type as input.
+Return an inversion as an admissible operation, see Definition ``\ref{def:admissible_operations}``.
+It takes the number of blocks of the
+``\mathbb{C}^*``-surface and optionally an integer type as input.
+
+# Example:
+
+```jldoctest
+julia> X = cstar_surface(PE, [[1,1],[2],[4]], [[-2,-3],[1],[3]])
+C*-surface of case PE with l = ((1,1),2,4) and d = ((-2,-3),1,3) 
+
+julia> α = inversion(3)
+AdmissibleOperation{Int64, 3}(true, [1, 2, 3], [0, 0, 0])
+
+julia> generator_matrix(α(X))
+3×5 SMatrix{3, 5, Int64, 15} with indices SOneTo(3)×SOneTo(5):
+ -1  -1   2   0   0
+ -1  -1   0   4   0
+  3   2  -1  -3  -1
+```
 
 """
 inversion(R :: Int, T :: Type{<:Integer} = Int) =
@@ -158,6 +177,22 @@ AdmissibleOperation{T,R}(true, SVector{R,Int}(1:R), SVector{R,T}(zeros(T,R)))
 
 Return a permutation as an admissible operation, see Definition ``\ref{def:admissible_operations}``.
 
+# Example:
+
+```jldoctest
+julia> X = cstar_surface(PE, [[1,1],[2],[4]], [[-2,-3],[1],[3]])
+C*-surface of case PE with l = ((1,1),2,4) and d = ((-2,-3),1,3) 
+
+julia> α = permutation(@SVector [2,3,1])
+AdmissibleOperation{Int64, 3}(false, [2, 3, 1], [0, 0, 0])
+
+julia> generator_matrix(α(X))
+3×5 SMatrix{3, 5, Int64, 15} with indices SOneTo(3)×SOneTo(5):
+ -2  4   0   0  0
+ -2  0   1   1  0
+  1  3  -2  -3  1
+```
+
 """
 permutation(perm :: SVector{R,Int}, T :: Type{<:Integer} = Int) where {R} =
 AdmissibleOperation{T,R}(false, perm, SVector{R,T}(zeros(T,R)))
@@ -167,6 +202,22 @@ AdmissibleOperation{T,R}(false, perm, SVector{R,T}(zeros(T,R)))
     addition(c :: SVector{R,T}) where {R, T <: Integer}
 
 Return an addition as an admissible operation, see Definition ``\ref{def:admissible_operations}``.
+
+# Example:
+
+```jldoctest
+julia> X = cstar_surface(PE, [[1,1],[2],[4]], [[-2,-3],[1],[3]])
+C*-surface of case PE with l = ((1,1),2,4) and d = ((-2,-3),1,3) 
+
+julia> α = addition(@SVector [2,-1])
+AdmissibleOperation{Int64, 3}(false, [1, 2, 3], [-1, 2, -1])
+
+julia> generator_matrix(α(X))
+3×5 SMatrix{3, 5, Int64, 15} with indices SOneTo(3)×SOneTo(5):
+ -1  -1  2   0  0
+ -1  -1  0   4  0
+ -3  -4  5  -1  1
+```
 
 """
 addition(c :: SVector{R,T}) where {R, T <: Integer} =
@@ -193,8 +244,21 @@ end
 @doc raw"""
     normal_form_with_operation(X :: CStarSurface)
 
-Return a tuple ``(Y, \psi)``, where ``\psi`` is an admissible operation turning ``X`` into normal form
+Return a pair ``(Y, \psi)``, where ``\psi`` is an admissible operation turning ``X`` into normal form
 and ``Y = \psi(X)``, see Proposition ``\ref{prp:defining_triple_normal_form_unique}`` 
+
+# Example:
+
+```jldoctest
+julia> X = cstar_surface(EP, [[2],[1,1],[4]], [[-5],[2,1],[9]])
+C*-surface of case EP with l = (2,(1,1),4) and d = (-5,(2,1),9) 
+
+julia> Y, α = normal_form_with_operation(X)
+(C*-surface of case PE with l = ((1,1),2,4) and d = ((-2,-3),1,3) , AdmissibleOperation{Int64, 3}(true, [2, 1, 3], [-1, -2, 3]))
+
+julia> α(X) == Y
+true
+```
 
 """
 function normal_form_with_operation(X :: CStarSurface{T,C,N,M,R}) where {T <: Integer, C, N, M, R}

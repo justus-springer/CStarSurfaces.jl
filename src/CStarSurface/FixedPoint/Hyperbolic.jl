@@ -12,7 +12,7 @@ struct HyperbolicFixedPoint <: BolicFixedPoint
 end
 
 Base.show(io :: IO, x :: HyperbolicFixedPoint) =
-print(io, "Hyperbolix fixed point x($(x.i), $(x.j))")
+print(io, "x", to_subscript(x.i), to_subscript(x.j))
 
 toric_chart(X :: CStarSurface, x :: HyperbolicFixedPoint) =
 hcat(ray(X, x.i, x.j), ray(X, x.i, x.j+1))
@@ -20,7 +20,7 @@ hcat(ray(X, x.i, x.j), ray(X, x.i, x.j+1))
 @doc raw"""
     hyperbolic_fixed_points(X :: CStarSurface)
 
-Return all hyperbolic fixed points of a ``\mathbb{C}^*``-surface,
+Return all hyperbolic fixed points of ``X``,
 see Definition ``\ref{def:defining_triple_fixed_points}``.
 
 """

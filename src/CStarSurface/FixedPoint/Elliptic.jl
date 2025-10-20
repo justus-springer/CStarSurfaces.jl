@@ -29,7 +29,7 @@ struct EllipticFixedPointMinus <: EllipticFixedPoint end
 @doc raw"""
     elliptic_fixed_points(X :: CStarSurface)
 
-Return all elliptic fixed points of a ``\mathbb{C}^*``-surface, see Definition ``\ref{def:defining_triple_fixed_points}``.
+Return all elliptic fixed points of ``X``, see Definition ``\ref{def:defining_triple_fixed_points}``.
 
 """
 function elliptic_fixed_points(X :: CStarSurface)
@@ -39,11 +39,11 @@ function elliptic_fixed_points(X :: CStarSurface)
     return xs
 end
 
-Base.show(io :: IO, :: EllipticFixedPointPlus) =
-print(io, "Elliptic fixed point x^+")
+Base.show(io :: IO, ::MIME"text/plain", :: EllipticFixedPointPlus) =
+print(io, "x⁺")
 
 Base.show(io :: IO, :: EllipticFixedPointMinus) =
-print(io, "Elliptic fixed point x^-")
+print(io, "x⁻")
 
 toric_chart(X :: CStarSurface, :: EllipticFixedPointPlus) =
 hcat([top_embedded_ray(X,i) for i = 0 : number_of_blocks(X)-1]...)

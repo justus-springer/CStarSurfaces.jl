@@ -1,10 +1,17 @@
+@doc raw"""
+    is_almost_free(xs :: AbstractVector)
+
+Check whether a given ``n``-element vector describes an almost free weight system,
+i.e. any ``n-1`` of the element are coprime.
+
+"""
 is_almost_free(xs :: AbstractVector) =
 all([gcd(deleteat!(copy(xs), k)) == 1 for k = 1 : length(xs)])
 
 @doc raw"""
     decompositions(n :: T, len :: Int) where {T <: Integer}
 
-Return all decompositions of `n` into a product of `len` positive integers.
+Return all decompositions of ``n`` into a product of `len` positive integers.
 
 """
 function decompositions(n :: T, len :: Int) where {T <: Integer}
@@ -27,7 +34,11 @@ end
 
 A simple struct with two fields `val :: T` and `eq :: Bool`. If `eq` is true, it is
 understood to be the condition that a variable equals `val`. If `eq` is false, it is
-the condition that a variable is at least `val`.
+the condition that a variable is at least `val`. This is used to encode the different
+subcases of the classification, see Table ``\ref{tbl:cstar_surface_log_terminal_cases}``.
+
+See also the constructors [`eq`](@ref) and [`geq`](@ref).
+
 """
 struct VarBound{T <: Integer}
     val :: T
@@ -35,7 +46,22 @@ struct VarBound{T <: Integer}
     VarBound(x :: T, eq :: Bool) where {T <: Integer} = new{T}(x, eq)
 end
 
+
+@doc raw"""
+    eq(x :: Integer)
+
+A constructor of [`VarBound`](@ref) for an equality.
+
+"""
 eq(x :: Integer) = VarBound(x, true)
+
+
+@doc raw"""
+    geq(x :: Integer)
+
+A constructor of [`VarBound`](@ref) for a lower bound.
+
+"""
 geq(x :: Integer) = VarBound(x, false)
 
 function Base.show(io::IO, vb::VarBound{T}) where T <: Integer
@@ -47,6 +73,15 @@ function Base.show(io::IO, vb::VarBound{T}) where T <: Integer
 end
 
 
+@doc raw"""
+    SingularityType
+
+An enum type with values `eAeA`, `eAeD`, `eDeD`, `eAeE`, `eDeE`, `eEeE`, `eDp`, `eEp`.
+This encodes the possible singularity types in the classification of
+log del Pezzo ``\mathbb{C}^*``-surfaces of Picard number one, see Table
+``\ref{tbl:cstar_surface_log_terminal_cases}``.
+
+"""
 @enum SingularityType eAeA eAeD eDeD eAeE eDeE eEeE eDp eEp
 
 function classify_by_picard_index(p :: T, ::Val{eAeA}) where {T <: Integer}
@@ -116,6 +151,33 @@ function classify_by_picard_index(p :: T, ::Val{eEp}) where {T <: Integer}
 end
 
 
+@doc raw"""
+    classify_by_picard_index(p :: T, ::Val{<:SingularityType}) where {T <: Integer}
+    classify_by_picard_index(p :: T) where {T <: Integer}
+
+Return all log del Pezzo ``\mathbb{C}^*``-surfaces of Picard number one with
+Picard index ``p``. If a [`SingularityType`](@ref) is provided, only surfaces
+of this singularity type are computed.
+
+# Example:
+
+There are ``7137`` surfaces of Picard index at most ``500``. There are no
+surfaces of Picard index ``31`` or ``127``, see also Theorem
+``\ref{thm:cstar_surface_mersenne_prime_madness}``.
+
+```jldoctest
+julia> Xss = classify_by_picard_index.(1:500);
+
+julia> sum(length.(Xss))
+7137
+
+julia> filter(i -> isempty(Xss[i]), 1 : 500)
+2-element Vector{Int64}:
+  31
+ 127
+```
+
+"""
 function classify_by_picard_index(p :: T) where {T <: Integer}
     res = CStarSurface{T}[]
     for c in instances(SingularityType)
@@ -124,7 +186,14 @@ function classify_by_picard_index(p :: T) where {T <: Integer}
     return res
 end
 
+@doc raw"""
+    classify_ee_from_l0(p :: T, l01 :: T, l02 :: T, ls_bounds :: VarBound{T}...) where {T <: Integer}
 
+An implementation of Algorithm ``\ref{alg:cstar_surface_picard_number_one_ee_from_l0}``.
+For the entries ``l_1, \dots, l_r``, one can provide either lower bounds or fixed values with
+[`VarBound`](@ref).
+
+"""
 function classify_ee_from_l0(p :: T, l01 :: T, l02 :: T, ls_bounds :: VarBound{T}...) where {T <: Integer}
 
     R = length(ls_bounds)
@@ -174,6 +243,14 @@ function classify_ee_from_l0(p :: T, l01 :: T, l02 :: T, ls_bounds :: VarBound{T
 end
 
 
+@doc raw"""
+    classify_ee_from_ls(p :: T, l01_bound :: VarBound{T}, l02_bound :: VarBound{T}, ls :: T...) where {T <: Integer}
+
+An implementation of Algorithm ``\ref{alg:cstar_surface_picard_number_one_ee_from_ls}``.
+For the entries ``l_{01}`` and ``l_{02}``, one can provide either lower bounds or fixed values with
+[`VarBound`](@ref).
+
+"""
 function classify_ee_from_ls(p :: T, l01_bound :: VarBound{T}, l02_bound :: VarBound{T}, ls :: T...) where {T <: Integer}
 
     R = length(ls)
@@ -229,6 +306,15 @@ function classify_ee_from_ls(p :: T, l01_bound :: VarBound{T}, l02_bound :: VarB
 
 end
 
+
+@doc raw"""
+    classify_pe(p :: T, ls_bounds :: VarBound{T}...) where {T <: Integer}
+
+An implementation of Algorithm ``\ref{alg:cstar_surface_picard_number_one_pe_from_ls}``. For
+the entries ``l_0, \dots, l_r``, one can provide either lower bounds or fixed values with
+[`VarBound`](@ref).
+
+"""
 function classify_pe(p :: T, ls_bounds :: VarBound{T}...) where {T <: Integer}
     R = length(ls_bounds)-1
     res = CStarSurface{T, PE, R+1, 2*(R+1), R+1}[]

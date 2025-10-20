@@ -1,5 +1,3 @@
-export bolic_fixed_points
-export cstar_surface
 export AbelianGroup
 export addition
 export admissible_operation
@@ -11,6 +9,7 @@ export beta_plus
 export beta_plus
 export block_sizes
 export BolicFixedPoint
+export bolic_fixed_points
 export bottom_embedded_ray
 export bottom_ray
 export case
@@ -20,14 +19,12 @@ export classify_ee_from_l0
 export classify_ee_from_ls
 export classify_pe
 export cokernel
+export cstar_surface
 export CStarSurface
 export CStarSurfaceCase 
 export d
 export decompositions
 export degree
-export grading_matrix
-export grading_matrix_free_part
-export grading_matrix_torsion_part
 export discrepancies
 export eAeA
 export eAeD
@@ -45,10 +42,15 @@ export EllipticFixedPointPlus
 export elliptic_fixed_points
 export embedded_ray
 export EP
+export eq
 export FixedPoint
 export fixed_points
 export generator_matrix
+export geq
 export gorenstein_index
+export grading_matrix
+export grading_matrix_free_part
+export grading_matrix_torsion_part
 export has_elliptic_fixed_point_minus
 export has_elliptic_fixed_point_plus
 export has_parabolic_fixed_point_curve_minus
@@ -56,6 +58,8 @@ export has_parabolic_fixed_point_curve_plus
 export HyperbolicFixedPoint
 export hyperbolic_fixed_points
 export inversion
+export invert_case
+export is_almost_free
 export is_canonical
 export is_factorial
 export is_log_canonical
@@ -99,7 +103,6 @@ export snf_with_transform
 export snf_with_transform!
 export sum_of_maximal_slopes
 export sum_of_minimal_slopes
-export invert_case
 export top_embedded_ray
 export top_ray
 export toric_chart

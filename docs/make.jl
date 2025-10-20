@@ -18,15 +18,23 @@ using Documenter, CStarSurfaces, DocumenterCitations
 
 bib = CitationBibliography(joinpath(@__DIR__, "src", "refs.bib"))
 
+DocMeta.setdocmeta!(CStarSurfaces, :DocTestSetup, :(using CStarSurfaces, StaticArrays); recursive=true)
+
 if format == "html"
     makedocs(
+        modules = [CStarSurfaces],
         sitename = "CStarSurfaces",
         pages = [
             "CStarSurfaces.jl" => "index.md",
-            "``\\mathbb{C}^*``-surfaces" => "cstar_surfaces.md",
+            "Basic types" => "basic_types.md",
+            "C*-surfaces" => "cstar_surfaces.md",
             "Local properties" => "local_properties.md",
             "Classifications" => "classifications.md",
+            "Bibliography" => "bibliography.md",
+            "Index" => "docs_index.md",
         ],
+        plugins = [bib],
+        warnonly = :missing_docs,
     )
 
     deploydocs(
@@ -35,15 +43,18 @@ if format == "html"
 
 elseif format == "thesis"
     makedocs(
+        modules = [CStarSurfaces],
         sitename = "CStarSurfaces",
         format = Documenter.LaTeX(platform = "none"),
         pages = [
             "CStarSurfaces.jl" => "index.md",
+            "Basic types" => "basic_types.md",
             "C*-surfaces" => "cstar_surfaces.md",
             "Local properties" => "local_properties.md",
             "Classifications" => "classifications.md",
         ],
         plugins = [bib],
+        warnonly = :missing_docs,
     )
 
     filename = joinpath(@__DIR__, "build", "CStarSurfaces.tex")
@@ -71,6 +82,18 @@ elseif format == "thesis"
 
     # Fix citations
     txt = replace(txt, r"\[\\hyperref\[doc:(\w+)\]\{\d+\}\]" => s"\\cite{\1}")
+
+    # Fix math mode in heading
+    txt = replace(txt, r"\\section\{CStar Surfaces\}" =>
+       s"\\section{\\texorpdfstring{\\( \\CC^* \\)}{C*}-surfaces}")
+
+
+    # Insert fixed point graph
+    txt = replace(txt, "FIXEDPOINTGRAPH" => "\\input{fixed-points-types.tex}")
+
+    # Fix duplicate label
+    txt = replace(txt, "\\label{doc:Classifications}{}" => "\\label{doc:CStarSurfaces.Classifications}{}")
+
 
     write(filename, txt)
 

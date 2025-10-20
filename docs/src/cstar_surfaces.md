@@ -1,18 +1,12 @@
-# Surfaces
+# CStar Surfaces
  
-## Cases
-
-We model the four possible cases ``\mathrm{(ee)}, \mathrm{(pe)}, \mathrm{(ep)}``
-and ``\mathrm{(pp)}`` by a simple enum type with four values:
-
-```@docs
-CStarSurfaceCase
-invert_case
-has_elliptic_fixed_point_plus(C :: CStarSurfaceCase)
-has_elliptic_fixed_point_minus(C :: CStarSurfaceCase)
-has_parabolic_fixed_point_curve_plus(C :: CStarSurfaceCase)
-has_parabolic_fixed_point_curve_minus(C :: CStarSurfaceCase)
-```
+This section documents the main functionality around ``\mathbb{C}^*``-surfaces
+and their global properties. In Subsection ``\ref{doc:The-CStarSurface-type}``,
+we introduce the type `CStarSurface`, which is modeled by defining triples.
+Subsection ``\ref{doc:Global-properties}`` goes over functions computing global
+invariants. Finally, Subsection
+``\ref{doc:Admissible-operations-and-the-normal-form}`` is about the normal
+form.
 
 ## The `CStarSurface` type
 
@@ -27,12 +21,12 @@ anyway, so there isn't much use in distinguishing between
 coefficient matrices.
 
 Since Julia's indexing of vectors is one-based, the convention for numbering the
-blocks used here differs from the one used throughout Chapter
-``\ref{chp:log_del_pezzo_c_star_surfaces}``. In particular, we write `R` for
-the number of blocks, which equals ``r+1`` in the notation of Construction
+blocks used by `CStarSurfaces.jl` differs from the one used throughout Chapter
+``\ref{chp:log_del_pezzo_c_star_surfaces}``. In particular, we write ``R`` for the
+number of blocks, which equals ``r+1`` in the notation of Construction
 ``\ref{cns:generator_matrix_cstar_surface}``. For some user-facing functions,
-like [`l`](@ref), [`d`](@ref) and [`block_sizes`](@ref), we add an offset
-automatically to match the convention used in Chapter
+like [`l`](@ref), [`d`](@ref) and [`block_sizes`](@ref), we add an offset to
+match the convention used in Chapter
 ``\ref{chp:log_del_pezzo_c_star_surfaces}``.
 
 Like the polygon type in `RationalPolygons.jl`, we use statically sized matrices
@@ -66,8 +60,9 @@ l_minus
 
 We describe functions that compute global properties of
 ``\mathbb{C}^*``-surfaces. For the [`class_group`](@ref), [`multiplicity`](@ref)
-and [`picard_index`](@ref), we refer to Section ``\ref{subsec:defining_triple_picard_group}`` for
-more details. For other properties, like [`gorenstein_index`](@ref),
+and [`picard_index`](@ref), we refer to Section
+``\ref{subsec:defining_triple_picard_group}`` and [HaHaSp25](@cite) for more
+details. For other properties, like [`gorenstein_index`](@ref),
 [`is_quasismooth`](@ref), [`is_log_terminal`](@ref), [`log_canonicity`](@ref),
 and [`degree`](@ref), we refer to [HaHaSp25](@cite).
 
@@ -76,6 +71,7 @@ class_group(X :: CStarSurface)
 multiplicity(X :: CStarSurface)
 grading_matrix_free_part(X :: CStarSurface)
 grading_matrix_torsion_part(X :: CStarSurface)
+grading_matrix(X :: CStarSurface{T,C,N,M,R}) where {C, T <: Integer, N, M, R}
 picard_index(X :: CStarSurface)
 gorenstein_index(X :: CStarSurface)
 is_quasismooth(X :: CStarSurface)
@@ -84,7 +80,7 @@ is_smooth(X :: CStarSurface)
 log_canonicity(X :: CStarSurface)
 is_log_canonical(X :: CStarSurface)
 is_log_terminal(X :: CStarSurface)
-degree(X :: CStarSurface)
+degree(X :: CStarSurface{T}) where {T <: Integer}
 ```
 
 ## Admissible operations and the normal form

@@ -6,18 +6,18 @@ The type of a ``\mathbb{C}^*`` surface. It has the following type parameters:
 
 - `T <: Integer`. The integer type to be used, e.g. `Int64` or `BigInt`.
 - `C :: CStarSurfaceCase`. One of `EE`, `EP`, `PE` and `PP`. This describes the
-  fixed point set of the ``\mathbb{C}^*``-surface, namely the existence of elliptic fixed
+  fixed point set of the ``\mathbb{C}^*``-surface, i.e. the existence of elliptic fixed
   points and parabolic fixed point curves.
 - `N :: Int`. The number of rays in the toric ambient variety. This equals ``n_0 + \dots + n_r``
   in the notation of Section ``\ref{sec:background_cstar_surfaces}``.
-- `M :: Int`. This always equals `2*N`.
+- `M :: Int`. This always equals ``2N``.
 - `R :: Int`. The number of arms of the ``\mathbb{C}^*``-surface. This equals ``r+1`` in the
   notation of Section ``\ref{sec:background_cstar_surfaces}``.
 
 The type itself has two fields:
 
 - `vertex_matrix :: SMatrix{2,N,T,M}`. This contains the main part of the data:
-  A 2xN integral matrix encoding the entries ``l_{ij}`` and ``d_{ij}`` of the rays
+  A ``2 \times N`` integral matrix encoding the entries ``l_{ij}`` and ``d_{ij}`` of the rays
   of the toric ambient. In the notation of Section ``\ref{sec:background_cstar_surfaces}``,
   the vertex matrix has the form
   ```math
@@ -56,9 +56,14 @@ end
 @doc raw"""
     cstar_surface(C :: CStarSurfaceCase, l :: Vector{Vector{T}}, d :: Vector{Vector{T}}) where {T <: Integer}
 
-Construct a ``\mathbb{C}^*``-surface from a defining triple.
+Construct a ``\mathbb{C}^*``-surface from a defining triple. This function
+does not check whether the input data truly is a defining triple in the sense
+of Construction ``\ref{cns:generator_matrix_cstar_surface}``.
+In particular, it is the responsibility of the user to ensure that ``\gcd(l_{ij}, d_{ij}) = 1``,
+that ``\frac{d_{i1}}{l_{i1}} > \dots > \frac{d_{in_i}}{l_{in_i}}`` and that the
+columns of the generator matrix generate ``\mathbb{Q}^{r+1}`` as a convex cone.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> cstar_surface(EE, [[1,4],[3],[2]], [[-1,-5],[2],[1]])
@@ -83,7 +88,7 @@ end
 The vertex matrix of a ``\mathbb{C}^*``-surface. This encodes the rays in the toric ambient
 variety.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> X = cstar_surface(EE, [[1,4],[3],[2]], [[-1,-5],[2],[1]])
@@ -120,14 +125,14 @@ block_sizes(X :: CStarSurface) = X.block_sizes
 @doc raw"""
     block_sizes(X :: CStarSurface, i :: Int)
 
-The size of the `i`-th block of a ``\mathbb{C}^*``-surface.
+The size of the ``i``-th block of a ``\mathbb{C}^*``-surface.
 
 """
 block_sizes(X :: CStarSurface, i :: Int) = block_sizes(X)[i+1]
 
 
 @doc raw"""
-    case(X :: CStarSurface{T,C}) where {T <: Integer}
+    case(X :: CStarSurface)
 
 The case of the ``\mathbb{C}^*``-surface, as a [`CStarSurfaceCase`](@ref).
 
@@ -138,10 +143,10 @@ case(:: CStarSurface{T,C}) where {C, T <: Integer} = C
 function Base.show(io :: IO, X :: CStarSurface{T,C,N,M,R}) where {T<:Integer, C, N, M, R}
     ns = block_sizes(X)
     print(io, "C*-surface of case ", C, " with l = (")
-    print(join([ns[i] == 1 ? l(X,i-1,1) : "(" * join([l(X,i-1,j) for j = 1 : ns[i]], ",") * ")"
+    print(io, join([ns[i] == 1 ? l(X,i-1,1) : "(" * join([l(X,i-1,j) for j = 1 : ns[i]], ",") * ")"
                 for i = 1 : R], ","), ") ")
     print(io, "and d = (")
-    print(join([ns[i] == 1 ? d(X,i-1,1) : "(" * join([d(X,i-1,j) for j = 1 : ns[i]], ",") * ")"
+    print(io, join([ns[i] == 1 ? d(X,i-1,1) : "(" * join([d(X,i-1,j) for j = 1 : ns[i]], ",") * ")"
                 for i = 1 : R], ","), ") ")
 end
 
@@ -183,7 +188,7 @@ has_parabolic_fixed_point_curve_plus(C)
     has_parabolic_fixed_point_curve_minus(X :: CStarSurface)
 
 Whether the ``\mathbb{C}^*``-surface has a curve of parabolic fixed points as the sink.
-This means the case is either `EP` or ``PP``.
+This means the case is either `EP` or `PP`.
 
 """
 has_parabolic_fixed_point_curve_minus(:: CStarSurface{T,C}) where {T<:Integer,C} =
@@ -208,7 +213,7 @@ end
 @doc raw"""
     d(X :: CStarSurface, i :: Int, j :: Int)
 
-Return the entry ``l_{ij}`` of the defining triple. By convention, the
+Return the entry ``d_{ij}`` of the defining triple. By convention, the
 indexation of the blocks starts with zero, i.e. ``i`` goes from ``0`` to
 `number_of_blocks(X)-1`. The indexation of the rays in each individual block
 starts with one.
@@ -223,16 +228,16 @@ end
 @doc raw"""
     ray(X :: CStarSurface, i :: Int, j :: Int)
 
-Return the `j`-th ray of the `i`-th block of the ``\mathbb{C}^*``-surface. By convention, the
-indexation of the blocks starts with zero, i.e. `i` goes from ``0`` to
+Return the ``j``-th ray of the ``i``-th block of the ``\mathbb{C}^*``-surface. By convention, the
+indexation of the blocks starts with zero, i.e. ``i`` goes from ``0`` to
 `number_of_blocks(X)-1`. The indexation of the rays in each individual block
 starts with one.
 
 This returns the ray as a vector with two entries. See also [`embedded_ray`](@ref) for
-the embedding into `R`-dimensional space, which is the actual ray of the
+the embedding into ``R``-dimensional space, which is the actual ray of the
 ambient toric variety.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> X = cstar_surface(EE, [[1,4],[3],[2]], [[-1,-5],[2],[1]])
@@ -255,7 +260,7 @@ end
 @doc raw"""
     top_ray(X :: CStarSurface, i :: Int)
 
-The topmost ray of the `i`-th block.
+The topmost ray of the ``i``-th block.
 
 """
 function top_ray(X :: CStarSurface, i :: Int)
@@ -267,7 +272,7 @@ end
 @doc raw"""
     bottom_ray(X :: CStarSurface, i :: Int)
 
-The bottommost ray of the `i`-th block.
+The bottommost ray of the ``i``-th block.
 
 """
 function bottom_ray(X :: CStarSurface, i :: Int)
@@ -279,10 +284,10 @@ end
 @doc raw"""
     embedded_ray(X :: CStarSurface, i :: Int, j :: Int)
 
-The `j`-th ray of the `i`-th block of the toric ambient variety. This is the
-embedded ray into `R`-dimensional space, where `R` is the number of blocks.
+The ``j``-th ray of the ``i``-th block of the toric ambient variety. This is the
+embedded ray into ``R``-dimensional space, where ``R`` is the number of blocks.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> X = cstar_surface(EE, [[1,4],[3],[2]], [[-1,-5],[2],[1]])
@@ -309,7 +314,7 @@ end
 @doc raw"""
     top_embedded_ray(X :: CStarSurface, i :: Int)
 
-The topmost ray of the `i`-th block as an embedded ray.
+The topmost ray of the ``i``-th block as an embedded ray.
 
 """
 top_embedded_ray(X :: CStarSurface, i :: Int) = embedded_ray(X, i, 1)
@@ -318,7 +323,7 @@ top_embedded_ray(X :: CStarSurface, i :: Int) = embedded_ray(X, i, 1)
 @doc raw"""
     bottom_embedded_ray(X :: CStarSurface, i :: Int)
 
-The bottommost ray of the `i`-th block as an embedded ray.
+The bottommost ray of the ``i``-th block as an embedded ray.
 
 """
 bottom_embedded_ray(X :: CStarSurface, i :: Int) = embedded_ray(X, i, block_sizes(X, i))
@@ -332,9 +337,9 @@ hcat([hcat([embedded_ray(X, i, j) for j = 1 : block_sizes(X)[i+1]]...) for i = 0
 
 The generator matrix of the ambient toric variety of ``X``. The columns of this
 matrix are the primitive ray generators of the fan of the ambient toric
-variety.
+variety. See Construction ``\ref{cns:generator_matrix_cstar_surface}``.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> X = cstar_surface(EE, [[1,4],[3],[2]], [[-1,-5],[2],[1]])
@@ -364,7 +369,7 @@ hcat(generator_matrix_core(X),
 @doc raw"""
     slope(X :: CStarSurface, i :: Int, j :: Int)
 
-The slope of the `j`-th ray of the `i`-th block, i.e. ``d_{ij} / l_{ij}``.
+The slope of the ``j``-th ray of the ``i``-th block, i.e. ``d_{ij} / l_{ij}``.
 
 """
 function slope(X :: CStarSurface, i :: Int, j :: Int)

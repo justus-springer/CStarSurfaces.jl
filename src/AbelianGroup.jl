@@ -1,12 +1,21 @@
 @doc raw"""
     AbelianGroup{T <: Integer}
 
-A struct reprensting a finitely generated abelian group. It consists of two
+A struct representing a finitely generated abelian group. It consists of two
 fields:
 
 - `rank :: T`: The rank of the group.
 - `elementary_divisors :: T`: The elementary divisors, i.e. the orders of the
   torsion part.
+
+# Example:
+
+Abelian groups are displayed using standard mathematical notation:
+
+```jldoctest
+julia> AbelianGroup(3, [2,4])
+Z^3 x Z/2 x Z/4
+```
 
 """
 struct AbelianGroup{T <: Integer}
@@ -76,7 +85,7 @@ torsion_part(G :: AbelianGroup) = AbelianGroup(0, elementary_divisors(G))
 @doc raw"""
     cokernel(A :: AbstractMatrix)
 
-The cokernel of a matrix as an abelian group.
+Return the cokernel of a matrix as an abelian group by computing its Smith normal form.
 
 """
 function cokernel(A :: AbstractMatrix)

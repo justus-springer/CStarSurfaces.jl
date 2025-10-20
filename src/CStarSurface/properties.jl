@@ -2,8 +2,9 @@
     class_group(X :: CStarSurface)
 
 Return the divisor class group of ``X``.
+See Definition ``\ref{def:defining_triple_class_group}``.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> X = cstar_surface(PE, [[1,1],[3],[3]], [[-1,-3],[2],[2]])
@@ -33,7 +34,7 @@ Return the index of the Picard group inside the divisor class group of ``X``.
 This equals the product of all local multiplicities divided by the global multiplicity, see
 Theorem ``\ref{thm:picard_index_formula_defining_triples}``.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> X = cstar_surface(PE, [[1,1],[3],[3]], [[-1,-3],[2],[2]])
@@ -50,9 +51,10 @@ picard_index(X :: CStarSurface) = prod([multiplicity(X,x) for x in fixed_points(
 @doc raw"""
     gorenstein_index(X :: CStarSurface)
 
-Return the Gorenstein index of ``X``.
+Return the Gorenstein index of ``X``. This is the least common multiple of the
+local Gorenstein indices, see also [`gorenstein_index`](@ref).
 
-# Example
+# Example:
 
 ```jldoctest
 julia> X = cstar_surface(PE, [[1,1],[3],[3]], [[-1,-3],[2],[2]])
@@ -72,7 +74,7 @@ gorenstein_index(X :: CStarSurface) = lcm([gorenstein_index(X,x) for x in fixed_
 Check whether ``X`` is quasismooth, i.e. its characteristic space is
 smooth. See Summary 8.1 of [HaHaSp25](@cite) for a description in terms of the defining data.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> X = cstar_surface(PE, [[1,1],[3],[3]], [[-1,-3],[2],[2]])
@@ -91,7 +93,7 @@ is_quasismooth(X :: CStarSurface) = all(x -> is_quasismooth(X, x), elliptic_fixe
 
 Check whether ``X`` is locally factorial, i.e. all local class groups are trivial.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> X = cstar_surface(PE, [[1,1],[3],[3]], [[-1,-3],[2],[2]])
@@ -119,9 +121,9 @@ is_smooth(X :: CStarSurface) = is_factorial(X) && is_quasismooth(X)
     log_canonicity(X :: CStarSurface)
 
 Return the maximal ``\varepsilon > 0`` such that the surface has ``\varepsilon``-log canonical
-singularities. For smooth surfaces, this returns `1//0` which is infinity.
+singularities. For smooth surfaces, this returns `1//0`, which is infinity by Julia's convention.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> X = cstar_surface(PE, [[1,1],[3],[3]], [[-1,-3],[2],[2]])
@@ -178,7 +180,7 @@ The self-intersection number of an anticanonical divisor of ``X``.
 See Proposition 7.9 of [HaHaSp25](@cite) for a formula in terms of the defining data.
 
 """
-function degree(X :: CStarSurface)
+function degree(X :: CStarSurface{T}) where {T <: Integer}
     # We use the formula given in Proposition 7.9 of [HHS23].
     r = number_of_blocks(X) - 1
     l = [[ray(X, i, j)[1] for j = 1 : block_sizes(X, i)] for i = 0 : r]
@@ -208,6 +210,7 @@ end
 
 Return a tuple ``(Q_0,Q_1)`` where ``Q_0`` is the free part and ``Q_1`` is the
 torsion part of the grading matrix associated to ``X``.
+See Definition ``\ref{def:defining_triple_class_group}``.
 
 """
 function grading_matrix(X :: CStarSurface{T,C,N,M,R}) where {C, T <: Integer, N, M, R}
@@ -226,8 +229,10 @@ end
     grading_matrix_free_part(X :: CStarSurface)
 
 Return the free part of the grading matrix associated to ``X``.
+See Definition ``\ref{def:defining_triple_class_group}``.
 
-# Example
+
+# Example:
 
 ```jldoctest
 julia> X = cstar_surface(PE, [[1,1],[3],[3]], [[-1,-3],[2],[2]])
@@ -247,8 +252,9 @@ grading_matrix_free_part(X :: CStarSurface) = grading_matrix(X)[1]
     grading_matrix_torsion_part(X :: CStarSurface)
 
 Return the torsion part of the grading matrix associated to ``X``.
+See Definition ``\ref{def:defining_triple_class_group}``.
 
-# Example
+# Example:
 
 ```jldoctest
 julia> X = cstar_surface(PE, [[1,1],[3],[3]], [[-1,-3],[2],[2]])
