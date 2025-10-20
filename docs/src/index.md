@@ -56,7 +56,8 @@ for smooth points.
 This documentation is generated directly from the docstrings of the package's
 source code. An online version is available on its GitHub page
 [CStarSurfaces_jl](@cite). Every documented item includes a clickable
-[`source`](https://github.com/justus-springer/CStarSurfaces.jl) link that directs to
+[`source`](https://github.com/justus-springer/CStarSurfaces.jl/blob/v1.0.0-thesis/docs/src/index.md?plain=1#L59)
+link that directs to
 the corresponding line in the source code where it is defined. The content here
 refers to version `v1.0.0-thesis` of `CStarSurfaces.jl`. All example sessions have been
 tested and verified to work with this version.
