@@ -1,7 +1,7 @@
 name = "CStarSurfaces"
 uuid = "d9e57b9c-945c-49a8-a633-a7fe926ee407"
 authors = ["Justus Springer <justusspringer@gmx.de>"]
-version = "1.0.0"
+version = "1.0.0-thesis"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
